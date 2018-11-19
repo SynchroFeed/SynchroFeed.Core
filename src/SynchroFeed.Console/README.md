@@ -16,7 +16,7 @@ The following documents the command line and configuration options for the *Cons
 The *Console* is a command line program that supports a couple command line arguments:
 
 ```
-SynchroFeed.Console.exe <-c|--config <configFilename>> [action <action>] [-?|-h|--help]
+SynchroFeed.Console.exe [-c|--config <configFilename>] [action...] [-?|-h|--help]
 ```
 
 The following table documents the command line arguments.
@@ -24,7 +24,7 @@ The following table documents the command line arguments.
 | Switch                     | Description 
 |----------------------------|-------------
 | `-c | --config <config>` | Specifies the configuration file that *SynchroFeed* will use. If none is specified, `app.json` will be used. The filename follows the switch. 
-| `action <action>`        | Specifies the name of the action contained in the configuration file to run even if that action is disabled. If no action is specified, then all enabled actions within the configuration file are executed.
+| `action`        | Specifies the name of one or more actions contained in the configuration file to run even if that action is disabled. If no action is specified, then all enabled actions within the configuration file are executed.
 | `-? | -h | --help`       | Displays the command line options help
 
 If no command line arguments are passed, then *Console* will look for a file named `app.json` in the current directory. If found,
