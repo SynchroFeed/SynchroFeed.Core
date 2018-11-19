@@ -1,0 +1,101 @@
+{
+  "FeedSettings": {
+    "SettingsGroups": {
+      "feed.mycompany.com": {
+        "ApiKey": "MyApiKey",
+        "DeleteFromTarget": true,
+        "Username": "MyUsername",
+        "Password": "MyPassword"
+      },
+      "catalogDatabaseSettings": {
+        "ConnectionStringName": "SynchroFeed_Catalog",
+        "CreateDatabaseIfNotFound": "true"
+      },
+      "Hipchat": {
+        "Url": "https://api.hipchat.com/v2/room/123456/notification?auth_token=myhipchattoken",
+        "MessageTemplate-ActionStarted": "{\"message_format\": \"text\",\"message\": \"Starting {Action.ActionSettings.Name}\"}",
+        "MessageTemplate-ActionCompleted": "{\"message_format\": \"text\",\"message\": \"Completed {Action.ActionSettings.Name}\"}"
+      },
+      "Slack": {
+        "Url": "https://hooks.slack.com/services/T12345678/SomeOtherToken",
+        "MessageTemplate-ActionStarted": "{\"attachments\": [{\"fallback\": \"Starting {Action.ActionSettings.Name}\",\"color\": \"good\",\"pretext\": \"Package Validation\",\"title\": \"Starting {Action.ActionSettings.Name}\"}]}",
+        "MessageTemplate-ActionCompleted": "{\"attachments\": [{\"fallback\": \"Completed {Action.ActionSettings.Name}\",\"color\": \"good\",\"pretext\": \"Package Validation\",\"title\": \"Completed {Action.ActionSettings.Name}\"}]}"
+      }
+    },
+    "Feeds": [
+      {
+        "Name": "progetfeed.mycompany.com",
+        "Type": "proget",
+        "SettingsGroup": "feed.mycompany.com",
+        "Settings": {
+          "Uri": "https://feed.mycompany.com/nuget/myprogetfeed/"
+        }
+      },
+      {
+        "Name": "feed.local",
+        "Type": "Directory",
+        "Settings": {
+          "Uri": "C:\\Temp\\repo\\feed.local"
+        }
+      }
+    ],
+    "Actions": [
+      {
+        "Name": "Sync progetfeed.mycompany.com to feed.local",
+        "Type": "Sync",
+        "SourceFeed": "progetfeed.mycompany.com",
+        "TargetFeed": "feed.local",
+        "OnlyLatestVersion": true,
+        "Enabled": true,
+        "Settings": {}
+      },
+      {
+        "Name": "Catalog progetfeed.mycompany.com",
+        "Type": "Process",
+        "SourceFeed": "progetfeed.mycompany.com",
+        "OnlyLatestVersion": false,
+        "Enabled": false,
+        "SettingsGroup": null,
+        "Settings": {},
+        "PackagesToIgnore": [],
+        "Commands": [
+          {
+            "Type": "Catalog",
+            "FailureAction": "Continue",
+            "SettingsGroup": "catalogDatabaseSettings",
+            "Settings": {}
+          }
+        ]
+      },
+      {
+        "Name": "Audit progetfeed.mycompany.com for 32-bit applications",
+        "Type": "Process",
+        "SourceFeed": "progetfeed.mycompany.com",
+        "OnlyLatestVersion": true,
+        "Enabled": true,
+        "PackagesToIgnore": [
+          "MyCompany.MyPackage1",
+          "MyCompany.MyPackage2",
+          "MyCompany.MyPackage3"
+        ],
+        "Settings": {
+        },
+        "Commands": [
+          {
+            "Type": "ApplicationIs64Bit",
+            "FailureAction": "FailPackage"
+          }
+        ],
+        "Observers": [
+          {
+            "Name": "WebPost",
+            "SettingsGroup": "Slack",
+            "Settings": {
+              "MessageTemplate-ActionCommandFailed": "{\"attachments\": [{\"fallback\": \"{Package.ID} contains a 32-bit application\",\"color\": \"danger\",\"pretext\": \"Package Validation\",\"title\": \"{Package.ID}\",\"title_link\": \"{Package.PackageUrl}\",\"text\": \"{Message}\",\"fields\": [{\"title\": \"Version\",\"value\": \"{Package.Version}\",\"short\": true},{\"title\": \"Feed\",\"value\": \"{Action.ActionSettings.SourceFeed}\",\"short\": true}]}]}"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
