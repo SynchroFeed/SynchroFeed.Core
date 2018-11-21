@@ -29,6 +29,8 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="bin\$configuration$\*.*" target="lib"/>
+		<file src="bin\$configuration$\SynchroFeed.Library.dll" target="lib"/>
+    <file src="bin\$configuration$\SynchroFeed.Library.pdb" target="lib"/>
+	  <file src="bin\$configuration$\SynchroFeed.Library.xml" target="lib"/>
 	</files>
 </package>
