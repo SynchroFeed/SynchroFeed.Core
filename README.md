@@ -1,6 +1,8 @@
 # SynchroFeed
+[![Slack](https://a.slack-edge.com/66f9/img/landing/header_logo_sprite.png)](https://synchrofeed.slack.com/)
+
 [![Build status](https://ci.appveyor.com/api/projects/status/909aq2v1cuqijsal?svg=true)](https://ci.appveyor.com/project/bvandehey/synchrofeed)
-[![NuGet version](https://badge.fury.io/nu/SyncroFeed.Library.svg)](https://badge.fury.io/nu/SyncroFeed.Library)
+[![NuGet version](https://badge.fury.io/nu/SyncroFeed.Library.svg)](https://badge.fury.io/nu/SynchroFeed.Library)
 
 *SynchroFeed* is an extensible framework written in Microsoft .NET C# for integrating with a Nuget-like feed to perform 
 use cases like the following:
