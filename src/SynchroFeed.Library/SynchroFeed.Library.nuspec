@@ -14,23 +14,8 @@
 		<releaseNotes>
 		</releaseNotes>
 		<dependencies>
-      <dependency id="Microsoft.CSharp" version="4.5.0"/>
-      <dependency id="Microsoft.Extensions.DependencyInjection" version="2.1.1"/>
-      <dependency id="Microsoft.Extensions.DependencyModel" version="2.1.0"/>
-      <dependency id="Microsoft.Extensions.Hosting.Abstractions" version="2.1.1"/>
-      <dependency id="Microsoft.Extensions.Logging.Abstractions" version="2.1.1"/>
-      <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="2.1.1"/>
-      <dependency id="Newtonsoft.Json" version="11.0.2"/>
-      <dependency id="Scrutor" version="3.0.2"/>
-      <dependency id="SharpZipLib" version="1.0.0"/>
-      <dependency id="System.Buffers" version="4.5.0"/>
-      <dependency id="System.Numerics.Vectors" version="4.5.0"/>
-      <dependency id="System.Runtime.InteropServices.RuntimeInformation" version="4.3.0"/>
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="bin\$configuration$\SynchroFeed.Library.dll" target="lib"/>
-    <file src="bin\$configuration$\SynchroFeed.Library.pdb" target="lib"/>
-	  <file src="bin\$configuration$\SynchroFeed.Library.xml" target="lib"/>
 	</files>
 </package>
