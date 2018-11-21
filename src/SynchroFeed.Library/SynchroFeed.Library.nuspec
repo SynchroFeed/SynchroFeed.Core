@@ -1,0 +1,34 @@
+﻿<package>
+	<metadata>
+	  <id>SynchroFeed.Library</id>
+	  <title>SynchroFeed Library</title>
+		<owners>SynchroFeed</owners>
+		<authors>Bob Vandehey</authors>
+	  <version>$version$</version>
+		<description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages</description>
+		<licenseUrl>https://raw.githubusercontent.com/SynchroFeed/SynchroFeed/master/LICENSE</licenseUrl>
+		<iconUrl>https://raw.githubusercontent.com/SynchroFeed/SynchroFeed/master/SynchroFeed.png</iconUrl>
+		<projectUrl>https://github.com/SynchroFeed/SynchroFeed</projectUrl>
+		<tags>nuget chocolately sync feed package catalog</tags>
+		<copyright>Copyright(c) 2018 Robert Vandehey</copyright>
+		<releaseNotes>
+		</releaseNotes>
+		<dependencies>
+      <dependency id="Microsoft.CSharp" version="4.5.0"/>
+      <dependency id="Microsoft.Extensions.DependencyInjection" version="2.1.1"/>
+      <dependency id="Microsoft.Extensions.DependencyModel" version="2.1.0"/>
+      <dependency id="Microsoft.Extensions.Hosting.Abstractions" version="2.1.1"/>
+      <dependency id="Microsoft.Extensions.Logging.Abstractions" version="2.1.1"/>
+      <dependency id="Microsoft.Extensions.Options.ConfigurationExtensions" version="2.1.1"/>
+      <dependency id="Newtonsoft.Json" version="11.0.2"/>
+      <dependency id="Scrutor" version="3.0.2"/>
+      <dependency id="SharpZipLib" version="1.0.0"/>
+      <dependency id="System.Buffers" version="4.5.0"/>
+      <dependency id="System.Numerics.Vectors" version="4.5.0"/>
+      <dependency id="System.Runtime.InteropServices.RuntimeInformation" version="4.3.0"/>
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="bin\$configuration$\*.*" target="lib"/>
+	</files>
+</package>

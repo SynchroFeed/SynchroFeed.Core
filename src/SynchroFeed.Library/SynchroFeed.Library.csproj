@@ -32,6 +32,14 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- Properties related to NuGet packaging: -->
+    <IncludeBuildOutput>False</IncludeBuildOutput>
+    <NoPackageAnalysis>True</NoPackageAnalysis>
+    <NuspecFile>SynchroFeed.Library.nuspec</NuspecFile>
+    <NuspecBasePath>$(MSBuildThisFileDirectory)</NuspecBasePath>
+    <PackageOutputPath>$(OutputDirectory)</PackageOutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -95,6 +103,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="README.md" />
+    <None Include="SynchroFeed.Library.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp">
