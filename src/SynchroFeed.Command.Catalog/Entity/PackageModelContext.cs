@@ -27,19 +27,20 @@
 #endregion
 using System;
 using System.Data.Entity;
-using System.Data.Entity.Migrations;
-//using SynchroFeed.Command.Catalog.Entity.View;
 using SynchroFeed.Command.Catalog.Migrations;
 
 namespace SynchroFeed.Command.Catalog.Entity
 {
     public class PackageModelContext : DbContext
     {
+        /// <summary>Initializes a new instance of the <see cref="T:SynchroFeed.Command.Catalog.Entity.PackageModelContext"/> class.</summary>
         public PackageModelContext()
         {
         }
 
-        public PackageModelContext(string connectionStringName, string connectionString)
+        /// <summary>Initializes a new instance of the <see cref="T:SynchroFeed.Command.Catalog.Entity.PackageModelContext"/> class.</summary>
+        /// <param name="connectionString">The connection string to initialize the database context.</param>
+        public PackageModelContext(string connectionString)
             : base(connectionString)
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<PackageModelContext, Configuration>(true));

@@ -26,8 +26,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 using System;
-using System.Linq;
-using System.Text;
 
 // ReSharper disable CollectionNeverQueried.Global
 // ReSharper disable UnassignedGetOnlyAutoProperty

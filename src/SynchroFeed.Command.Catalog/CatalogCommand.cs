@@ -31,7 +31,6 @@ using System.Data.Entity.Validation;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Extensions.Configuration;
@@ -40,7 +39,6 @@ using Mono.Cecil;
 using SynchroFeed.Command.Catalog.Entity;
 using SynchroFeed.Library.Action;
 using SynchroFeed.Library.Command;
-using SynchroFeed.Library.DomainLoader;
 using SynchroFeed.Library.Repository;
 using Assembly = SynchroFeed.Command.Catalog.Entity.Assembly;
 using Package = SynchroFeed.Library.Model.Package;
@@ -78,7 +76,7 @@ namespace SynchroFeed.Command.Catalog
             var connectionString = configuration.GetConnectionString(connectionStringName);
             if (string.IsNullOrEmpty(connectionString))
                 throw new InvalidOperationException($"No connection string found with the name \"{commandSettings.Settings.ConnectionStringName()}\" ");
-            dbContext = new PackageModelContext(connectionStringName, connectionString);
+            dbContext = new PackageModelContext(connectionString);
         }
 
         /// <summary>

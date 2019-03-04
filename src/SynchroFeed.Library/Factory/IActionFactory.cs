@@ -26,8 +26,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 using System;
-using System.Linq;
-using System.Text;
 using SynchroFeed.Library.Action;
 
 namespace SynchroFeed.Library.Factory

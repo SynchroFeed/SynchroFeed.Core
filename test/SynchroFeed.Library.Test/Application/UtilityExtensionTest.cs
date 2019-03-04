@@ -66,7 +66,7 @@ namespace SynchroFeed.Library.Test.Application
 
             var sut = value.Convert<bool>();
 
-            Assert.Equal(true, sut);
+            Assert.True(sut);
         }
 
         [Fact]
@@ -179,7 +179,7 @@ namespace SynchroFeed.Library.Test.Application
 
             var sut = settings.GetCustomSetting<bool>(key);
 
-            Assert.Equal(true, sut);
+            Assert.True(sut);
         }
 
         [Fact]
@@ -193,7 +193,7 @@ namespace SynchroFeed.Library.Test.Application
 
             var sut = settings.GetCustomSetting<bool>(key);
 
-            Assert.Equal(false, sut);
+            Assert.False(sut);
         }
 
         [Fact]
