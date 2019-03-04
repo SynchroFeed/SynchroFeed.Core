@@ -1,6 +1,6 @@
 #region header
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright company="Robert Vandehey" file="201806240417397_InitialCreate.cs">
+// <copyright company="Robert Vandehey" file="201806240422267_CreateViews.cs">
 // MIT License
 // 
 // Copyright(c) 2018 Robert Vandehey
@@ -25,11 +25,11 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-using System;
-using System.Data.Entity.Migrations;
-
 namespace SynchroFeed.Command.Catalog.Migrations
 {
+    using System;
+    using System.Data.Entity.Migrations;
+    
     public partial class InitialCreate : DbMigration
     {
         public override void Up()
@@ -40,7 +40,6 @@ namespace SynchroFeed.Command.Catalog.Migrations
                     {
                         AssemblyId = c.Int(nullable: false, identity: true),
                         Name = c.String(maxLength: 100),
-                        Title = c.String(maxLength: 200),
                         CreatedUtcDateTime = c.DateTimeOffset(nullable: false, precision: 7),
                     })
                 .PrimaryKey(t => t.AssemblyId);
@@ -50,13 +49,14 @@ namespace SynchroFeed.Command.Catalog.Migrations
                 c => new
                     {
                         AssemblyVersionId = c.Int(nullable: false, identity: true),
-                        AssemblyVersionHash = c.String(nullable: false, maxLength: 64, unicode: false),
                         AssemblyId = c.Int(nullable: false),
-                        Version = c.String(maxLength: 20),
+                        FullName = c.String(maxLength: 200),
+                        Version = c.String(nullable: false, maxLength: 20),
                         MajorVersion = c.Int(nullable: false),
                         MinorVersion = c.Int(nullable: false),
                         BuildVersion = c.Int(nullable: false),
                         RevisionVersion = c.Int(nullable: false),
+                        FrameworkVersion = c.String(maxLength: 100),
                         CreatedUtcDateTime = c.DateTimeOffset(nullable: false, precision: 7),
                     })
                 .PrimaryKey(t => t.AssemblyVersionId)
@@ -69,9 +69,8 @@ namespace SynchroFeed.Command.Catalog.Migrations
                 c => new
                     {
                         PackageVersionId = c.Int(nullable: false, identity: true),
-                        PackageVersionHash = c.String(nullable: false, maxLength: 64, unicode: false),
                         PackageId = c.Int(nullable: false),
-                        Version = c.String(maxLength: 20),
+                        Version = c.String(nullable: false, maxLength: 20),
                         MajorVersion = c.Int(nullable: false),
                         MinorVersion = c.Int(nullable: false),
                         BuildVersion = c.Int(nullable: false),
@@ -96,16 +95,16 @@ namespace SynchroFeed.Command.Catalog.Migrations
                 .PrimaryKey(t => t.PackageId);
             
             CreateTable(
-                "dbo.PackageEnvironments",
+                "dbo.PackageVersionEnvironments",
                 c => new
                     {
-                        PackageId = c.Int(nullable: false),
+                        PackageVersionId = c.Int(nullable: false),
                         Name = c.String(nullable: false, maxLength: 100),
                         CreatedUtcDateTime = c.DateTimeOffset(nullable: false, precision: 7),
                     })
-                .PrimaryKey(t => new { t.PackageId, t.Name })
-                .ForeignKey("dbo.Packages", t => t.PackageId, cascadeDelete: true)
-                .Index(t => t.PackageId);
+                .PrimaryKey(t => new { t.PackageVersionId, t.Name })
+                .ForeignKey("dbo.PackageVersions", t => t.PackageVersionId, cascadeDelete: true)
+                .Index(t => t.PackageVersionId);
             
             CreateTable(
                 "dbo.PackageVersionAssemblies",
@@ -127,17 +126,17 @@ namespace SynchroFeed.Command.Catalog.Migrations
             DropForeignKey("dbo.AssemblyVersions", "AssemblyId", "dbo.Assemblies");
             DropForeignKey("dbo.PackageVersionAssemblies", "PackageVersionId", "dbo.PackageVersions");
             DropForeignKey("dbo.PackageVersionAssemblies", "AssemblyVersionId", "dbo.AssemblyVersions");
+            DropForeignKey("dbo.PackageVersionEnvironments", "PackageVersionId", "dbo.PackageVersions");
             DropForeignKey("dbo.PackageVersions", "PackageId", "dbo.Packages");
-            DropForeignKey("dbo.PackageEnvironments", "PackageId", "dbo.Packages");
             DropIndex("dbo.PackageVersionAssemblies", new[] { "PackageVersionId" });
             DropIndex("dbo.PackageVersionAssemblies", new[] { "AssemblyVersionId" });
-            DropIndex("dbo.PackageEnvironments", new[] { "PackageId" });
+            DropIndex("dbo.PackageVersionEnvironments", new[] { "PackageVersionId" });
             DropIndex("dbo.PackageVersions", new[] { "Version" });
             DropIndex("dbo.PackageVersions", new[] { "PackageId" });
             DropIndex("dbo.AssemblyVersions", new[] { "Version" });
             DropIndex("dbo.AssemblyVersions", new[] { "AssemblyId" });
             DropTable("dbo.PackageVersionAssemblies");
-            DropTable("dbo.PackageEnvironments");
+            DropTable("dbo.PackageVersionEnvironments");
             DropTable("dbo.Packages");
             DropTable("dbo.PackageVersions");
             DropTable("dbo.AssemblyVersions");

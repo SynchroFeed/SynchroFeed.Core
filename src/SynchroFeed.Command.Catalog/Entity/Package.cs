@@ -38,7 +38,6 @@ namespace SynchroFeed.Command.Catalog.Entity
         public Package()
         {
             PackageVersions = new HashSet<PackageVersion>();
-            PackageEnvironments = new HashSet<PackageEnvironment>();
             CreatedUtcDateTime = DateTimeOffset.UtcNow;
         }
 
@@ -55,9 +54,6 @@ namespace SynchroFeed.Command.Catalog.Entity
 
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PackageVersion> PackageVersions { get; set; }
-
-        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PackageEnvironment> PackageEnvironments { get; set; }
 
         [Required]
         public DateTimeOffset CreatedUtcDateTime { get; set; }

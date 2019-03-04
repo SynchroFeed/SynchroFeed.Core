@@ -49,7 +49,7 @@ namespace SynchroFeed.Repository.Nuget
     /// <seealso cref="SynchroFeed.Library.Repository.BaseEntityRepository" />
     public class NugetRepository : BaseEntityRepository
     {
-        public const string ApiKeyHeaderName = "x-Apikey";
+        public const string ApiKeyHeaderName = "X-NUGET-APIKEY";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NugetRepository" /> class.

@@ -27,6 +27,7 @@
 #endregion
 using System;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 //using SynchroFeed.Command.Catalog.Entity.View;
 using SynchroFeed.Command.Catalog.Migrations;
 
@@ -35,21 +36,20 @@ namespace SynchroFeed.Command.Catalog.Entity
     public class PackageModelContext : DbContext
     {
         public PackageModelContext()
-            : this("PackageModel")
         {
         }
 
-        public PackageModelContext(string connectionStringName = "PackageModel")
-            : base($"name={connectionStringName}")
+        public PackageModelContext(string connectionStringName, string connectionString)
+            : base(connectionString)
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<PackageModelContext, Configuration>());
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<PackageModelContext, Configuration>(true));
         }
 
         public virtual DbSet<Assembly> Assemblies { get; set; }
         public virtual DbSet<AssemblyVersion> AssemblyVersions { get; set; }
         public virtual DbSet<Package> Packages { get; set; }
         public virtual DbSet<PackageVersion> PackageVersions { get; set; }
-        public virtual DbSet<PackageEnvironment> PackageEnvironments { get; set; }
+        public virtual DbSet<PackageVersionEnvironment> PackageEnvironments { get; set; }
 
         //public virtual DbSet<AssemblyVersionsView> AssemblyVersionsViews { get; set; }
         //public virtual DbSet<MaxPackageVersion> MaxPackageVersions { get; set; }
@@ -76,13 +76,13 @@ namespace SynchroFeed.Command.Catalog.Entity
                 .WithRequired(e => e.Package)
                 .WillCascadeOnDelete(true);
 
-            modelBuilder.Entity<Package>()
+            modelBuilder.Entity<PackageVersion>()
                 .HasMany(e => e.PackageEnvironments)
-                .WithRequired(e => e.Package)
+                .WithRequired(e => e.PackageVersion)
                 .WillCascadeOnDelete(true);
 
-            modelBuilder.Entity<PackageEnvironment>()
-                .HasKey(e => new { e.PackageId, e.Name });
+            modelBuilder.Entity<PackageVersionEnvironment>()
+                .HasKey(e => new { e.PackageVersionId, e.Name });
         }
     }
 }

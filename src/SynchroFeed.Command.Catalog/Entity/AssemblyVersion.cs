@@ -48,6 +48,9 @@ namespace SynchroFeed.Command.Catalog.Entity
         [ForeignKey("Assembly")]
         public int AssemblyId { get; set; }
 
+        [StringLength(200)]
+        public string FullName { get; set; }
+
         [Required]
         [Index]
         [StringLength(20)]
@@ -60,6 +63,9 @@ namespace SynchroFeed.Command.Catalog.Entity
         public int BuildVersion { get; set; }
 
         public int RevisionVersion { get; set; }
+
+        [StringLength(100)]
+        public string FrameworkVersion { get; set; }
 
         public virtual Assembly Assembly { get; set; }
 

@@ -47,9 +47,6 @@ namespace SynchroFeed.Command.Catalog.Entity
         [StringLength(100)]
         public string Name { get; set; }
 
-        [StringLength(200)]
-        public string Title { get; set; }
-
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AssemblyVersion> AssemblyVersions { get; set; }
 
