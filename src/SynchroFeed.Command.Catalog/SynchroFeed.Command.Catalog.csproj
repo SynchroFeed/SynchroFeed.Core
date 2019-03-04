@@ -30,8 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JustDecompiler">
-      <HintPath>..\..\..\..\JustAssembly\JustDecompileEngine\Cecil.Decompiler\bin\Debug JustAssembly\JustDecompiler.dll</HintPath>
+    <Reference Include="JustDecompiler, Version=2018.2.802.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\JustDecompiler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -41,8 +42,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Telerik.JustDecompile.Mono.Cecil">
-      <HintPath>..\..\..\..\JustAssembly\JustDecompileEngine\Cecil.Decompiler\bin\Debug JustAssembly\Telerik.JustDecompile.Mono.Cecil.dll</HintPath>
+    <Reference Include="Telerik.JustDecompile.Mono.Cecil, Version=2018.2.802.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Telerik.JustDecompile.Mono.Cecil.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -105,6 +107,12 @@
     <EmbeddedResource Include="Migrations\201903040053065_CreateViews.resx">
       <DependentUpon>201903040053065_CreateViews.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lib\JustDecompiler.dll" />
+    <None Include="lib\JustDecompiler.pdb" />
+    <None Include="lib\Telerik.JustDecompile.Mono.Cecil.dll" />
+    <None Include="lib\Telerik.JustDecompile.Mono.Cecil.pdb" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
