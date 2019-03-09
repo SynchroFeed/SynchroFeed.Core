@@ -66,6 +66,7 @@
     <Compile Include="Factory\IActionObserverFactory.cs" />
     <Compile Include="Factory\BaseActionFactory.cs" />
     <Compile Include="HttpClientFactory.cs" />
+    <Compile Include="IInitializable.cs" />
     <Compile Include="Processor\IActionProcessor.cs" />
     <Compile Include="Processor\ActionProcessor.cs" />
     <Compile Include="Action\BaseAction.cs" />

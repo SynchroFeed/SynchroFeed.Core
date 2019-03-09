@@ -37,6 +37,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Mono.Cecil;
 using SynchroFeed.Command.Catalog.Entity;
+using SynchroFeed.Library;
 using SynchroFeed.Library.Action;
 using SynchroFeed.Library.Command;
 using SynchroFeed.Library.Repository;
@@ -46,9 +47,10 @@ using Settings = SynchroFeed.Library.Settings;
 
 namespace SynchroFeed.Command.Catalog
 {
-    public class CatalogCommand : BaseCommand
+    public class CatalogCommand : BaseCommand, IInitializable
     {
         private readonly PackageModelContext dbContext;
+        private readonly Regex normalizeNameRegex;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CatalogCommand" /> class.
@@ -77,6 +79,16 @@ namespace SynchroFeed.Command.Catalog
             if (string.IsNullOrEmpty(connectionString))
                 throw new InvalidOperationException($"No connection string found with the name \"{commandSettings.Settings.ConnectionStringName()}\" ");
             dbContext = new PackageModelContext(connectionString);
+            if (!string.IsNullOrEmpty(commandSettings.Settings.NormalizeRegEx()))
+            {
+                normalizeNameRegex = new Regex(commandSettings.Settings.NormalizeRegEx());
+            }
+        }
+
+        /// <summary>Initializes the CatalogCommand by making sure the database has been created and all migrations have been run.</summary>
+        public void Initialize()
+        {
+            CreateOrUpdateDatabase(dbContext);
         }
 
         /// <summary>
@@ -91,13 +103,15 @@ namespace SynchroFeed.Command.Catalog
         /// <value>The action type of this action.</value>
         public override string Type => "Catalog";
 
+        /// <summary>The method that executes the appropriate command to process the package.</summary>
+        /// <param name="package">The package for the command to handle.</param>
+        /// <returns>Returns the CommandResult for the package.</returns>
         public override CommandResult Execute(Package package)
         {
             Debug.Assert(package != null);
 
             try
             {
-                EnsureDatabaseExists();
                 var packageEntity = GetorAddPackageEntity(dbContext, package);
                 // ReSharper disable once UnusedVariable
                 var packageVersionEntity = GetorAddPackageVersionEntity(dbContext, Action.SourceRepository, package, packageEntity);
@@ -117,16 +131,6 @@ namespace SynchroFeed.Command.Catalog
             {
                 Logger.LogError($"Error Cataloging package {package.Id}. Error: {ex.Message}.");
                 return new CommandResult(this, false, $"Error Cataloging package {package.Id}. Error: {ex.Message}.");
-            }
-        }
-
-        private bool checkedForDatabaseExistense;
-        private void EnsureDatabaseExists()
-        {
-            if (!checkedForDatabaseExistense)
-            {
-                checkedForDatabaseExistense = true;
-                CreateOrUpdateDatabase(dbContext);
             }
         }
 
@@ -357,13 +361,15 @@ namespace SynchroFeed.Command.Catalog
             return assemblyEntity;
         }
 
-        private readonly Regex normalizeNameRegex = new Regex(@"(\.\d+)+");
         private string NormalizedName(string assemblyName)
         {
-            var match = normalizeNameRegex.Match(assemblyName);
-            if (match.Success)
+            if (normalizeNameRegex != null)
             {
-                return assemblyName.Replace(match.Value, "");
+                var match = normalizeNameRegex.Match(assemblyName);
+                if (match.Success)
+                {
+                    return assemblyName.Replace(match.Value, "");
+                }
             }
 
             return assemblyName;
