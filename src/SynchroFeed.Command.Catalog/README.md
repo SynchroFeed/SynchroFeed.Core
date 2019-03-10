@@ -13,6 +13,7 @@ The following documents the configuration for the Catalog command.
 | FailureAction            | An enumeration that determines what action should occur when the command has marked the package as failed. The options are: `Continue`, `FailPackage` and `FailAction`.  `Continue` is the default and it means to continue processing any subsequent Commands and Actions. `FailPackage` means to fail the package being processed and don't call any subsequent Commands but continue with the Action. `FailAction` means to fail the package being processed and stop the Action from any further processing of packages.
 | ConnectionStringName     | The name of the database connection string to use for the Catalog. The name must be defined as a valid connection string within .NET config. |
 | CreateDatabaseIfNotFound | ```Default=False``` This is a boolean value that determines whether the database should be created if it doesn't exist. |
+| NormalizeRegEx           | A regular expression that can be used to remove unwanted values from an assembly name. For example, if your assembly has the version embedded in it like MyAssembly.1.2 but you want all of the assemblies with that name cataloged under the same assembly, the following regular expression can be used "(\\.\\d+)+". Whatever matches this regular expression is removed from the assembly name so in this example, the assembly name used for cataloging would be MyAssembly.
 
 ## Tables
 The following documents the tables schema for the Catalog database. **Bold** column names are the primary keys for the table.
