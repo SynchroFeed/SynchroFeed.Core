@@ -111,4 +111,8 @@
     <None Include="lib\Telerik.JustDecompile.Mono.Cecil.pdb" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>IF NOT EXIST "$(SolutionDir)JustDecompileEngine\Mono.Cecil\bin\$(ConfigurationName)" MD "$(SolutionDir)JustDecompileEngine\Mono.Cecil\bin\$(ConfigurationName)"
+COPY "$(SolutionDir)JustDecompileEngine\Mono.Cecil\bin\$(ConfigurationName) JustAssembly\*.*" "$(SolutionDir)JustDecompileEngine\Mono.Cecil\bin\$(ConfigurationName)" /Y</PreBuildEvent>
+  </PropertyGroup>
 </Project>
