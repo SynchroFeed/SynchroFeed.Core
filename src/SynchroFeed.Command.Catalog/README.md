@@ -28,17 +28,6 @@ The Packages table contains a row for each unique package name which is also cal
 | Title              | nvarchar(200)        | A human-friendly title of the package, typically used in UI displays. |
 | CreatedUtcDateTime | datetimeoffset       | A UTC datetime when the row was created in the database. |
 
-### PackageEnvironments
-The PackageEnvironments table is a one-to-many table to track the environments where a package 
-was found. An environment is typically the name of the source feed where the package was retrieved.
-
-| Column Name        | Data Type            | Description |
-|--------------------|----------------------|-------------|
-| **PackageID**      | int                  | The package ID is a foreign key to the Packages table. |
-| **Name**           | nvarchar(100)        | The name of the environment the package was found. This is typically the name of the feed where the package was found. |
-| CreatedUtcDateTime | datetimeoffset       | A UTC datetime when the row was created in the database. |
-
-
 ### PackageVersions
 The PackageVersions table is a one-to-many table that contains a row for each version of a package found.
 
@@ -53,6 +42,17 @@ The PackageVersions table is a one-to-many table that contains a row for each ve
 | RevisionVersion      | int                  | An integer containing the revision portion of the version number. i.e. major.minor.build.revision |
 | IsPrerelease         | bit                  | A flag that determines whether the package is a prerelease version. |
 | CreatedUtcDateTime   | datetimeoffset       | A UTC datetime when the row was created in the database. |
+
+### PackageVersionEnvironments
+The PackageVersionEnvironments table is a one-to-many table to track the environments where a specific 
+version of package was found. An environment is typically the name of the source feed where the package 
+was retrieved.
+
+| Column Name               | Data Type            | Description |
+|---------------------------|----------------------|-------------|
+| **PackageVersionID**      | int                  | The package version ID is a foreign key to the PackageVersions table. |
+| **Name**                  | nvarchar(100)        | The name of the environment the package was found. This is typically the name of the feed where the package was found. |
+| CreatedUtcDateTime        | datetimeoffset       | A UTC datetime when the row was created in the database. |
 
 ### Assemblies
 The Assemblies table contains a row for each unique assembly found. 
