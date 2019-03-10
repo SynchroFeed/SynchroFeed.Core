@@ -122,7 +122,9 @@ namespace SynchroFeed.Repository.Directory.Test
             var packagesIncludingPrerelease = sourceRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId);
 
             Assert.Equal(NotepadPlusPlusPackageCount, packages.Count());
-            Assert.Equal(NotepadPlusPlusPrereleasePackageCount, (int) packagesPrerelease.Count());
+#pragma warning disable xUnit2013 // Do not use equality check to check for collection size.
+            Assert.Equal(NotepadPlusPlusPrereleasePackageCount, packagesPrerelease.Count());
+#pragma warning restore xUnit2013 // Do not use equality check to check for collection size.
             Assert.Equal(NotepadPlusPlusPackageCount + NotepadPlusPlusPrereleasePackageCount, packagesIncludingPrerelease.Count());
         }
 

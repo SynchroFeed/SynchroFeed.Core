@@ -73,7 +73,7 @@ namespace SynchroFeed.Command.Catalog
             if (connectionStringName == null)
             {
                 connectionStringName = "PackageModel";
-                Logger.LogInformation($"No connection string name configured for Catalog command. Using \"PackageModel\".");
+                Logger.LogInformation("No connection string name configured for Catalog command. Using \"PackageModel\".");
             }
             var connectionString = configuration.GetConnectionString(connectionStringName);
             if (string.IsNullOrEmpty(connectionString))
@@ -170,7 +170,7 @@ namespace SynchroFeed.Command.Catalog
             return packageEntity;
         }
 
-        private PackageVersionEnvironment GetOrAddPackageEnvironmentEntity(IRepository<Package> repository, Entity.Package packageEntity, Entity.PackageVersion packageVersionEntity)
+        private PackageVersionEnvironment GetOrAddPackageEnvironmentEntity(IRepository<Package> repository, Entity.Package packageEntity, PackageVersion packageVersionEntity)
         {
             var packageEnvironment =
                 packageVersionEntity.PackageEnvironments.FirstOrDefault(s => s.PackageVersionId == packageVersionEntity.PackageVersionId && s.Name == repository.Name);
