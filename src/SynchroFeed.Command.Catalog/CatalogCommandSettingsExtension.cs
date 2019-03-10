@@ -41,5 +41,10 @@ namespace SynchroFeed.Command.Catalog
         {
             return settings.GetCustomSetting<string>("ConnectionStringName");
         }
+
+        public static string NormalizeRegEx(this Library.Settings.SettingsCollection settings)
+        {
+            return settings.GetCustomSetting<string>("NormalizeRegEx");
+        }
     }
 }

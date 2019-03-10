@@ -31,23 +31,23 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SynchroFeed.Command.Catalog.Entity
 {
-    public class PackageEnvironment
+    public class PackageVersionEnvironment
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public PackageEnvironment()
+        public PackageVersionEnvironment()
         {
             CreatedUtcDateTime = DateTimeOffset.UtcNow;
         }
 
         [Key, Column(Order = 0)]
-        [ForeignKey("Package")]
-        public int PackageId { get; set; }
+        [ForeignKey("PackageVersion")]
+        public int PackageVersionId { get; set; }
 
         [Key, Column(Order = 1)]
         [StringLength(100)]
         public string Name { get; set; }
 
-        public virtual Package Package { get; set; }
+        public virtual PackageVersion PackageVersion { get; set; }
 
         public DateTimeOffset CreatedUtcDateTime { get; set; }
     }

@@ -7,13 +7,13 @@ namespace SynchroFeed.Command.Catalog.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class VersionTypeChange : IMigrationMetadata
+    public sealed partial class CreateViews : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(VersionTypeChange));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(CreateViews));
         
         string IMigrationMetadata.Id
         {
-            get { return "201811170857005_VersionTypeChange"; }
+            get { return "201903040053065_CreateViews"; }
         }
         
         string IMigrationMetadata.Source

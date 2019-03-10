@@ -39,6 +39,7 @@ namespace SynchroFeed.Command.Catalog.Entity
         public PackageVersion()
         {
             AssemblyVersions = new HashSet<AssemblyVersion>();
+            PackageEnvironments = new HashSet<PackageVersionEnvironment>();
             CreatedUtcDateTime = DateTimeOffset.UtcNow;
         }
 
@@ -64,6 +65,9 @@ namespace SynchroFeed.Command.Catalog.Entity
         public bool IsPrerelease { get; set; }
 
         public virtual Package Package { get; set; }
+
+        [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PackageVersionEnvironment> PackageEnvironments { get; set; }
 
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AssemblyVersion> AssemblyVersions { get; set; }

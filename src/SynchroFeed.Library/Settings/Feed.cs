@@ -26,7 +26,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 using System;
-using System.Linq;
 
 namespace SynchroFeed.Library.Settings
 {

@@ -55,11 +55,10 @@ namespace SynchroFeed.Repository.Directory.Test
             TempRepoFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
             ServiceProvider = new ServiceCollection()
-                .AddLogging()
+                .AddLogging(loggingBuilder => { loggingBuilder.AddDebug(); })
                 .BuildServiceProvider();
 
             LoggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
-            LoggerFactory.AddDebug(LogLevel.Trace);
         }
 
         [Fact]
@@ -123,20 +122,15 @@ namespace SynchroFeed.Repository.Directory.Test
             var packagesIncludingPrerelease = sourceRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId);
 
             Assert.Equal(NotepadPlusPlusPackageCount, packages.Count());
+#pragma warning disable xUnit2013 // Do not use equality check to check for collection size.
             Assert.Equal(NotepadPlusPlusPrereleasePackageCount, packagesPrerelease.Count());
+#pragma warning restore xUnit2013 // Do not use equality check to check for collection size.
             Assert.Equal(NotepadPlusPlusPackageCount + NotepadPlusPlusPrereleasePackageCount, packagesIncludingPrerelease.Count());
         }
 
         [Fact]
         public void Test_DirectoryRepository_Copy_And_Delete_Packages()
         {
-            var serviceProvider = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-
-            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-            loggerFactory.AddDebug(LogLevel.Trace);
-
             var localRepoFeedConfig = new Settings.Feed
             {
                 Name = "local.choco",
@@ -150,8 +144,8 @@ namespace SynchroFeed.Repository.Directory.Test
             };
             tempRepoFeedConfig.Settings.Add("Uri", TempRepoFolder);
 
-            var sourceRepo = new DirectoryRepository(localRepoFeedConfig, loggerFactory);
-            var targetRepo = new DirectoryRepository(tempRepoFeedConfig, loggerFactory);
+            var sourceRepo = new DirectoryRepository(localRepoFeedConfig, LoggerFactory);
+            var targetRepo = new DirectoryRepository(tempRepoFeedConfig, LoggerFactory);
 
             var sourcePackages = sourceRepo.Fetch(t => t.Id == "notepadplusplus" && !t.IsPrerelease).ToArray();
 

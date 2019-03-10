@@ -35,7 +35,9 @@ namespace SynchroFeed.Command.Catalog.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            //AutomaticMigrationsEnabled = true;
+            //AutomaticMigrationDataLossAllowed = true;
+
             ContextKey = "SynchroFeed.Library.Entity.PackageModelContext";
         }
 

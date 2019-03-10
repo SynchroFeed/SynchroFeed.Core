@@ -137,6 +137,10 @@ namespace SynchroFeed.Library.Action
                             {
                                 var commandFactory = this.ServiceProvider.GetNamedFactory<ICommandFactory>(command.Type);
                                 var commandInstance = commandFactory.Create(this, command);
+                                if (commandInstance is IInitializable initializable)
+                                {
+                                    initializable.Initialize();
+                                }
                                 this.commands.Add(commandInstance);
                             }
                         }

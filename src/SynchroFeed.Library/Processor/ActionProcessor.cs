@@ -171,7 +171,13 @@ namespace SynchroFeed.Library.Processor
             var actionFactory = scope.ServiceProvider.GetNamedFactory<IActionFactory>(actionSettings.Type);
 
             Logger.LogInformation($"Running {actionSettings.Type} on \"{actionSettings.Name}\" Action");
-            return actionFactory.Create(actionSettings);
+            var action = actionFactory.Create(actionSettings);
+            if (action is IInitializable initializable)
+            {
+                initializable.Initialize();
+            }
+
+            return action;
         }
     }
 }
