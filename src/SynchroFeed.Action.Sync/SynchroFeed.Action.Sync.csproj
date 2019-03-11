@@ -51,7 +51,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="README.md" />
-    <None Include="SynchroFeed.Action.Process.nuspec" />
+    <None Include="SynchroFeed.Action.Sync.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp">
