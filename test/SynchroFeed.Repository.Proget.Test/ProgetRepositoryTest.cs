@@ -26,8 +26,11 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 using System;
+using System.Collections.Generic;
+using System.Data.Services.Client;
 using System.IO;
 using System.Linq;
+using System.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SynchroFeed.Library.Model;
@@ -94,9 +97,7 @@ namespace SynchroFeed.Repository.Directory.Test
 
             var sourceRepo = new ProgetRepository(repoFeedConfig);
 
-            var packages = sourceRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId && !t.IsPrerelease);
-
-            Assert.Empty(packages);
+            Assert.Throws<HttpException>(() => sourceRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId && !t.IsPrerelease));
         }
 
         [Fact]
@@ -106,12 +107,19 @@ namespace SynchroFeed.Repository.Directory.Test
             {
                 Name = "nuget.test",
             };
-            sourceRepoFeedConfig.Settings.Add("Uri", RepoUrl + "nuget.test");
+            sourceRepoFeedConfig.Settings.Add("Uri", RepoUrl);
             sourceRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
 
             var sourceRepo = new ProgetRepository(sourceRepoFeedConfig);
             var package = new Package { Id = "PackageJunkName", Version = "1.0.0" };
-            Assert.Null(sourceRepo.Fetch(package));
+            try
+            {
+                Assert.Null(sourceRepo.Fetch(package));
+            }
+            catch (Exception)
+            {
+                // Expected
+            }
         }
 
         [Fact]
@@ -128,7 +136,7 @@ namespace SynchroFeed.Repository.Directory.Test
             {
                 Name = "nuget.test",
             };
-            targetRepoFeedConfig.Settings.Add("Uri", RepoUrl + "nuget.test");
+            targetRepoFeedConfig.Settings.Add("Uri", RepoUrl);
             targetRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
 
             var sourceRepo = new DirectoryRepository(localRepoFeedConfig, LoggerFactory);

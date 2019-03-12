@@ -36,6 +36,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Web;
 using SynchroFeed.Library;
 using SynchroFeed.Library.Repository;
 using Package = SynchroFeed.Library.Model.Package;
@@ -158,43 +159,35 @@ namespace SynchroFeed.Repository.Nuget
             if (package == null)
                 throw new ArgumentNullException(nameof(package));
 
-            try
+            var context = DataServiceContext();
+            var entity = GetQueryResponse(context, t => t.Id == package.Id && t.Version == package.Version).FirstOrDefault();
+            if (entity == null)
+                return null;
+            entity.Content = GetContentForPackage(context, entity);
+            entity.PackageDownloadUrl = GetPackageDownloadUrl(context, entity);
+            entity.PackageUrl = GetPackageUrl(context, entity);
+
+            return entity;
+
+            byte[] GetContentForPackage(DataServiceContext dataServiceContext, Package packageEntity)
             {
-                var context = DataServiceContext();
-                var entity = GetQueryResponse(context, t => t.Id == package.Id && t.Version == package.Version).FirstOrDefault();
-                if (entity == null)
-                    return null;
-                entity.Content = GetContentForPackage(context, entity);
-                entity.PackageDownloadUrl = GetPackageDownloadUrl(context, entity);
-                entity.PackageUrl = GetPackageUrl(context, entity);
-
-                return entity;
-
-                byte[] GetContentForPackage(DataServiceContext dataServiceContext, Package packageEntity)
+                using (var webresponse = dataServiceContext.GetReadStream(packageEntity))
                 {
-                    using (var webresponse = dataServiceContext.GetReadStream(packageEntity))
+                    if (webresponse != null)
                     {
-                        if (webresponse != null)
+                        using (var byteStream = new MemoryStream(new byte[packageEntity.PackageSize], true))
                         {
-                            using (var byteStream = new MemoryStream(new byte[packageEntity.PackageSize], true))
+                            using (var stream = webresponse.Stream)
                             {
-                                using (var stream = webresponse.Stream)
-                                {
-                                    stream.CopyTo(byteStream);
-                                }
-
-                                return byteStream.ToArray();
+                                stream.CopyTo(byteStream);
                             }
+
+                            return byteStream.ToArray();
                         }
                     }
-
-                    return null;
                 }
 
-            }
-            catch (DataServiceClientException ex)
-            {
-                throw new ObjectNotFoundException("Package not found", ex);
+                return null;
             }
         }
 
@@ -255,6 +248,7 @@ namespace SynchroFeed.Repository.Nuget
         /// <param name="query">The expression to use to query against the data service context.</param>
         /// <returns>IEnumerable&lt;Package&gt;.</returns>
         /// <exception cref="WebException">Thrown if an error occurs with the communication to the web server.</exception>
+        /// <exception cref="DataServiceClientException">Thrown if a unknown DataService client error is encountered.</exception>
         protected virtual IEnumerable<Package> GetQueryResponse(DataServiceContext context, Expression<Func<Package, bool>> query)
         {
             const string ODataContentType = "application/atom+xml";
@@ -278,6 +272,10 @@ namespace SynchroFeed.Repository.Nuget
             {
                 if (ex.Response.StatusCode == 404)
                     return new List<Package>();
+                if (ex.Response.StatusCode == 401)
+                    throw new HttpException(401, "Access unauthorized", ex);
+                if (ex.InnerException is DataServiceClientException)
+                    throw ex.InnerException;
                 throw;
             }
         }
