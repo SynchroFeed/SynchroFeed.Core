@@ -118,9 +118,18 @@ namespace SynchroFeed.Action.Process
 
             try
             {
-                Logger.LogDebug($"Fetching package {package.Id}.{package.Version} from {SourceRepository.Name}");
-                var packageWithContent = SourceRepository.Fetch(package);
-                Logger.LogTrace($"Fetching package {package.Id}.{package.Version} from {SourceRepository.Name}...done");
+                Package packageWithContent = package;
+                if (packageEvent != PackageEvent.Deleted)
+                {
+                    Logger.LogDebug($"Fetching package {package.Id}.{package.Version} from {SourceRepository.Name}");
+                    packageWithContent = SourceRepository.Fetch(package);
+                    Logger.LogTrace($"Fetching package {package.Id}.{package.Version} from {SourceRepository.Name}...done");
+                    if (packageWithContent == null)
+                    {
+                        Logger.LogWarning($"Package not found: {package.Id}.{package.Version} from {SourceRepository.Name}. Ignoring but expecting failure.");
+                        packageWithContent = package;
+                    }
+                }
 
                 switch (ProcessCommands(packageWithContent, packageEvent))
                 {
