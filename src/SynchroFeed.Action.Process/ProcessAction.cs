@@ -101,6 +101,11 @@ namespace SynchroFeed.Action.Process
             }
         }
 
+        /// <summary>The method in the action that processes the package.</summary>
+        /// <param name="package">The package to process.</param>
+        /// <param name="packageEvent">The type of event associated with the package.</param>
+        /// <returns>
+        ///   <c>true</c> if the process was successful and processing should continue, <c>false</c> otherwise.</returns>
         public override bool ProcessPackage(Package package, PackageEvent packageEvent)
         {
             if (IgnorePackage(package.Id))
@@ -117,7 +122,7 @@ namespace SynchroFeed.Action.Process
                 var packageWithContent = SourceRepository.Fetch(package);
                 Logger.LogTrace($"Fetching package {package.Id}.{package.Version} from {SourceRepository.Name}...done");
 
-                switch (ProcessCommands(packageWithContent))
+                switch (ProcessCommands(packageWithContent, packageEvent))
                 {
                     case CommandFailureAction.Continue:
                         this.ObserverManager.NotifyObservers(new ActionEvent(this, ActionEventType.ActionPackageSuccess,

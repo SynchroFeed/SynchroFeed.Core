@@ -93,7 +93,7 @@ namespace SynchroFeed.Command.ApplicationIs64bit.Tests
             var results = new Dictionary<Package, CommandResult>();
             foreach (var package in packages)
             {
-                results.Add(package, sut.Execute(package));
+                results.Add(package, sut.Execute(package, PackageEvent.Added));
             }
 
             Assert.True(results.Count == 4);
@@ -101,6 +101,33 @@ namespace SynchroFeed.Command.ApplicationIs64bit.Tests
             Assert.False(results[new Package { Id = "Test.Choco.32bit-Prefer32-bit", Version = "1.0.0" }].ResultValid);
             Assert.True(results[new Package { Id = "Test.Choco.32bit-x64", Version = "1.0.0" }].ResultValid);
             Assert.False(results[new Package { Id = "Test.Choco.32bit-x86", Version = "1.0.0" }].ResultValid);
+        }
+
+        [Fact]
+        public void TestApplicationIs64BitCommandPackageDeleted()
+        {
+            var command = new Library.Settings.Command();
+            var action = new DummyAction();
+            var localRepoFeedConfig = new Feed
+            {
+                Name = "local.choco",
+            };
+            localRepoFeedConfig.Settings.Add("Uri", LocalRepoFolder);
+            action.SourceRepository = new DirectoryRepository(localRepoFeedConfig, LoggerFactory);
+            var packages = action.SourceRepository.Fetch((p) => true);
+
+            var sut = new ApplicationIs64BitCommand(action, command, LoggerFactory);
+            var results = new Dictionary<Package, CommandResult>();
+            foreach (var package in packages)
+            {
+                results.Add(package, sut.Execute(package, PackageEvent.Deleted));
+            }
+
+            Assert.True(results.Count == 4);
+            Assert.True(results[new Package { Id = "Test.Choco.32bit-NoPrefer32-bit", Version = "1.0.0" }].ResultValid);
+            Assert.True(results[new Package { Id = "Test.Choco.32bit-Prefer32-bit", Version = "1.0.0" }].ResultValid);
+            Assert.True(results[new Package { Id = "Test.Choco.32bit-x64", Version = "1.0.0" }].ResultValid);
+            Assert.True(results[new Package { Id = "Test.Choco.32bit-x86", Version = "1.0.0" }].ResultValid);
         }
     }
 }

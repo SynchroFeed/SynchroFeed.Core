@@ -144,11 +144,11 @@ namespace SynchroFeed.Action.Sync
                 case PackageEvent.Deleted:
                     return ProcessPackageDelete(package);
                 default:
-                    return ProcessPackage(package);
+                    return ProcessPackageAdded(package, packageEvent);
             }
         }
 
-        protected virtual bool ProcessPackage(Package package)
+        protected virtual bool ProcessPackageAdded(Package package, PackageEvent packageEvent)
         {
             if (IgnorePackage(package.Id))
             {
@@ -163,7 +163,7 @@ namespace SynchroFeed.Action.Sync
             Logger.LogTrace($"Fetching package {package.Id}.{package.Version} from {SourceRepository.Name}...done");
             try
             {
-                switch (ProcessCommands(package))
+                switch (ProcessCommands(package, packageEvent))
                 {
                     case CommandFailureAction.Continue:
                         Logger.LogInformation($"Adding package {packageWithContent.Id}.{packageWithContent.Version} to {TargetRepository.Name}");

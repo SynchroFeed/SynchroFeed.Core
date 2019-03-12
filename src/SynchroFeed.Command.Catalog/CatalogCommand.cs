@@ -40,6 +40,7 @@ using SynchroFeed.Command.Catalog.Entity;
 using SynchroFeed.Library;
 using SynchroFeed.Library.Action;
 using SynchroFeed.Library.Command;
+using SynchroFeed.Library.Model;
 using SynchroFeed.Library.Repository;
 using Assembly = SynchroFeed.Command.Catalog.Entity.Assembly;
 using Package = SynchroFeed.Library.Model.Package;
@@ -105,11 +106,67 @@ namespace SynchroFeed.Command.Catalog
 
         /// <summary>The method that executes the appropriate command to process the package.</summary>
         /// <param name="package">The package for the command to handle.</param>
+        /// <param name="packageEvent">The event associated with the package.</param>
         /// <returns>Returns the CommandResult for the package.</returns>
-        public override CommandResult Execute(Package package)
+        public override CommandResult Execute(Package package, PackageEvent packageEvent)
         {
             Debug.Assert(package != null);
 
+            if (packageEvent == PackageEvent.Deleted)
+            {
+                return ProcessPackageDeleted(package);
+            }
+            else if (packageEvent == PackageEvent.Added || packageEvent == PackageEvent.Promoted)
+            {
+                return ProcessPackageAdded(package);
+            }
+
+            return new CommandResult(this);
+        }
+
+        private CommandResult ProcessPackageDeleted(Package package)
+        {
+            try
+            {
+                var packageEntity = GetPackageEntity(dbContext, package);
+                if (packageEntity == null)
+                {
+                    return new CommandResult(this);
+                }
+
+                // ReSharper disable once UnusedVariable
+                var packageVersionEntity = GetPackageVersionEntity(package, packageEntity);
+                if (packageVersionEntity == null)
+                {
+                    return new CommandResult(this);
+                }
+
+                // ReSharper disable once UnusedVariable
+                var packageEnvironmentEntity = GetPackageEnvironmentEntity(Action.SourceRepository, packageVersionEntity);
+                if (packageEnvironmentEntity == null)
+                {
+                    return new CommandResult(this);
+                }
+
+                packageVersionEntity.PackageEnvironments.Remove(packageEnvironmentEntity);
+                dbContext.SaveChanges();
+                return new CommandResult(this, true, $"{package.Id} in {Action.SourceRepository} was removed from catalog successfully");
+            }
+            catch (DbEntityValidationException ex)
+            {
+                Logger.LogError($"Entity Validation Error Cataloging package {package.Id}. Error: {ex.Message}. Reverting changes.");
+                dbContext.RevertChanges(ex);
+                return new CommandResult(this, false, $"Entity Validation Error Cataloging package {package.Id}. Error: {ex.Message}.");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Error Cataloging package {package.Id}. Error: {ex.Message}.");
+                return new CommandResult(this, false, $"Error Cataloging package {package.Id}. Error: {ex.Message}.");
+            }
+        }
+
+        protected virtual CommandResult ProcessPackageAdded(Package package)
+        {
             try
             {
                 var packageEntity = GetorAddPackageEntity(dbContext, package);
@@ -151,10 +208,15 @@ namespace SynchroFeed.Command.Catalog
             }
         }
 
+        private Entity.Package GetPackageEntity(PackageModelContext dbcontext, Package package)
+        {
+            return dbcontext.Packages.FirstOrDefault(s => s.Name == package.Id);
+        }
+
         private Entity.Package GetorAddPackageEntity(PackageModelContext dbcontext, Package package)
         {
             // Get package from database or add it if not found
-            var packageEntity = dbcontext.Packages.FirstOrDefault(s => s.Name == package.Id);
+            var packageEntity = GetPackageEntity(dbcontext, package);
             if (packageEntity == null)
             {
                 // Package not found in database. Add it.
@@ -170,10 +232,14 @@ namespace SynchroFeed.Command.Catalog
             return packageEntity;
         }
 
+        private PackageVersionEnvironment GetPackageEnvironmentEntity(IRepository<Package> repository, PackageVersion packageVersionEntity)
+        {
+            return packageVersionEntity.PackageEnvironments.FirstOrDefault(s => s.PackageVersionId == packageVersionEntity.PackageVersionId && s.Name == repository.Name);
+        }
+
         private PackageVersionEnvironment GetOrAddPackageEnvironmentEntity(IRepository<Package> repository, Entity.Package packageEntity, PackageVersion packageVersionEntity)
         {
-            var packageEnvironment =
-                packageVersionEntity.PackageEnvironments.FirstOrDefault(s => s.PackageVersionId == packageVersionEntity.PackageVersionId && s.Name == repository.Name);
+            var packageEnvironment = GetPackageEnvironmentEntity(repository, packageVersionEntity);
             if (packageEnvironment == null)
             {
                 packageEnvironment = new PackageVersionEnvironment
@@ -188,9 +254,14 @@ namespace SynchroFeed.Command.Catalog
             return packageEnvironment;
         }
 
+        private PackageVersion GetPackageVersionEntity(Package package, Entity.Package packageEntity)
+        {
+            return packageEntity.PackageVersions.FirstOrDefault(s => s.PackageId == packageEntity.PackageId && s.Version == package.Version);
+        }
+
         private PackageVersion GetorAddPackageVersionEntity(PackageModelContext dbcontext, IRepository<Package> repository, Package package, Entity.Package packageEntity)
         {
-            var packageVersionEntity = packageEntity.PackageVersions.FirstOrDefault(s => s.PackageId == packageEntity.PackageId && s.Version == package.Version);
+            var packageVersionEntity = GetPackageVersionEntity(package, packageEntity);
 
             // This version of the package was already processed, don't process again
             if (packageVersionEntity != null)

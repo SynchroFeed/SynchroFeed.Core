@@ -26,8 +26,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Data.Services.Client;
 using System.IO;
 using System.Linq;
 using System.Web;

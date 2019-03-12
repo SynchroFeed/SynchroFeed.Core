@@ -47,11 +47,10 @@ namespace SynchroFeed.Library.Command
         /// <value>The name of this command.</value>
         string Type { get; }
 
-        /// <summary>
-        /// The method that executes the appropriate command to process the package.
-        /// </summary>
+        /// <summary>The method that executes the appropriate command to process the package.</summary>
         /// <param name="package">The package for the command to handle.</param>
+        /// <param name="packageEvent">The event associated with the package.</param>
         /// <returns>Returns the CommandResult for the package.</returns>
-        CommandResult Execute(Package package);
+        CommandResult Execute(Package package, PackageEvent packageEvent);
     }
 }

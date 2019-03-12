@@ -72,17 +72,23 @@ namespace SynchroFeed.Command.ApplicationIs64bit
         /// <value>The logger.</value>
         private ILogger Logger { get; }
 
-        /// <summary>
-        /// Validates that the specified package is a 64 bit application.
-        /// </summary>
+        /// <summary>Validates that the specified package is a 64 bit application.</summary>
         /// <param name="package">The package to examine.</param>
+        /// <param name="packageEvent">The event associated with the package.</param>
         /// <returns>Returns <c>true</c> if the packages does not contain a 32-bit application, otherwise <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException">package</exception>
         /// <remarks>The more correct description is to validate that the package
         /// does not contain a 32-bit application.</remarks>
-        public override CommandResult Execute(Package package)
+        public override CommandResult Execute(Package package, PackageEvent packageEvent)
         {
             if (package == null)
                 throw new ArgumentNullException(nameof(package));
+
+            if (packageEvent != PackageEvent.Added)
+            {
+                Logger.LogTrace($"Ignoring {package.Id} due to the event being a delete");
+                return new CommandResult(this);
+            }
 
             var result = DoesPackageContain32bitExecutable(Action.SourceRepository, package);
             if (result.contains32BitExecutable)

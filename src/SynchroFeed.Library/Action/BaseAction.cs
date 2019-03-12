@@ -215,16 +215,15 @@ namespace SynchroFeed.Library.Action
         /// <returns><c>true</c> if the process was successful and processing should continue, <c>false</c> otherwise.</returns>
         public abstract bool ProcessPackage(Package package, PackageEvent packageEvent);
 
-        /// <summary>
-        /// Processes the configured Commands against the package.
-        /// </summary>
+        /// <summary>Processes the configured Commands against the package.</summary>
         /// <param name="package">The package for the Commands to process.</param>
+        /// <param name="packageEvent">The event associated with the package.</param>
         /// <returns>Returns the Settings.CommandFailureAction.</returns>
-        protected CommandFailureAction ProcessCommands(Package package)
+        protected CommandFailureAction ProcessCommands(Package package, PackageEvent packageEvent)
         {
             foreach (var command in Commands)
             {
-                var result = command.Execute(package);
+                var result = command.Execute(package, packageEvent);
                 if (result.ResultValid)
                 {
                     this.ObserverManager.NotifyObservers(new ActionEvent(this, ActionEventType.ActionCommandSuccess, result.Result, result.Command, package));

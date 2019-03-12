@@ -73,11 +73,10 @@ namespace SynchroFeed.Library.Command
         // ReSharper disable once UnusedAutoPropertyAccessor.Local
         private ILogger Logger { get; }
 
-        /// <summary>
-        /// The method that executes the appropriate command to process the package.
-        /// </summary>
+        /// <summary>The method that executes the appropriate command to process the package.</summary>
         /// <param name="package">The package for the command to handle.</param>
+        /// <param name="packageEvent">The event associated with the package.</param>
         /// <returns>Returns the CommandResult for the package.</returns>
-        public abstract CommandResult Execute(Package package);
+        public abstract CommandResult Execute(Package package, PackageEvent packageEvent);
     }
 }
