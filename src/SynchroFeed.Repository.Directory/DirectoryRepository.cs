@@ -104,7 +104,7 @@ namespace SynchroFeed.Repository.Directory
         {
             var filename = Path.Combine(Uri, $"{package.Id}.{package.Version}.nupkg");
             if (!File.Exists(filename))
-                throw new ObjectNotFoundException($"Package with the filename {filename} was not found");
+                return null;
 
             return Package.CreateFromFile(filename, true);
         }

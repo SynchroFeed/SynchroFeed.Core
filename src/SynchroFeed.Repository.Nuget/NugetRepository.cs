@@ -116,6 +116,10 @@ namespace SynchroFeed.Repository.Nuget
 
             var request = new HttpRequestMessage(HttpMethod.Delete, new Uri(Uri).Combine($"package/{package.Id}/{package.Version}"));
             request.Headers.Authorization = AuthorizationHeader;
+            if (!string.IsNullOrEmpty(ApiKey))
+            {
+                request.Headers.Add(ApiKeyHeaderName, ApiKey);
+            }
             var response = HttpClientFactory.GetHttpClient().SendAsync(request);
             response.Wait();
             response.Result.EnsureSuccessStatusCode();

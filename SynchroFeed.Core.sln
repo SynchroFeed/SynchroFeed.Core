@@ -59,6 +59,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JustCompile", "JustCompile"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Cecil", "JustDecompileEngine\Mono.Cecil\Mono.Cecil.csproj", "{D68133BD-1E63-496E-9EDE-4FBDBF77B486}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SynchroFeed.Repository.Proget.Test", "test\SynchroFeed.Repository.Proget.Test\SynchroFeed.Repository.Proget.Test.csproj", "{0F60E322-3C36-4CBB-84B5-E0A169F44690}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,10 @@ Global
 		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Debug|Any CPU.Build.0 = Debug JustAssembly|Any CPU
 		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Release|Any CPU.ActiveCfg = Release JustAssembly|Any CPU
 		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Release|Any CPU.Build.0 = Release JustAssembly|Any CPU
+		{0F60E322-3C36-4CBB-84B5-E0A169F44690}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F60E322-3C36-4CBB-84B5-E0A169F44690}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F60E322-3C36-4CBB-84B5-E0A169F44690}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F60E322-3C36-4CBB-84B5-E0A169F44690}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -26,33 +26,38 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 using System;
-using System.Data;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SynchroFeed.Library.Model;
+using SynchroFeed.Repository.Proget;
 using Xunit;
 using Settings=SynchroFeed.Library.Settings;
 
 namespace SynchroFeed.Repository.Directory.Test
 {
-    public class DirectoryRepositoryTest : IDisposable
+    public class ProgetRepositoryTest
     {
+        const string EnvVar_Url = "NUGETTEST_URL";
+        const string EnvVar_ApiKey = "NUGETTEST_APIKEY";
         const string NotepadPlusPlusPackageId = "notepadplusplus";
         const int NotepadPlusPlusPackageCount = 17;
-        const int NotepadPlusPlusPrereleasePackageCount = 1;
         private string RootFolder { get; }
         private string LocalRepoFolder { get; }
-        private string TempRepoFolder { get; }
+        private string RepoUrl { get; }
+        private string ApiKey { get; }
         private IServiceProvider ServiceProvider { get; }
         private ILoggerFactory LoggerFactory { get; }
 
-        public DirectoryRepositoryTest()
+        public ProgetRepositoryTest()
         {
             RootFolder = Environment.CurrentDirectory;
             LocalRepoFolder = Path.Combine(RootFolder, "local.choco");
-            TempRepoFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            RepoUrl = Environment.GetEnvironmentVariable(EnvVar_Url);
+            ApiKey = Environment.GetEnvironmentVariable(EnvVar_ApiKey);
+            Assert.True(!string.IsNullOrEmpty(RepoUrl), $"No environment variable found for {EnvVar_Url}");
+            Assert.True(!string.IsNullOrEmpty(ApiKey), $"No environment variable found for {EnvVar_ApiKey}");
 
             ServiceProvider = new ServiceCollection()
                 .AddLogging(loggingBuilder => { loggingBuilder.AddDebug(); })
@@ -62,28 +67,32 @@ namespace SynchroFeed.Repository.Directory.Test
         }
 
         [Fact]
-        public void Test_DirectoryRepositoryFactory()
+        public void Test_ProgetRepositoryFactory()
         {
             var appSettings = new Settings.ApplicationSettings();
-            var factory = new DirectoryRepositoryFactory(appSettings, ServiceProvider, LoggerFactory);
-            var feed = new Settings.Feed { Name = "", Type = "Directory"};
+            var factory = new ProgetRepositoryFactory(appSettings, ServiceProvider, LoggerFactory);
+            var feed = new Settings.Feed
+            {
+                Name = "",
+                Type = "Proget"
+            };
 
             var sut = factory.Create(feed);
 
-            Assert.Equal("Directory", sut.RepositoryType);
+            Assert.Equal("Proget", sut.RepositoryType);
         }
 
         [Fact]
-        public void Test_DirectoryRepository_Uri_Doesnt_Exist()
+        public void Test_ProgetRepository_Uri_Doesnt_Exist()
         {
-            var localRepoFeedConfig = new Settings.Feed
+            var repoFeedConfig = new Settings.Feed
             {
-                Name = "local.choco.notfound",
+                Name = "choco.notfound",
             };
 
-            localRepoFeedConfig.Settings.Add("Uri", LocalRepoFolder + "-not-found");
+            repoFeedConfig.Settings.Add("Uri", RepoUrl + "-not-found");
 
-            var sourceRepo = new DirectoryRepository(localRepoFeedConfig, LoggerFactory);
+            var sourceRepo = new ProgetRepository(repoFeedConfig);
 
             var packages = sourceRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId && !t.IsPrerelease);
 
@@ -91,22 +100,22 @@ namespace SynchroFeed.Repository.Directory.Test
         }
 
         [Fact]
-        public void Test_DirectoryRepository_Fetch_Package_Not_Found()
+        public void Test_ProgetRepository_Fetch_Package_Not_Found()
         {
-            var localRepoFeedConfig = new Settings.Feed
+            var sourceRepoFeedConfig = new Settings.Feed
             {
-                Name = "local.choco",
+                Name = "nuget.test",
             };
+            sourceRepoFeedConfig.Settings.Add("Uri", RepoUrl + "nuget.test");
+            sourceRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
 
-            localRepoFeedConfig.Settings.Add("Uri", LocalRepoFolder);
-
-            var sourceRepo = new DirectoryRepository(localRepoFeedConfig, LoggerFactory);
-            var package = new Package { Id = "PackageJunkName", Version = "1.0.0"};
+            var sourceRepo = new ProgetRepository(sourceRepoFeedConfig);
+            var package = new Package { Id = "PackageJunkName", Version = "1.0.0" };
             Assert.Null(sourceRepo.Fetch(package));
         }
 
         [Fact]
-        public void Test_DirectoryRepository_Fetch_With_Expression()
+        public void Test_ProgetRepository_Copy_And_Delete_Packages()
         {
             var localRepoFeedConfig = new Settings.Feed
             {
@@ -115,39 +124,17 @@ namespace SynchroFeed.Repository.Directory.Test
 
             localRepoFeedConfig.Settings.Add("Uri", LocalRepoFolder);
 
-            var sourceRepo = new DirectoryRepository(localRepoFeedConfig,LoggerFactory);
-
-            var packages = sourceRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId && !t.IsPrerelease);
-            var packagesPrerelease = sourceRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId && t.IsPrerelease);
-            var packagesIncludingPrerelease = sourceRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId);
-
-            Assert.Equal(NotepadPlusPlusPackageCount, packages.Count());
-#pragma warning disable xUnit2013 // Do not use equality check to check for collection size.
-            Assert.Equal(NotepadPlusPlusPrereleasePackageCount, packagesPrerelease.Count());
-#pragma warning restore xUnit2013 // Do not use equality check to check for collection size.
-            Assert.Equal(NotepadPlusPlusPackageCount + NotepadPlusPlusPrereleasePackageCount, packagesIncludingPrerelease.Count());
-        }
-
-        [Fact]
-        public void Test_DirectoryRepository_Copy_And_Delete_Packages()
-        {
-            var localRepoFeedConfig = new Settings.Feed
+            var targetRepoFeedConfig = new Settings.Feed
             {
-                Name = "local.choco",
+                Name = "nuget.test",
             };
-
-            localRepoFeedConfig.Settings.Add("Uri", LocalRepoFolder);
-
-            var tempRepoFeedConfig = new Settings.Feed
-            {
-                Name = "local.temp.choco",
-            };
-            tempRepoFeedConfig.Settings.Add("Uri", TempRepoFolder);
+            targetRepoFeedConfig.Settings.Add("Uri", RepoUrl + "nuget.test");
+            targetRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
 
             var sourceRepo = new DirectoryRepository(localRepoFeedConfig, LoggerFactory);
-            var targetRepo = new DirectoryRepository(tempRepoFeedConfig, LoggerFactory);
+            var targetRepo = new ProgetRepository(targetRepoFeedConfig);
 
-            var sourcePackages = sourceRepo.Fetch(t => t.Id == "notepadplusplus" && !t.IsPrerelease).ToArray();
+            var sourcePackages = sourceRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId && !t.IsPrerelease).ToArray();
 
             foreach (var package in sourcePackages)
             {
@@ -155,7 +142,7 @@ namespace SynchroFeed.Repository.Directory.Test
                 targetRepo.Add(p);
             }
 
-            var targetPackages = targetRepo.Fetch(t => t.Id == "notepadplusplus" && !t.IsPrerelease).ToArray();
+            var targetPackages = targetRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId && !t.IsPrerelease).ToArray();
 
             Assert.Equal(NotepadPlusPlusPackageCount, sourcePackages.Length);
             Assert.Equal(NotepadPlusPlusPackageCount, targetPackages.Length);
@@ -165,16 +152,8 @@ namespace SynchroFeed.Repository.Directory.Test
                 targetRepo.Delete(targetPackage);
             }
 
-            targetPackages = targetRepo.Fetch(t => t.Id == "notepadplusplus" && !t.IsPrerelease).ToArray();
+            targetPackages = targetRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId && !t.IsPrerelease).ToArray();
             Assert.Empty(targetPackages);
-    }
-
-        public void Dispose()
-        {
-            if (System.IO.Directory.Exists(TempRepoFolder))
-            {
-                System.IO.Directory.Delete(TempRepoFolder, true);
-            }
         }
     }
 }
