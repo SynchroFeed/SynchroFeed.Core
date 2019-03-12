@@ -186,6 +186,9 @@ namespace SynchroFeed.Library.Action
         /// </summary>
         public abstract void Run();
 
+        /// <summary>Gets the packages.</summary>
+        /// <param name="repo">The package repository.</param>
+        /// <returns>Package[].</returns>
         protected Package[] GetPackages(IRepository<Package> repo)
         {
             Logger.LogDebug($"Retrieving packages from feed: {repo.Name}");
@@ -203,9 +206,9 @@ namespace SynchroFeed.Library.Action
         /// <returns><c>true</c> if the package should be ignored, <c>false</c> otherwise.</returns>
         protected bool IgnorePackage(string packageId)
         {
+            // TODO - Should convert this to a regex
             return ActionSettings.PackagesToIgnore.Any(p => p.Equals(packageId, StringComparison.CurrentCultureIgnoreCase));
         }
-
 
         /// <summary>
         /// The method in the action that processes the package.

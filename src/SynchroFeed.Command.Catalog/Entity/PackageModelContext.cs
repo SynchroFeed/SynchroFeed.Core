@@ -31,9 +31,11 @@ using SynchroFeed.Command.Catalog.Migrations;
 
 namespace SynchroFeed.Command.Catalog.Entity
 {
+    /// <summary>The PackageModelContext is the Entity Framework context for persisting the Packages into the database.</summary>
     public class PackageModelContext : DbContext
     {
-        /// <summary>Initializes a new instance of the <see cref="T:SynchroFeed.Command.Catalog.Entity.PackageModelContext"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="T:SynchroFeed.Command.Catalog.Entity.PackageModelContext"/>
+        /// class.</summary>
         public PackageModelContext()
         {
         }
@@ -46,16 +48,41 @@ namespace SynchroFeed.Command.Catalog.Entity
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<PackageModelContext, Configuration>(true));
         }
 
+        /// <summary>Gets or sets the assemblies database set.</summary>
+        /// <value>The assemblies database set.</value>
         public virtual DbSet<Assembly> Assemblies { get; set; }
+        /// <summary>Gets or sets the assembly versions database set.</summary>
+        /// <value>The assembly versions database set.</value>
         public virtual DbSet<AssemblyVersion> AssemblyVersions { get; set; }
+        /// <summary>Gets or sets the packages database set.</summary>
+        /// <value>The packages database set.</value>
         public virtual DbSet<Package> Packages { get; set; }
+        /// <summary>Gets or sets the package versions database set.</summary>
+        /// <value>The package versions database set.</value>
         public virtual DbSet<PackageVersion> PackageVersions { get; set; }
+        /// <summary>Gets or sets the package version environments database set.</summary>
+        /// <value>The package version environments database set.</value>
         public virtual DbSet<PackageVersionEnvironment> PackageEnvironments { get; set; }
 
         //public virtual DbSet<AssemblyVersionsView> AssemblyVersionsViews { get; set; }
         //public virtual DbSet<MaxPackageVersion> MaxPackageVersions { get; set; }
         //public virtual DbSet<PackageVersionAssembliesView> PackageVersionAssembliesViews { get; set; }
 
+        /// <summary>
+        /// This method is called when the model for a derived context has been initialized, but
+        /// before the model has been locked down and used to initialize the context.  The default
+        /// implementation of this method does nothing, but it can be overridden in a derived class
+        /// such that the model can be further configured before it is locked down.
+        /// </summary>
+        /// <param name="modelBuilder">The builder that defines the model for the context being created.</param>
+        /// <remarks>
+        /// Typically, this method is called only once when the first instance of a derived context
+        /// is created.  The model for that context is then cached and is for all further instances of
+        /// the context in the app domain.  This caching can be disabled by setting the ModelCaching
+        /// property on the given ModelBuidler, but note that this can seriously degrade performance.
+        /// More control over caching is provided through use of the DbModelBuilder and DbContextFactory
+        /// classes directly.
+        /// </remarks>
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             // Added to eliminate System.InvalidOperationException due to not finding the EF type for SQL Server

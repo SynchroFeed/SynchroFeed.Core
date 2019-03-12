@@ -50,6 +50,7 @@ namespace SynchroFeed.Repository.Nuget
     /// <seealso cref="SynchroFeed.Library.Repository.BaseEntityRepository" />
     public class NugetRepository : BaseEntityRepository
     {
+        /// <summary>A constant value that contains the name of the header that contains the Nuget API key.</summary>
         public const string ApiKeyHeaderName = "X-NUGET-APIKEY";
 
         /// <summary>
@@ -336,6 +337,8 @@ namespace SynchroFeed.Repository.Nuget
             }
         }
 
+        /// <summary>  Gets the DataServiceContext that is used to access the atom repository.</summary>
+        /// <returns>DataServiceContext that is used to access the atom repository.</returns>
         protected virtual DataServiceContext DataServiceContext()
         {
             var context = new DataServiceContext(new Uri(Uri))
@@ -393,23 +396,8 @@ namespace SynchroFeed.Repository.Nuget
             // Do nothing - available for override
         }
 
-        protected virtual WebRequest CreateNewRequest(HttpWebRequest argsRequest, string newUrl)
-        {
-            HttpWebRequest newRequest = (HttpWebRequest) WebRequest.Create(newUrl);
-            newRequest.Credentials = argsRequest.Credentials;
-            newRequest.UserAgent = argsRequest.UserAgent;
-            newRequest.Timeout = argsRequest.Timeout;
-            foreach (string header in argsRequest.Headers)
-            {
-                if (!header.Equals("User-Agent", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    var value = argsRequest.Headers.Get(header);
-                    newRequest.Headers.Add(header, value);
-                }
-            }
-            return newRequest;
-        }
-
+        /// <summary>Gets the authorization header to add to the web request.</summary>
+        /// <value>The authorization header to add to the web request.</value>
         protected virtual AuthenticationHeaderValue AuthorizationHeader
         {
             get

@@ -39,6 +39,9 @@ namespace SynchroFeed.Command.Catalog
     /// </summary>
     public static class UtilityExtensions
     {
+        /// <summary>Gets the validation message associated with a DbEntityValidationException.</summary>
+        /// <param name="exception">The exception.</param>
+        /// <returns>System.String.</returns>
         public static string GetValidationMessage(this DbEntityValidationException exception)
         {
             var sb = new StringBuilder(1000);
@@ -54,6 +57,9 @@ namespace SynchroFeed.Command.Catalog
             return sb.ToString();
         }
 
+        /// <summary>An extension method that reverts the changes associated with a PackageModelContext Entity Framework context.</summary>
+        /// <param name="context">The Entity Framework context to revert.</param>
+        /// <param name="exception">The exception causing the revert.</param>
         public static void RevertChanges(this PackageModelContext context, DbEntityValidationException exception)
         {
             foreach (DbEntityValidationResult item in exception.EntityValidationErrors)

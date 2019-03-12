@@ -85,11 +85,23 @@ namespace SynchroFeed.Library
         }
 
         // Define other methods and classes here
+        /// <summary>Formats the with.</summary>
+        /// <param name="format">The string to format. The string contains formatting tokens in the format of {&lt;FieldName&gt;:&lt;format specification&gt;}</param>
+        /// <param name="source">The source object to bind to the tokens in the format string.</param>
+        /// <param name="throwException">if set to <c>true, throw an </c>exception on a formatting error.</param>
+        /// <returns>System.String.</returns>
         public static string FormatWith(this string format, object source, bool throwException=false)
         {
             return FormatWith(format, null, source, throwException);
         }
 
+        // Define other methods and classes here
+        /// <summary>Formats the with.</summary>
+        /// <param name="format">The string to format. The string contains formatting tokens in the format of {&lt;FieldName&gt;:&lt;format specification&gt;}</param>
+        /// <param name="provider">An instance of the IFormatProvider to use to interpret the format string.</param>
+        /// <param name="source">The source object to bind to the tokens in the format string.</param>
+        /// <param name="throwException">if set to <c>true, throw an </c>exception on a formatting error.</param>
+        /// <returns>System.String.</returns>
         public static string FormatWith(this string format, IFormatProvider provider, object source, bool throwException = false)
         {
             if (format == null)
@@ -124,6 +136,12 @@ namespace SynchroFeed.Library
             return formattedString;
         }
 
+        /// <summary>Gets the custom setting from the settings collection with the settingName. If the setting is not found, return the defaultValue.</summary>
+        /// <typeparam name="T">The type of the setting.</typeparam>
+        /// <param name="settings">The settings collection to search for a setting with the settingName.</param>
+        /// <param name="settingName">Name of the setting to search for in the settings collection.</param>
+        /// <param name="defaultValue">The default value to use if the settingName is not found in the settings collection.</param>
+        /// <returns>T.</returns>
         public static T GetCustomSetting<T>(this SettingsCollection settings, string settingName, T defaultValue = default(T))
         {
             if (settings.ContainsKey(settingName))
@@ -134,6 +152,10 @@ namespace SynchroFeed.Library
             return defaultValue;
         }
 
+        /// <summary>A helper extension method to find a factory class with the specified name.</summary>
+        /// <typeparam name="T">The type of factory to return.</typeparam>
+        /// <param name="serviceProvider">The service provider instance to search for a provider with the given name.</param>
+        /// <param name="name">The name of the factory to search for in the service provider.</param>
         public static T GetNamedFactory<T>(this IServiceProvider serviceProvider, string name)
             where T : INamedFactory
         {

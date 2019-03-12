@@ -27,6 +27,7 @@
 #endregion
 using System;
 using System.Data.Entity.Migrations;
+#pragma warning disable 1591
 
 namespace SynchroFeed.Command.Catalog.Migrations
 {

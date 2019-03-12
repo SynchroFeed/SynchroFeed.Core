@@ -36,6 +36,8 @@ using Settings = SynchroFeed.Library.Settings;
 
 namespace SynchroFeed.Command.Catalog
 {
+    /// <summary>The CatalogCommandFactory class is an implementation of <see cref="ICommandFactory"/>
+    /// for creating an <see cref="CatalogCommand"/> instance.</summary>
     public class CatalogCommandFactory : BaseCommandFactory
     {
         /// <summary>

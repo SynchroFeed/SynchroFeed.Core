@@ -29,7 +29,8 @@ namespace SynchroFeed.Command.Catalog.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
+    #pragma warning disable 1591
+
     public partial class InitialCreate : DbMigration
     {
         public override void Up()

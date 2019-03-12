@@ -32,6 +32,7 @@ using SynchroFeed.Library.Settings;
 
 namespace SynchroFeed.Library.Factory
 {
+    /// <summary>  The BaseActionObserverFactory is a base class for implementing an <see cref="IActionObserverFactory"/>.</summary>
     public abstract class BaseActionObserverFactory : IActionObserverFactory
     {
         /// <summary>

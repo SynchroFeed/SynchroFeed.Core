@@ -96,6 +96,9 @@ namespace SynchroFeed.Library.Settings
             return newFeed;
         }
 
+        /// <summary>Clones and merge the settings with the settings in this instance.</summary>
+        /// <param name="settings">The settings to clone and merge with the instance.</param>
+        /// <returns>Feed.</returns>
         public Feed CloneAndMergeSettings(SettingsCollection settings)
         {
             var newFeed = this.Clone();

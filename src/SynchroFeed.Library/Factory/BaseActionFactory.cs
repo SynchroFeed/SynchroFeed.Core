@@ -35,6 +35,7 @@ using SynchroFeed.Library.Settings;
 
 namespace SynchroFeed.Library.Factory
 {
+    /// <summary>The BaseActionFactory is the base class for implementing an <see cref="IActionFactory"/>.</summary>
     public abstract class BaseActionFactory : IActionFactory
     {
         /// <summary>
@@ -100,6 +101,9 @@ namespace SynchroFeed.Library.Factory
         /// <exception cref="NotImplementedException"></exception>
         public abstract IAction Create(Settings.Action actionSettings);
 
+        /// <summary>Gets the repository for the specified feedName.</summary>
+        /// <param name="feedName">The name of the feed to get the repository for.</param>
+        /// <exception cref="InvalidOperationException">Thrown if the feedName isn't found in the application settings.</exception>
         protected IRepository<Package> GetRepository(string feedName)
         {
             Logger.LogDebug($"Creating repository for feed \"{feedName}\"");

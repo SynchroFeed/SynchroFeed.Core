@@ -46,90 +46,186 @@ namespace SynchroFeed.Library.Model
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public class Package : IEquatable<Package>
     {
+        /// <summary>Gets or sets the authors.</summary>
+        /// <value>The authors.</value>
         public string Authors { get; set; }
 
+        /// <summary>Gets or sets the package contents.</summary>
+        /// <value>The contents of the package.</value>
         public byte[] Content { get; set; }
 
+        /// <summary>Gets or sets the copyright.</summary>
+        /// <value>The copyright.</value>
         public string Copyright { get; set; }
 
+        /// <summary>Gets or sets the created date.</summary>
+        /// <value>The date the package was created.</value>
         public DateTime? Created { get; set; }
 
+        /// <summary>Gets or sets the dependencies of the package.</summary>
+        /// <value>The dependencies associagted with this package.</value>
         public string Dependencies { get; set; }
 
+        /// <summary>Gets or sets the description of the package.</summary>
+        /// <value>The description of the package.</value>
         public string Description { get; set; }
 
+        /// <summary>Gets or sets the download count.</summary>
+        /// <value>The count of how many times the package was downloaded.</value>
         public int DownloadCount { get; set; }
 
+        /// <summary>Gets or sets the gallery details URL.</summary>
+        /// <value>The URL to the gallery details for the package.</value>
         public string GalleryDetailsUrl { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether this package has source code.</summary>
+        /// <value>
+        ///   <c>true</c> if this package has source code; otherwise, <c>false</c>.</value>
         public bool HasSource { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether this package has symbols.</summary>
+        /// <value>
+        ///   <c>true</c> if this package has symbols; otherwise, <c>false</c>.</value>
         public bool HasSymbols { get; set; }
 
+        /// <summary>Gets or sets the icon URL.</summary>
+        /// <value>The icon URL associaged with this package.</value>
         public string IconUrl { get; set; }
 
+        /// <summary>Gets or sets the identifier associaged with this package.</summary>
+        /// <value>The identifier associaged with this package.</value>
         public string Id { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether this package is the absolute latest version.</summary>
+        /// <value>
+        ///   <c>true</c> if this package is absolute latest version; otherwise, <c>false</c>.</value>
         public bool IsAbsoluteLatestVersion { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether this package is cached.</summary>
+        /// <value>
+        ///   <c>true</c> if this package is cached; otherwise, <c>false</c>.</value>
         public bool IsCached { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether this package is the latest version.</summary>
+        /// <value>
+        ///   <c>true</c> if this package is latest version; otherwise, <c>false</c>.</value>
         public bool IsLatestVersion { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether this package is a local package.</summary>
+        /// <value>
+        ///   <c>true</c> if this package is a local package; otherwise, <c>false</c>.</value>
         public bool IsLocalPackage { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether this package is a prerelease package.</summary>
+        /// <value>
+        ///   <c>true</c> if this package is a prerelease package; otherwise, <c>false</c>.</value>
         public bool IsPrerelease { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether this package is hosted on Proget.</summary>
+        /// <value>
+        ///   <c>true</c> if this package is hosted on Proget; otherwise, <c>false</c>.</value>
         public bool IsProGetHosted { get; set; }
 
+        /// <summary>Gets or sets the language of the package.</summary>
+        /// <value>The language of the package.</value>
         public string Language { get; set; }
 
+        /// <summary>Gets or sets the last edited date</summary>
+        /// <value>The last time the package was edited.</value>
         public DateTime? LastEdited { get; set; }
 
+        /// <summary>Gets or sets the last updated date</summary>
+        /// <value>The last time the package was updated.</value>
         public DateTime? LastUpdated { get; set; }
 
+        /// <summary>Gets or sets the name of the license.</summary>
+        /// <value>The name of the license associated with this package.</value>
         public string LicenseNames { get; set; }
 
+        /// <summary>Gets or sets the license report URL.</summary>
+        /// <value>The license report URL.</value>
         public string LicenseReportUrl { get; set; }
 
+        /// <summary>Gets or sets the license URL.</summary>
+        /// <value>The license URL.</value>
         public string LicenseUrl { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether this <see cref="T:SynchroFeed.Library.Model.Package"/> is listed.</summary>
+        /// <value>
+        ///   <c>true</c> if listed; otherwise, <c>false</c>.</value>
         public bool Listed { get; set; }
 
+        /// <summary>Gets or sets the minimum client version.</summary>
+        /// <value>The minimum client version.</value>
         public string MinClientVersion { get; set; }
 
+        /// <summary>Gets or sets the normalized version.</summary>
+        /// <value>The normalized version.</value>
         public string NormalizedVersion { get; set; }
 
+        /// <summary>Gets or sets the owners of the package.</summary>
+        /// <value>The owners of the package.</value>
         public string Owners { get; set; }
 
+        /// <summary>Gets or sets the package download URL.</summary>
+        /// <value>The package download URL.</value>
         public string PackageDownloadUrl { get; set; }
 
+        /// <summary>Gets or sets the package hash.</summary>
+        /// <value>The package hash.</value>
         public string PackageHash { get; set; }
 
+        /// <summary>Gets or sets the package hash algorithm.</summary>
+        /// <value>The package hash algorithm.</value>
         public string PackageHashAlgorithm { get; set; }
 
+        /// <summary>Gets or sets the size of the package.</summary>
+        /// <value>The size of the package.</value>
         public long PackageSize { get; set; }
 
+        /// <summary>Gets or sets the package URL.</summary>
+        /// <value>The package URL.</value>
         public string PackageUrl { get; set; }
 
+        /// <summary>Gets or sets the project URL.</summary>
+        /// <value>The project URL.</value>
         public string ProjectUrl { get; set; }
 
+        /// <summary>Gets or sets the date the package was published.</summary>
+        /// <value>The published date of the package.</value>
         public DateTime? Published { get; set; }
 
+        /// <summary>Gets or sets the release notes associated with this package.</summary>
+        /// <value>The release notes for this package.</value>
         public string ReleaseNotes { get; set; }
 
+        /// <summary>Gets or sets the report abuse URL.</summary>
+        /// <value>The report abuse URL.</value>
         public string ReportAbuseUrl { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether license acceptance is required to install the package.</summary>
+        /// <value>
+        ///   <c>true</c> if license acceptance is required to install this package; otherwise, <c>false</c>.</value>
         public bool RequireLicenseAcceptance { get; set; }
 
+        /// <summary>Gets or sets the package summary.</summary>
+        /// <value>The package summary.</value>
         public string Summary { get; set; }
 
+        /// <summary>Gets or sets the tags associated with the package.</summary>
+        /// <value>The tags associated with the package.</value>
         public string Tags { get; set; }
 
+        /// <summary>Gets or sets the title associated with the package.</summary>
+        /// <value>The title associated with the package.</value>
         public string Title { get; set; }
 
+        /// <summary>Gets or sets the version associated with this package.</summary>
+        /// <value>The version associated with this package.</value>
         public string Version { get; set; }
 
+        /// <summary>Gets or sets the version download count.</summary>
+        /// <value>The count of how manu times this version of the package has been downloaded.</value>
         public int VersionDownloadCount { get; set; }
 
         /// <summary>
@@ -210,47 +306,49 @@ namespace SynchroFeed.Library.Model
         /// <returns>Returns a new Package that is a clone of this instance.</returns>
         public Package ClonePackage()
         {
-            var clone = new Package();
-            clone.Id = this.Id;
-            clone.Version = this.Version;
-            clone.NormalizedVersion = this.NormalizedVersion;
-            clone.Title = this.Title;
-            clone.Authors = this.Authors;
-            clone.IconUrl = this.IconUrl;
-            clone.LicenseUrl = this.LicenseUrl;
-            clone.ProjectUrl = this.ProjectUrl;
-            clone.ReportAbuseUrl = this.ReportAbuseUrl;
-            clone.GalleryDetailsUrl = this.GalleryDetailsUrl;
-            clone.DownloadCount = this.DownloadCount;
-            clone.VersionDownloadCount = this.VersionDownloadCount;
-            clone.RequireLicenseAcceptance = this.RequireLicenseAcceptance;
-            clone.Description = this.Description;
-            clone.Language = this.Language;
-            clone.Summary = this.Summary;
-            clone.ReleaseNotes = this.ReleaseNotes;
-            clone.Published = this.Published;
-            clone.Created = this.Created;
-            clone.LastUpdated = this.LastUpdated;
-            clone.LastEdited = this.LastEdited;
-            clone.Dependencies = this.Dependencies;
-            clone.PackageHash = this.PackageHash;
-            clone.PackageSize = this.PackageSize;
-            clone.PackageHashAlgorithm = this.PackageHashAlgorithm;
-            clone.Copyright = this.Copyright;
-            clone.Tags = this.Tags;
-            clone.IsAbsoluteLatestVersion = this.IsAbsoluteLatestVersion;
-            clone.IsLatestVersion = this.IsLatestVersion;
-            clone.IsPrerelease = this.IsPrerelease;
-            clone.Listed = this.Listed;
-            clone.IsLocalPackage = this.IsLocalPackage;
-            clone.IsProGetHosted = this.IsProGetHosted;
-            clone.IsCached = this.IsCached;
-            clone.HasSymbols = this.HasSymbols;
-            clone.HasSource = this.HasSource;
-            clone.MinClientVersion = this.MinClientVersion;
-            clone.LicenseNames = this.LicenseNames;
-            clone.LicenseReportUrl = this.LicenseReportUrl;
-            clone.Content = this.Content;
+            var clone = new Package
+            {
+                Id = this.Id,
+                Version = this.Version,
+                NormalizedVersion = this.NormalizedVersion,
+                Title = this.Title,
+                Authors = this.Authors,
+                IconUrl = this.IconUrl,
+                LicenseUrl = this.LicenseUrl,
+                ProjectUrl = this.ProjectUrl,
+                ReportAbuseUrl = this.ReportAbuseUrl,
+                GalleryDetailsUrl = this.GalleryDetailsUrl,
+                DownloadCount = this.DownloadCount,
+                VersionDownloadCount = this.VersionDownloadCount,
+                RequireLicenseAcceptance = this.RequireLicenseAcceptance,
+                Description = this.Description,
+                Language = this.Language,
+                Summary = this.Summary,
+                ReleaseNotes = this.ReleaseNotes,
+                Published = this.Published,
+                Created = this.Created,
+                LastUpdated = this.LastUpdated,
+                LastEdited = this.LastEdited,
+                Dependencies = this.Dependencies,
+                PackageHash = this.PackageHash,
+                PackageSize = this.PackageSize,
+                PackageHashAlgorithm = this.PackageHashAlgorithm,
+                Copyright = this.Copyright,
+                Tags = this.Tags,
+                IsAbsoluteLatestVersion = this.IsAbsoluteLatestVersion,
+                IsLatestVersion = this.IsLatestVersion,
+                IsPrerelease = this.IsPrerelease,
+                Listed = this.Listed,
+                IsLocalPackage = this.IsLocalPackage,
+                IsProGetHosted = this.IsProGetHosted,
+                IsCached = this.IsCached,
+                HasSymbols = this.HasSymbols,
+                HasSource = this.HasSource,
+                MinClientVersion = this.MinClientVersion,
+                LicenseNames = this.LicenseNames,
+                LicenseReportUrl = this.LicenseReportUrl,
+                Content = this.Content
+            };
 
             return clone;
         }

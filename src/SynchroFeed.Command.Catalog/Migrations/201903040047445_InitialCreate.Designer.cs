@@ -5,7 +5,8 @@ namespace SynchroFeed.Command.Catalog.Migrations
     using System.Data.Entity.Migrations;
     using System.Data.Entity.Migrations.Infrastructure;
     using System.Resources;
-    
+    #pragma warning disable 1591
+
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
     public sealed partial class InitialCreate : IMigrationMetadata
     {

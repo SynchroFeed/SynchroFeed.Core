@@ -31,6 +31,8 @@ using SynchroFeed.Library.Command;
 
 namespace SynchroFeed.Library.Factory
 {
+    /// <summary>  The ICommandFactory
+    /// interface is used to implement a factory class that generates a Command.</summary>
     public interface ICommandFactory : INamedFactory
     {
         /// <summary>

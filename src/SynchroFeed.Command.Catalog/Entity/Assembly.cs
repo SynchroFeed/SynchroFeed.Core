@@ -32,8 +32,10 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace SynchroFeed.Command.Catalog.Entity
 {
+    /// <summary>The Assembly class is an Entity Framework model class for an assembly contained within a package.</summary>
     public class Assembly
     {
+        /// <summary>Initializes a new instance of the <see cref="T:SynchroFeed.Command.Catalog.Entity.Assembly"/> class.</summary>
         [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
         public Assembly()
         {
@@ -41,15 +43,23 @@ namespace SynchroFeed.Command.Catalog.Entity
             CreatedUtcDateTime = DateTimeOffset.UtcNow;
         }
 
+        /// <summary>The identifier assigned to the assembly in the database.</summary>
+        /// <value>The assembly identifier.</value>
         [Key]
         public int AssemblyId { get; set; }
 
+        /// <summary>Gets or sets the name of the assembly.</summary>
+        /// <value>The name.</value>
         [StringLength(100)]
         public string Name { get; set; }
 
+        /// <summary>Gets or sets the versions associated with the assembly.</summary>
+        /// <value>The versions associated with the assembly.</value>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AssemblyVersion> AssemblyVersions { get; set; }
 
+        /// <summary>Gets or sets the date and time the database row was created.</summary>
+        /// <value>The date and time the database row was created.</value>
         public DateTimeOffset CreatedUtcDateTime { get; set; }
     }
 }

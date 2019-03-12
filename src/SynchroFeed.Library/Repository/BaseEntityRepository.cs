@@ -33,6 +33,7 @@ using SynchroFeed.Library.Settings;
 
 namespace SynchroFeed.Library.Repository
 {
+    /// <summary>The base class for implementing a <see cref="IRepository&lt;Package&gt;"/>.</summary>
     public abstract class BaseEntityRepository : IRepository<Package>
     {
         /// <summary>
@@ -65,6 +66,8 @@ namespace SynchroFeed.Library.Repository
         /// <value>The type of the repository.</value>
         public abstract string RepositoryType { get; }
 
+        /// <summary>Gets the settings dictionary associated with this repository.</summary>
+        /// <value>The settings collection.</value>
         protected Dictionary<string, string> Settings { get; }
 
         /// <summary>

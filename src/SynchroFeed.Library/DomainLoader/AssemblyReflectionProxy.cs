@@ -49,6 +49,8 @@ namespace SynchroFeed.Library.DomainLoader
         /// <value>The name of the proxied assembly.</value>
         public AssemblyName AssemblyName { get; private set; }
 
+        /// <summary>Validate the assembly by calling the specifier of type T.</summary>
+        /// <typeparam name="T">Returns true if the validator is able to successfully validate the assembly.</typeparam>
         public bool ValidateAssembly<T>()
             where T : IAssemblyValidator
         {

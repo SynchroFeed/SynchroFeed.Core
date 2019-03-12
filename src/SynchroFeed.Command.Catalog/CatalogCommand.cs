@@ -48,6 +48,7 @@ using Settings = SynchroFeed.Library.Settings;
 
 namespace SynchroFeed.Command.Catalog
 {
+    /// <summary>The CatalogCommand is an implementation of <see cref="ICommand"/> that catalogs a package into a database.</summary>
     public class CatalogCommand : BaseCommand, IInitializable
     {
         private readonly PackageModelContext dbContext;
@@ -165,6 +166,9 @@ namespace SynchroFeed.Command.Catalog
             }
         }
 
+        /// <summary>Processes a package that was added to a repository.</summary>
+        /// <param name="package">The package that was added to the respository.</param>
+        /// <returns>CommandResult.</returns>
         protected virtual CommandResult ProcessPackageAdded(Package package)
         {
             try

@@ -32,6 +32,7 @@ using SynchroFeed.Library.Settings;
 
 namespace SynchroFeed.Library.Factory
 {
+    /// <summary>The IRepositoryFactory interface is used to create a factory for creating a <see cref="IRepository{TEntity}"/>.</summary>
     public interface IRepositoryFactory : INamedFactory
     {
         /// <summary>

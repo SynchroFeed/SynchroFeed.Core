@@ -34,10 +34,15 @@ namespace SynchroFeed.Library.Model
     /// </summary>
     public enum PackageEvent
     {
+        /// <summary>The event for when a package was added.</summary>
         Added,
+        /// <summary>The event for when a package was deleted.</summary>
         Deleted,
+        /// <summary>The event for when a package was deployed.</summary>
         Deployed,
+        /// <summary>The event for when a package was promoted.</summary>
         Promoted,
+        /// <summary>The event for when a package was processed.</summary>
         Processed
     }
 }

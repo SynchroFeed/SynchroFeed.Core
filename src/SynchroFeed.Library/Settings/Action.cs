@@ -140,6 +140,9 @@ namespace SynchroFeed.Library.Settings
             return newAction;
         }
 
+        /// <summary>Clones the and merge settings.</summary>
+        /// <param name="settings">The collection of settungs to clone and merge.</param>
+        /// <returns>Action.</returns>
         public Action CloneAndMergeSettings(SettingsCollection settings)
         {
             var newAction = this.Clone();

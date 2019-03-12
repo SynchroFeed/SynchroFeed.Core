@@ -96,6 +96,9 @@ namespace SynchroFeed.Library.Settings
             return newObserver;
         }
 
+        /// <summary>Clones and merge the settings.</summary>
+        /// <param name="settings">The settings to clone and merge with the instance settings.</param>
+        /// <returns>Observer.</returns>
         public Observer CloneAndMergeSettings(SettingsCollection settings)
         {
             var newObserver = this.Clone();

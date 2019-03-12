@@ -32,6 +32,7 @@ using SynchroFeed.Library.Model;
 
 namespace SynchroFeed.Library.Command
 {
+    /// <summary>The BaseCommand is a base implementation if <see cref="ICommand"/>.</summary>
     public abstract class BaseCommand : ICommand
     {
         /// <summary>

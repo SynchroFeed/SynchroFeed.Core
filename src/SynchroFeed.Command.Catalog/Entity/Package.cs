@@ -32,8 +32,10 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace SynchroFeed.Command.Catalog.Entity
 {
+    /// <summary>The Package class is an Entity Framework model class for a package.</summary>
     public class Package
     {
+        /// <summary>Initializes a new instance of the <see cref="T:SynchroFeed.Command.Catalog.Entity.Package"/> class.</summary>
         [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
         public Package()
         {
@@ -41,20 +43,30 @@ namespace SynchroFeed.Command.Catalog.Entity
             CreatedUtcDateTime = DateTimeOffset.UtcNow;
         }
 
+        /// <summary>Gets or sets the database identifier associated with this package.</summary>
+        /// <value>The database identifier associated with this package.</value>
         [Key]
         public int PackageId { get; set; }
 
+        /// <summary>Gets or sets the name of the package.</summary>
+        /// <value>The name of the package.</value>
         [Required]
         [StringLength(100)]
         public string Name { get; set; }
 
+        /// <summary>Gets or sets the title of the package.</summary>
+        /// <value>The title of the package.</value>
         [Required]
         [StringLength(200)]
         public string Title { get; set; }
 
+        /// <summary>Gets or sets the versions associated with the package.</summary>
+        /// <value>The versions associated with the package.</value>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PackageVersion> PackageVersions { get; set; }
 
+        /// <summary>Gets or sets the date and time the database row was created.</summary>
+        /// <value>The date and time the database row was created.</value>
         [Required]
         public DateTimeOffset CreatedUtcDateTime { get; set; }
     }

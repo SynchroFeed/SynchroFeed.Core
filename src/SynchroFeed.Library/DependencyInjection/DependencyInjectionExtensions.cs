@@ -36,6 +36,7 @@ using SynchroFeed.Library.Settings;
 
 namespace SynchroFeed.Library.DependencyInjection
 {
+    /// <summary>The DependencyInjectionExtensions class is an extension class for implementing helper functions to assist with dependency injection.</summary>
     public static class DependencyInjectionExtensions
     {
         /// <summary>

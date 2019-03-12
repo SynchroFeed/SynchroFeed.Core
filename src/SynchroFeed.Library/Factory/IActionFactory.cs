@@ -30,6 +30,8 @@ using SynchroFeed.Library.Action;
 
 namespace SynchroFeed.Library.Factory
 {
+    /// <summary>The IActionFactory
+    /// interface is used to implement a factory class for creating an Action.</summary>
     public interface IActionFactory : INamedFactory
     {
         /// <summary>
