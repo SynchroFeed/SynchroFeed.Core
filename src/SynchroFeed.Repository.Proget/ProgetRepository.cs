@@ -27,6 +27,7 @@
 #endregion
 using System;
 using System.Data.Services.Client;
+using Microsoft.Extensions.Logging;
 using SynchroFeed.Library.Model;
 using Settings=SynchroFeed.Library.Settings;
 using SynchroFeed.Repository.Nuget;
@@ -39,12 +40,11 @@ namespace SynchroFeed.Repository.Proget
     /// </summary>
     public class ProgetRepository : NugetRepository
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProgetRepository"/> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="T:SynchroFeed.Repository.Proget.ProgetRepository"/> class.</summary>
         /// <param name="feedSettings">The feed settings.</param>
-        public ProgetRepository(Settings.Feed feedSettings) 
-            : base(feedSettings)
+        /// <param name="loggerFactory">The logger factory.</param>
+        public ProgetRepository(Settings.Feed feedSettings, ILoggerFactory loggerFactory) 
+            : base(feedSettings, loggerFactory)
         {
         }
 

@@ -93,7 +93,7 @@ namespace SynchroFeed.Repository.Directory.Test
 
             repoFeedConfig.Settings.Add("Uri", RepoUrl + "-not-found");
 
-            var sourceRepo = new ProgetRepository(repoFeedConfig);
+            var sourceRepo = new ProgetRepository(repoFeedConfig, LoggerFactory);
 
             Assert.Throws<HttpException>(() => sourceRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId && !t.IsPrerelease));
         }
@@ -108,7 +108,7 @@ namespace SynchroFeed.Repository.Directory.Test
             sourceRepoFeedConfig.Settings.Add("Uri", RepoUrl);
             sourceRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
 
-            var sourceRepo = new ProgetRepository(sourceRepoFeedConfig);
+            var sourceRepo = new ProgetRepository(sourceRepoFeedConfig, LoggerFactory);
             var package = new Package { Id = "PackageJunkName", Version = "1.0.0" };
             try
             {
@@ -138,7 +138,7 @@ namespace SynchroFeed.Repository.Directory.Test
             targetRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
 
             var sourceRepo = new DirectoryRepository(localRepoFeedConfig, LoggerFactory);
-            var targetRepo = new ProgetRepository(targetRepoFeedConfig);
+            var targetRepo = new ProgetRepository(targetRepoFeedConfig, LoggerFactory);
 
             var sourcePackages = sourceRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId && !t.IsPrerelease).ToArray();
 

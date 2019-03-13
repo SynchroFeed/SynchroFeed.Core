@@ -148,6 +148,11 @@ namespace SynchroFeed.Action.Sync
             }
         }
 
+        /// <summary>A protected method that processes added packages.</summary>
+        /// <param name="package">The package to process.</param>
+        /// <param name="packageEvent">The package event that generated the package.</param>
+        /// <returns>
+        ///   <c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         protected virtual bool ProcessPackageAdded(Package package, PackageEvent packageEvent)
         {
             if (IgnorePackage(package.Id))
@@ -198,6 +203,10 @@ namespace SynchroFeed.Action.Sync
             return true;
         }
 
+        /// <summary>A protected method that processes a deleted package.</summary>
+        /// <param name="package">The package that was deleted.</param>
+        /// <returns>
+        ///   <c>true</c> if the package was successfully deleted, <c>false</c> otherwise.</returns>
         protected virtual bool ProcessPackageDelete(Package package)
         {
             try

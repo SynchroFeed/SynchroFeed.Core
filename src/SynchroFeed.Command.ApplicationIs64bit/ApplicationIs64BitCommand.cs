@@ -64,6 +64,10 @@ namespace SynchroFeed.Command.ApplicationIs64bit
         }
 
 
+        /// <summary>
+        /// Gets the action type of this action.
+        /// </summary>
+        /// <value>The action type of this action.</value>
         public override string Type => "ApplicationIs64Bit";
 
         /// <summary>

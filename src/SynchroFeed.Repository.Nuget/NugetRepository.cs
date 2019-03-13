@@ -37,6 +37,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Web;
+using Microsoft.Extensions.Logging;
 using SynchroFeed.Library;
 using SynchroFeed.Library.Repository;
 using Package = SynchroFeed.Library.Model.Package;
@@ -53,14 +54,15 @@ namespace SynchroFeed.Repository.Nuget
         /// <summary>A constant value that contains the name of the header that contains the Nuget API key.</summary>
         public const string ApiKeyHeaderName = "X-NUGET-APIKEY";
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NugetRepository" /> class.
-        /// </summary>
+        /// <summary>Initializes a new instance of the <see cref="T:SynchroFeed.Repository.Nuget.NugetRepository"/> class.</summary>
         /// <param name="feedSettings">The feed settings to initialize this repository.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
         /// <exception cref="ArgumentNullException">Thrown if feedConfig is null</exception>
-        public NugetRepository(Library.Settings.Feed feedSettings)
+        public NugetRepository(Library.Settings.Feed feedSettings, ILoggerFactory loggerFactory)
             : base(feedSettings)
         {
+            if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
+            Logger = loggerFactory.CreateLogger<NugetRepository>();
         }
 
         /// <summary>
@@ -68,6 +70,12 @@ namespace SynchroFeed.Repository.Nuget
         /// </summary>
         /// <value>The type of the repository.</value>
         public override string RepositoryType => "Nuget";
+
+        /// <summary>
+        /// Gets the logger.
+        /// </summary>
+        /// <value>The logger.</value>
+        private ILogger Logger { get; }
 
         /// <summary>
         /// Adds the specified package to the repository.
@@ -83,6 +91,13 @@ namespace SynchroFeed.Repository.Nuget
 
             if (package.Content == null)
                 throw new InvalidOperationException("The package doesn't have any content associated with it.");
+
+            var existingPackage = Fetch(p => p.Id == package.Id && p.Version == package.Version).FirstOrDefault();
+            if (existingPackage != null)
+            {
+                Logger.LogWarning($"Package already exists ({package.Id}). Ignoring.");
+                return;
+            }
 
             var request = new HttpRequestMessage(HttpMethod.Put, new Uri(Uri).Combine("package/"));
             request.Headers.Authorization = AuthorizationHeader;

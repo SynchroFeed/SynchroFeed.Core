@@ -36,6 +36,10 @@ using Settings = SynchroFeed.Library.Settings;
 
 namespace SynchroFeed.Command.ApplicationIs64bit
 {
+    /// <summary>
+    /// The ApplicationIs64BitCommandFactory class if a factory class that creates an instance of <see cref="ApplicationIs64BitCommand"/>.
+    /// </summary>
+    /// <seealso cref="SynchroFeed.Library.Factory.BaseCommandFactory" />
     public class ApplicationIs64BitCommandFactory : BaseCommandFactory
     {
         /// <summary>

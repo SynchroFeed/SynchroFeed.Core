@@ -35,6 +35,10 @@ using SynchroFeed.Library.Settings;
 
 namespace SynchroFeed.Action.Sync
 {
+    /// <summary>
+    /// The SyncActionFactory is a factory class that creates an instance of a <see cref="SyncAction"/>.
+    /// </summary>
+    /// <seealso cref="SynchroFeed.Library.Factory.BaseActionFactory" />
     public class SyncActionFactory : BaseActionFactory
     {
         /// <summary>
