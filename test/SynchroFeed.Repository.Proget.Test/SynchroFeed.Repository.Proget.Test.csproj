@@ -45,9 +45,6 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\CompanyAssemblyInfo.cs">
-      <Link>Properties\CompanyAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="ProgetRepositoryTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,0 +1,25 @@
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+        <MyFiles Include="$(SolutionDir)**\*.nuspec"/>
+    </ItemGroup>
+    <Target Name="BeforeBuild" BeforeTargets="Build;Rebuild">
+        <Message Text="Solution Build Started" Importance="High"/>
+        <PropertyGroup>
+            <!-- It is important for CustomAfterMicrosoftCommontargets to be absolute path, not relative -->
+            <CustomAfterMicrosoftCommontargets>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)Common.Project.targets'))</CustomAfterMicrosoftCommontargets>
+        </PropertyGroup>
+    </Target>
+    <Target Name="AfterBuild" AfterTargets="Build;Rebuild">
+		<Exec Command="nuget pack &quot;%(MyFiles.Identity)&quot; -Properties &quot;Configuration=$(Configuration);Platform=AnyCPU;version=1.0.0&quot; -IncludeReferencedProjects -OutputDirectory &quot;C:\LocalRepo\temp.choco.dev&quot;"/>
+        <Message Text="Solution Build Finished" Importance="High"/>
+    </Target>
+    <!-- All four standard targets must be present, otherwise VS barfs. -->
+    <Target Name="Build">
+        <Message Text="Solution Build target" Importance="High"/>
+    </Target>
+    <Target Name="Rebuild">
+        <Message Text="Solution Rebuild target" Importance="High"/>
+    </Target>
+    <Target Name="Clean"></Target>
+    <Target Name="Publish"></Target>
+</Project>

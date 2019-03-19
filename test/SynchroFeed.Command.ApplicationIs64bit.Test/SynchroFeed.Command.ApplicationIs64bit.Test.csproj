@@ -1,50 +1,23 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B1F8A5C1-F6E5-48FE-9FBA-0FEAFF99BEEA}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SynchroFeed.Command.ApplicationIs64bit.Tests</RootNamespace>
     <AssemblyName>SynchroFeed.Command.ApplicationIs64bit.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <TargetFramework>net47</TargetFramework>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <AssemblyTitle>SynchroFeed.Command.ApplicationIs64bit.Tests</AssemblyTitle>
+    <Product>SynchroFeed.Command.ApplicationIs64bit.Tests</Product>
+    <Copyright>Copyright ©  2018</Copyright>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ApplicationIs64bitTest.cs" />
-    <Compile Include="DummyClasses.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestLogger.cs" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="local.choco\Test.Choco.32bit-NoPrefer32-bit.1.0.0.nupkg">
@@ -64,39 +37,19 @@
     <Content Include="local.choco\.gitignore" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AutoFixture.SeedExtensions">
-      <Version>4.8.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions">
-      <Version>2.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection">
-      <Version>2.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging">
-      <Version>2.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="Moq">
-      <Version>4.10.1</Version>
-    </PackageReference>
-    <PackageReference Include="xunit">
-      <Version>2.4.1</Version>
-    </PackageReference>
+    <PackageReference Include="AutoFixture.SeedExtensions" Version="4.8.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
+    <PackageReference Include="Moq" Version="4.10.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SynchroFeed.Command.ApplicationIs64bit\SynchroFeed.Command.ApplicationIs64bit.csproj">
-      <Project>{7569f829-f3d8-4643-98a6-dbf87f41165c}</Project>
-      <Name>SynchroFeed.Command.ApplicationIs64bit</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\SynchroFeed.Library\SynchroFeed.Library.csproj">
-      <Project>{dd82ce9d-7037-4a40-88c2-5b0b02e6bcd8}</Project>
-      <Name>SynchroFeed.Library</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\SynchroFeed.Repository.Directory\SynchroFeed.Repository.Directory.csproj">
-      <Project>{bb452e80-be2c-44c9-ad7f-5b79fd6f9868}</Project>
-      <Name>SynchroFeed.Repository.Directory</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\src\SynchroFeed.Command.ApplicationIs64bit\SynchroFeed.Command.ApplicationIs64bit.csproj" />
+    <ProjectReference Include="..\..\src\SynchroFeed.Library\SynchroFeed.Library.csproj" />
+    <ProjectReference Include="..\..\src\SynchroFeed.Repository.Directory\SynchroFeed.Repository.Directory.csproj" />
   </ItemGroup>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 </Project>

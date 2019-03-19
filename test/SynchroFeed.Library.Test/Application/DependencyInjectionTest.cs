@@ -35,11 +35,19 @@ using SynchroFeed.Library.DependencyInjection;
 using SynchroFeed.Library.DomainLoader;
 using SynchroFeed.Library.Settings;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace SynchroFeed.Library.Test.Application
 {
     public class DependencyInjectionTest
     {
+        private readonly ITestOutputHelper testOutputHelper;
+
+        public DependencyInjectionTest(ITestOutputHelper testOutputHelper)
+        {
+            this.testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public void Test_AddSynchroFeed_Extension_Adds_Types_To_ServiceCollection()
         {
@@ -50,7 +58,7 @@ namespace SynchroFeed.Library.Test.Application
                 .Callback((ServiceDescriptor sd) => 
                 {
                     sdCollection.Add(sd);
-                    Console.WriteLine($"Service Descriptor: {sd.ServiceType.AssemblyQualifiedName}");
+                    testOutputHelper.WriteLine($"Service Descriptor: {sd.ServiceType.AssemblyQualifiedName}");
                 });
             var sut = mock.Object;
 
