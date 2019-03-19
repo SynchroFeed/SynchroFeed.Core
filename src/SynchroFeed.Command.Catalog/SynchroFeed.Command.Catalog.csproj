@@ -2,25 +2,33 @@
   <PropertyGroup>
     <ProjectGuid>{C8B95609-4B3D-44A8-9F9A-ABB352E83327}</ProjectGuid>
     <TargetFramework>net47</TargetFramework>
-    <AssemblyTitle>SynchroFeed.Command.ApplicationIs64bit</AssemblyTitle>
-    <Product>SynchroFeed.Command.ApplicationIs64bit</Product>
-    <Description>
-      SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing,
-      cataloging and validation of Nuget and Chocolatey packages. This is an addon for cataloging packages
-      and the included assemblies into a database.
-    </Description>
+    <AssemblyTitle>SynchroFeed.Command.Catalog</AssemblyTitle>
+    <Product>SynchroFeed.Command.Catalog</Product>
+    <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for cataloging packages and the included assemblies into a database.</Description>
     <Copyright>Copyright(c) 2018 Robert Vandehey</Copyright>
     <Version>0.0.0.0</Version>
     <Authors>Bob Vandehey</Authors>
-    <PackageIconUrl>https://raw.githubusercontent.com/SynchroFeed/SynchroFeed/master/SynchroFeed.png</PackageIconUrl>
-    <PackageId>SynchroFeed.Command.ApplicationIs64bit</PackageId>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/SynchroFeed/SynchroFeed/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Command.Catalog</PackageProjectUrl>
+    <PackageId>SynchroFeed.Command.Catalog</PackageId>
+    <PackageLicenseUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/SynchroFeed.png</PackageIconUrl>
+    <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Command.Catalog/</RepositoryUrl>
     <PackageTags>nuget chocolately sync feed package catalog addon command</PackageTags>
   </PropertyGroup>
   <PropertyGroup>
     <NoWarn>1701;1702;NU5125</NoWarn>
+    <RepositoryType>nuget</RepositoryType>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <NoWarn>1701;1702;NU5125</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />

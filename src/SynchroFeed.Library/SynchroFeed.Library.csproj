@@ -18,8 +18,12 @@
     <FileVersion>0.0.0.0</FileVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup>
     <NoWarn>1701;1702;NU5125</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

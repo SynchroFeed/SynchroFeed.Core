@@ -4,23 +4,31 @@
     <TargetFramework>net47</TargetFramework>
     <AssemblyTitle>SynchroFeed.Command.ApplicationIs64bit</AssemblyTitle>
     <Product>SynchroFeed.Command.ApplicationIs64bit</Product>
-    <Description>
-		  SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, 
-		  cataloging and validation of Nuget and Chocolatey packages. This is an addon for validating packages
-      to make sure the included assemblies are all 64-bit.
-		</Description>
+    <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for validating packages to make sure the included assemblies are all 64-bit.</Description>
     <Copyright>Copyright(c) 2018 Robert Vandehey</Copyright>
-    <Version>1.0.0.0</Version>
+    <Version>0.0.0.0</Version>
     <Authors>Bob Vandehey</Authors>
-    <PackageIconUrl>https://raw.githubusercontent.com/SynchroFeed/SynchroFeed/master/SynchroFeed.png</PackageIconUrl>
     <PackageId>SynchroFeed.Command.ApplicationIs64bit</PackageId>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/SynchroFeed/SynchroFeed/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/SynchroFeed.png</PackageIconUrl>
+    <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Command.ApplicationIs64bit/</RepositoryUrl>
     <PackageTags>nuget chocolately sync feed package catalog addon command</PackageTags>
   </PropertyGroup>
   <PropertyGroup>
     <NoWarn>1701;1702;NU5125</NoWarn>
+    <RepositoryType>nuget</RepositoryType>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <NoWarn>1701;1702;NU5125</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>

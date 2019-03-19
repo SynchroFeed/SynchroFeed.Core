@@ -4,20 +4,28 @@
     <TargetFramework>net47</TargetFramework>
     <AssemblyTitle>SynchroFeed.Repository.Directory</AssemblyTitle>
     <Product>SynchroFeed.Repository.Directory</Product>
-    <Description>
-		  SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, 
-		  cataloging and validation of Nuget and Chocolatey packages. This is an addon for using a directory 
-		  as a repository.
-		</Description>
+    <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for using a directory as a repository.</Description>
     <Copyright>Copyright(c) 2018 Robert Vandehey</Copyright>
-    <Version>1.0.0.0</Version>
+    <Version>0.0.0.0</Version>
     <Authors>Bob Vandehey</Authors>
-    <PackageIconUrl>https://raw.githubusercontent.com/SynchroFeed/SynchroFeed/master/SynchroFeed.png</PackageIconUrl>
     <PackageId>SynchroFeed.Repository.Directory</PackageId>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/SynchroFeed/SynchroFeed/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/SynchroFeed.png</PackageIconUrl>
+    <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Repository.Directory/</RepositoryUrl>
     <PackageTags>nuget chocolately sync feed package catalog addon repository</PackageTags>
+    <RepositoryType>nuget</RepositoryType>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <NoWarn>1701;1702;NU5125</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Web" />
