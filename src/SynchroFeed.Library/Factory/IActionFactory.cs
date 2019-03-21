@@ -25,20 +25,20 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-using System;
 using SynchroFeed.Library.Action;
 
 namespace SynchroFeed.Library.Factory
 {
-    /// <summary>The IActionFactory
-    /// interface is used to implement a factory class for creating an Action.</summary>
+    /// <summary>
+    /// The IActionFactory interface is used to implement a factory class for creating an Action.
+    /// </summary>
     public interface IActionFactory : INamedFactory
     {
         /// <summary>
         /// A factory method that creates the specified action.
         /// </summary>
         /// <param name="actionSettings">The settings associated with the target action.</param>
-        /// <returns>Returns an instance of IAction for the specified action type.</returns>
+        /// <returns>Returns an instance of <see cref="IAction"/> for the specified action type.</returns>
         IAction Create(Settings.Action actionSettings);
     }
 }
