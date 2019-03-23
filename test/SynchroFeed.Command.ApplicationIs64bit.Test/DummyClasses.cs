@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SynchroFeed.Library.Action;
 using SynchroFeed.Library.Action.Observer;
 using SynchroFeed.Library.Command;
@@ -36,6 +37,7 @@ using SynchroFeed.Library.Model;
 using SynchroFeed.Library.Processor;
 using SynchroFeed.Library.Repository;
 using SynchroFeed.Library.Settings;
+using SynchroFeed.Repository.Directory;
 
 namespace SynchroFeed.Command.ApplicationIs64bit.Tests
 {
@@ -52,6 +54,24 @@ namespace SynchroFeed.Command.ApplicationIs64bit.Tests
 
     public class DummyAction : IAction
     {
+        public static DummyAction CreateFromDirectory(string localRepoFolder, ILoggerFactory loggerFactory)
+        {
+            var localRepoFeedConfig = new Feed
+            {
+                Name = "Dummy.Feed",
+                Settings =
+                {
+                    { "Uri", localRepoFolder }
+                }
+            };
+
+            var action = new DummyAction()
+            {
+                SourceRepository = new DirectoryRepository(localRepoFeedConfig, loggerFactory)
+            };
+
+            return action;
+        }
 
         public static Func<Package, PackageEvent, bool> ProcessPackageFunc = ProcessPackageMethod;
 

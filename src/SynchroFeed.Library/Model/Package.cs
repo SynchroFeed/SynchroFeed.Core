@@ -382,7 +382,7 @@ namespace SynchroFeed.Library.Model
         [System.Diagnostics.CodeAnalysis.SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
         public override int GetHashCode()
         {
-            return $"{this.Id.ToLower()}{this.Version}".GetHashCode();
+            return this.ToString().ToLower().GetHashCode();
         }
 
         /// <summary>
@@ -391,7 +391,7 @@ namespace SynchroFeed.Library.Model
         /// <returns>A <see cref="System.String" /> that represents ID of this package.</returns>
         public override string ToString()
         {
-            return this.Id;
+            return $"{this.Id} v{this.Version}";
         }
     }
 }
