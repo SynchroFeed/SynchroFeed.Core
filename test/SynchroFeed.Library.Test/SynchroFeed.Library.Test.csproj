@@ -14,12 +14,17 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\SynchroFeed.Library.TestFramework\SynchroFeed.Library.TestFramework.csproj" />
     <ProjectReference Include="..\..\src\SynchroFeed.Library\SynchroFeed.Library.csproj" />
   </ItemGroup>
   <ItemGroup>
