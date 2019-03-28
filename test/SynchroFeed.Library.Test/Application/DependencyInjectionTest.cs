@@ -34,6 +34,7 @@ using SynchroFeed.Library.Action.Observer;
 using SynchroFeed.Library.DependencyInjection;
 using SynchroFeed.Library.DomainLoader;
 using SynchroFeed.Library.Settings;
+using SynchroFeed.Library.TestFramework;
 using Xunit;
 using Xunit.Abstractions;
 

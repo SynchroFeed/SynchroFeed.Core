@@ -4,37 +4,17 @@
     <RootNamespace>SynchroFeed.Command.ApplicationIs64bit.Tests</RootNamespace>
     <AssemblyName>SynchroFeed.Command.ApplicationIs64bit.Tests</AssemblyName>
     <TargetFramework>net47</TargetFramework>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
     <AssemblyTitle>SynchroFeed.Command.ApplicationIs64bit.Tests</AssemblyTitle>
     <Product>SynchroFeed.Command.ApplicationIs64bit.Tests</Product>
     <Copyright>Copyright ©  2018</Copyright>
   </PropertyGroup>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <ItemGroup>
+    <None Remove="local.choco\.gitignore" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="local.choco\Test.Choco.32bit-NoPrefer32-bit.1.0.0.nupkg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="local.choco\Test.Choco.32bit-Prefer32-bit.1.0.0.nupkg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="local.choco\Test.Choco.32bit-x64.1.0.0.nupkg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="local.choco\Test.Choco.32bit-x86.1.0.0.nupkg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="local.choco\.gitignore" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoFixture.SeedExtensions" Version="4.8.0" />
@@ -43,13 +23,29 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Moq" Version="4.10.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\SynchroFeed.Command.ApplicationIs64bit\SynchroFeed.Command.ApplicationIs64bit.csproj" />
+    <ProjectReference Include="..\..\src\SynchroFeed.Library.TestFramework\SynchroFeed.Library.TestFramework.csproj" />
     <ProjectReference Include="..\..\src\SynchroFeed.Library\SynchroFeed.Library.csproj" />
     <ProjectReference Include="..\..\src\SynchroFeed.Repository.Directory\SynchroFeed.Repository.Directory.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <None Update="local.choco\Test.Choco.32bit-NoPrefer32-bit.1.0.0.nupkg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.choco\Test.Choco.32bit-Prefer32-bit.1.0.0.nupkg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.choco\Test.Choco.32bit-x64.1.0.0.nupkg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.choco\Test.Choco.32bit-x86.1.0.0.nupkg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
