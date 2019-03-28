@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ProjectGuid>{5A13090C-7DA5-4E2D-89DE-CBCE00B37602}</ProjectGuid>
+    <RootNamespace>SynchroFeed.Command.NugetContainsSupportFiles.Test</RootNamespace>
+    <AssemblyName>SynchroFeed.Command.NugetContainsSupportFiles.Test</AssemblyName>
+    <TargetFramework>net47</TargetFramework>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <AssemblyTitle>SynchroFeed.Command.NugetContainsSupportFiles.Test</AssemblyTitle>
+    <Product>SynchroFeed.Command.NugetContainsSupportFiles.Test</Product>
+    <Copyright>Copyright ©  2018</Copyright>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="local.choco\.gitignore" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoFixture.SeedExtensions" Version="4.8.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
+    <PackageReference Include="Moq" Version="4.10.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SynchroFeed.Command.NugetContainsSupportFiles\SynchroFeed.Command.NugetContainsSupportFiles.csproj" />
+    <ProjectReference Include="..\..\src\SynchroFeed.Library.TestFramework\SynchroFeed.Library.TestFramework.csproj" />
+    <ProjectReference Include="..\..\src\SynchroFeed.Library\SynchroFeed.Library.csproj" />
+    <ProjectReference Include="..\..\src\SynchroFeed.Repository.Directory\SynchroFeed.Repository.Directory.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="local.choco\Files.With.Package.Name.4.1.0.nupkg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.choco\Has.Some.Support.Files.1.0.0.nupkg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.choco\Has.Support.Files.1.0.0.nupkg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

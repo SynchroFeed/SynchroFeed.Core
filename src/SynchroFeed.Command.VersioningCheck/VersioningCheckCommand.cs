@@ -4,7 +4,6 @@ using SynchroFeed.Library.Action;
 using SynchroFeed.Library.Command;
 using SynchroFeed.Library.DomainLoader;
 using SynchroFeed.Library.Model;
-using SynchroFeed.Library.Repository;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -64,12 +63,18 @@ namespace SynchroFeed.Command.VersioningCheck
                 return new CommandResult(this);
             }
 
+            if (package.Content == null)
+            {
+                Logger.LogWarning($"Contents are empty for package {package}.");
+                return new CommandResult(this);
+            }
+
             if (this.Settings.Settings.TryGetValue(Setting_PackageIdRegex, out var packageIdRegex) && !string.IsNullOrWhiteSpace(packageIdRegex))
             {
                 if (!Regex.IsMatch(package.Id, packageIdRegex, RegexOptions.IgnoreCase))
                 {
-                    Logger.LogTrace($"{package.Id} (v{package.Version}) skipped due to package filtering.");
-                    return new CommandResult(this, true, $"{package.Id} (v{package.Version}) package versioning check skipped.");
+                    Logger.LogTrace($"{package} skipped due to package filtering.");
+                    return new CommandResult(this, true, $"{package} package versioning check skipped.");
                 }
             }
             else
@@ -77,37 +82,27 @@ namespace SynchroFeed.Command.VersioningCheck
                 Logger.LogTrace($"Command does not have a '{Setting_PackageIdRegex}' setting, defaulting to all packages.");
             }
 
-            var binariesWithDifferentVersions = GetBinariesWithDifferentVersions(Action.SourceRepository, package);
+            var binariesWithDifferentVersions = GetBinariesWithDifferentVersions(package);
 
             if (binariesWithDifferentVersions.Count > 0)
             {
-                Logger.LogWarning($"{package.Id} (v{package.Version}) has binaries with versions that differ from the package version.");
-                return new CommandResult(this, false, $"{package.Id} (v{package.Version}) contains the following binaries with a different version from the package: {string.Join(", ", binariesWithDifferentVersions)}");
+                Logger.LogWarning($"{package} has binaries with versions that differ from the package version.");
+                return new CommandResult(this, false, $"{package} contains the following binaries with a different version from the package: {string.Join(", ", binariesWithDifferentVersions)}");
             }
 
-            Logger.LogTrace($"{package.Id} (v{package.Version}) contains no differences between package and binary versions.");
-            return new CommandResult(this, true, $"{package.Id} (v{package.Version}) contains no differences between package and binary versions.");
+            Logger.LogTrace($"{package} contains no differences between package and binary versions.");
+            return new CommandResult(this, true, $"{package} contains no differences between package and binary versions.");
         }
 
-        private List<string> GetBinariesWithDifferentVersions(IRepository<Package> repository, Package package)
+        private List<string> GetBinariesWithDifferentVersions(Package package)
         {
-            if (package.Content?.Length == 0)
-            {
-                Logger.LogDebug($"Fetching contents for package {package.Id}");
-                package = repository.Fetch(package);
-            }
-
             var packageVersion = GetPackageVersion(package.Version);
             var binariesWithDifferentVersions = new HashSet<string>();
 
             if (this.Settings.Settings.TryGetValue(Setting_FileRegex, out var fileRegex) && !string.IsNullOrWhiteSpace(fileRegex))
-            {
                 fileRegex = fileRegex.Replace(FileRegexPlaceHolder, package.Id);
-            }
             else
-            {
                 fileRegex = @"\.(dll|exe)$";
-            }
 
             if (package.Content == null)
             {
@@ -120,10 +115,10 @@ namespace SynchroFeed.Command.VersioningCheck
             {
                 foreach (ZipEntry zipEntry in zipFile)
                 {
-                    if (!zipEntry.IsFile)
+                    if (!zipEntry.IsFile || (zipEntry.Name == null))
                         continue;
 
-                    var fileName = Path.GetFileName(zipEntry.Name) ?? "";
+                    var fileName = Path.GetFileName(zipEntry.Name);
 
                     if (!Regex.IsMatch(fileName, fileRegex, RegexOptions.IgnoreCase))
                         continue;
