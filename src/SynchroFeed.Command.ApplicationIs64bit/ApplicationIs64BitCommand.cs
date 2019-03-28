@@ -1,20 +1,21 @@
 ﻿#region header
+
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright company="Robert Vandehey" file="ApplicationIs64BitCommand.cs">
 // MIT License
-// 
+//
 // Copyright(c) 2018 Robert Vandehey
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,17 +25,18 @@
 // SOFTWARE.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-#endregion
-using System;
-using System.IO;
+
+#endregion header
+
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Extensions.Logging;
 using SynchroFeed.Library.Action;
 using SynchroFeed.Library.Command;
 using SynchroFeed.Library.DomainLoader;
 using SynchroFeed.Library.Model;
-using SynchroFeed.Library.Repository;
-using Settings=SynchroFeed.Library.Settings;
+using System;
+using System.IO;
+using Settings = SynchroFeed.Library.Settings;
 
 namespace SynchroFeed.Command.ApplicationIs64bit
 {
@@ -62,7 +64,6 @@ namespace SynchroFeed.Command.ApplicationIs64bit
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
             Logger = loggerFactory.CreateLogger<ApplicationIs64BitCommand>();
         }
-
 
         /// <summary>
         /// Gets the action type of this action.
@@ -94,10 +95,16 @@ namespace SynchroFeed.Command.ApplicationIs64bit
                 return new CommandResult(this);
             }
 
-            var result = DoesPackageContain32bitExecutable(Action.SourceRepository, package);
+            if (package.Content == null)
+            {
+                Logger.LogWarning($"Contents are empty for package {package}.");
+                return new CommandResult(this);
+            }
+
+            var result = DoesPackageContain32bitExecutable(package);
             if (result.contains32BitExecutable)
             {
-                Logger.LogWarning($"{package.Id} contains a 32-bit application:{result.assemblyName}");
+                Logger.LogWarning($"{package} contains a 32-bit application:{result.assemblyName}");
                 return new CommandResult(this, false, $"{package.Id} contains a 32-bit application:{result.assemblyName}");
             }
 
@@ -111,14 +118,8 @@ namespace SynchroFeed.Command.ApplicationIs64bit
         /// <param name="repository">The repository containing the package.</param>
         /// <param name="package">The package to examine if it contains a 32-bit executable.</param>
         /// <returns><c>true</c> if the package contains a 32-bit executable, <c>false</c> otherwise.</returns>
-        private (bool contains32BitExecutable, string assemblyName) DoesPackageContain32bitExecutable(IRepository<Package> repository, Package package)
+        private (bool contains32BitExecutable, string assemblyName) DoesPackageContain32bitExecutable(Package package)
         {
-            if (package.Content == null || package.Content.Length == 0)
-            {
-                Logger.LogDebug($"Fetching contents for package {package.Id}");
-                package = repository.Fetch(package);
-            }
-
             using (var byteStream = new MemoryStream(package.Content))
             using (var zipFile = new ZipFile(byteStream))
             {
