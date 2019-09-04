@@ -9,7 +9,7 @@
     <Copyright>Copyright(c) 2018 Robert Vandehey</Copyright>
     <PackageLicenseUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/SynchroFeed.png</PackageIconUrl>
+    <PackageIconUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/SynchroFeed.png?raw=true</PackageIconUrl>
     <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.ActionObserver.WebPost/</RepositoryUrl>
     <RepositoryType>nuget</RepositoryType>
     <PackageTags>nuget chocolately sync feed package catalog addon observer</PackageTags>
