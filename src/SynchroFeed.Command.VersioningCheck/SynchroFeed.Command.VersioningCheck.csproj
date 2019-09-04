@@ -5,6 +5,7 @@
     <AssemblyTitle>SynchroFeed.Command.VersioningCheck</AssemblyTitle>
     <Product>SynchroFeed.Command.VersioningCheck</Product>
     <Copyright>Copyright ©  2018</Copyright>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
