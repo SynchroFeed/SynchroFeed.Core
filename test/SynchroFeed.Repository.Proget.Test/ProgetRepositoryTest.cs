@@ -67,7 +67,11 @@ namespace SynchroFeed.Repository.Directory.Test
             LoggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
         }
 
+#if DEBUG
         [Fact]
+#else
+        [Fact(Skip="Integration testing only.")]
+#endif
         public void Test_ProgetRepositoryFactory()
         {
             var appSettings = new Settings.ApplicationSettings();
@@ -83,7 +87,11 @@ namespace SynchroFeed.Repository.Directory.Test
             Assert.Equal("Proget", sut.RepositoryType);
         }
 
+#if DEBUG
         [Fact]
+#else
+        [Fact(Skip = "Integration testing only.")]
+#endif
         public void Test_ProgetRepository_Uri_Doesnt_Exist()
         {
             var repoFeedConfig = new Settings.Feed
@@ -98,7 +106,11 @@ namespace SynchroFeed.Repository.Directory.Test
             Assert.Throws<HttpException>(() => sourceRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId && !t.IsPrerelease));
         }
 
+#if DEBUG
         [Fact]
+#else
+        [Fact(Skip = "Integration testing only.")]
+#endif
         public void Test_ProgetRepository_Fetch_Package_Not_Found()
         {
             var sourceRepoFeedConfig = new Settings.Feed
@@ -120,7 +132,11 @@ namespace SynchroFeed.Repository.Directory.Test
             }
         }
 
+#if DEBUG
         [Fact]
+#else
+        [Fact(Skip = "Integration testing only.")]
+#endif
         public void Test_ProgetRepository_Copy_And_Delete_Packages()
         {
             var localRepoFeedConfig = new Settings.Feed
