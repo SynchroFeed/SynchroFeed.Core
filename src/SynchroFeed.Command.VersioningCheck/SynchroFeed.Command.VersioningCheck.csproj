@@ -4,14 +4,21 @@
     <TargetFramework>net47</TargetFramework>
     <AssemblyTitle>SynchroFeed.Command.VersioningCheck</AssemblyTitle>
     <Product>SynchroFeed.Command.VersioningCheck</Product>
-    <Copyright>Copyright ©  2018</Copyright>
+    <Copyright>Copyright(c) 2018 SynchroFeed</Copyright>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>C:\Projects\SynchroFeed.Core\nuget\Release\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>C:\Projects\SynchroFeed.Core\nuget\Debug\</OutputPath>
+    <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for validating packages to make sure they have the same version applied to all dlls within the package.</Description>
+    <Version>0.0.0.0</Version>
+    <Authors>SynchroFeed</Authors>
+    <Company>SynchroFeed</Company>
+    <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Command.VersioningCheck/</RepositoryUrl>
+    <PackageIconUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/SynchroFeed.png?raw=true</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
+    <RepositoryType>nuget</RepositoryType>
+    <PackageTags>nuget chocolately sync feed package version addon command</PackageTags>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
@@ -22,6 +29,10 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>

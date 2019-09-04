@@ -9,7 +9,6 @@
     <Version>0.0.0.0</Version>
     <Authors>Bob Vandehey</Authors>
     <PackageId>SynchroFeed.Command.Catalog</PackageId>
-    <PackageLicenseUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
     <PackageIconUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/SynchroFeed.png?raw=true</PackageIconUrl>
     <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Command.Catalog/</RepositoryUrl>
@@ -27,6 +26,7 @@
   <PropertyGroup>
     <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -54,6 +54,10 @@
     <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
