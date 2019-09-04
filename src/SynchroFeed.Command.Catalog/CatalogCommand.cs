@@ -35,7 +35,6 @@ using System.Text.RegularExpressions;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Mono.Cecil;
 using SynchroFeed.Command.Catalog.Entity;
 using SynchroFeed.Library;
 using SynchroFeed.Library.Action;
@@ -70,17 +69,24 @@ namespace SynchroFeed.Command.Catalog
             : base(action, commandSettings, loggerFactory)
         {
             if (loggerFactory == null) throw new ArgumentNullException(nameof(loggerFactory));
+
             Logger = loggerFactory.CreateLogger<CatalogCommand>();
+
             var connectionStringName = commandSettings.Settings.ConnectionStringName();
+
             if (connectionStringName == null)
             {
                 connectionStringName = "PackageModel";
                 Logger.LogInformation("No connection string name configured for Catalog command. Using \"PackageModel\".");
             }
+
             var connectionString = configuration.GetConnectionString(connectionStringName);
+
             if (string.IsNullOrEmpty(connectionString))
                 throw new InvalidOperationException($"No connection string found with the name \"{commandSettings.Settings.ConnectionStringName()}\" ");
+
             dbContext = new PackageModelContext(connectionString);
+
             if (!string.IsNullOrEmpty(commandSettings.Settings.NormalizeRegEx()))
             {
                 normalizeNameRegex = new Regex(commandSettings.Settings.NormalizeRegEx());
@@ -304,7 +310,7 @@ namespace SynchroFeed.Command.Catalog
                     if (!zipEntry.IsFile)
                         continue;
 
-                    AssemblyInfo assemblyInfo = GetAssemblyInfoFromZipEntry(zipFile, zipEntry);
+                    AssemblyInfo assemblyInfo = GetAssemblyInfoFromZipEntry(packageVersionEntity, zipFile, zipEntry);
                     // Result is null if not a .NET assembly
                     if (assemblyInfo == null)
                         continue;
@@ -379,35 +385,58 @@ namespace SynchroFeed.Command.Catalog
             return assemblyVersionEntity;
         }
 
-        private AssemblyInfo GetAssemblyInfoFromZipEntry(ZipFile zipFile, ZipEntry zipEntry)
+        private AssemblyInfo GetAssemblyInfoFromZipEntry(PackageVersion packageVersionEntity, ZipFile zipFile, ZipEntry zipEntry)
         {
             AssemblyInfo assemblyInfo = null;
+
             if (zipEntry.Name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
             {
                 using (Stream zipStream = zipFile.GetInputStream(zipEntry))
                 {
-                    var tempFilename = Path.GetTempFileName();
-                    using (var fileStream = new FileStream(tempFilename, FileMode.Append, FileAccess.Write, FileShare.Read))
+                    System.Reflection.Assembly assembly = null;
+
+                    try
                     {
-                        zipStream.CopyTo(fileStream);
+                        using (var ms = new MemoryStream())
+                        {
+                            zipStream.CopyTo(ms);
+                            ms.Position = 0;
+
+                            assembly = System.Reflection.Assembly.ReflectionOnlyLoad(ms.ToArray());
+                        }
                     }
-                    var assemblyDef = GlobalAssemblyResolver.Instance.GetAssemblyDefinition(tempFilename);
-                    File.Delete(tempFilename);
-
-                    if (assemblyDef == null)
+                    catch (BadImageFormatException)
                     {
-                        Logger.LogDebug($"No assembly definition found for {zipEntry.Name}. Ignoring.");
-                        return null;
+                        Logger.LogError($"{packageVersionEntity.Package.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - had a bad image.");
+                    }
+                    catch (FileLoadException)
+                    {
+                        Logger.LogError($"{packageVersionEntity.Package.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - could not be loaded.");
                     }
 
-                    assemblyInfo = new AssemblyInfo
+                    if (assembly != null)
                     {
-                        AssemblyName = new AssemblyName() {FullName = assemblyDef.FullName, Name = assemblyDef.Name.Name, Version = assemblyDef.Name.Version, FrameworkVersion = assemblyDef.TargetFrameworkAttributeValue}
-                    };
+                        var assemblyName = assembly.GetName();
 
-                    foreach (var referencedAssembly in assemblyDef.MainModule.AssemblyReferences)
-                    {
-                        assemblyInfo.ReferencedAssemblies.Add(new AssemblyName() {FullName = referencedAssembly.FullName, Name = referencedAssembly.Name, Version = referencedAssembly.Version});
+                        assemblyInfo = new AssemblyInfo
+                        {
+                            AssemblyName = new AssemblyName()
+                            {
+                                FullName = assemblyName.FullName,
+                                Name = assemblyName.Name,
+                                Version = assemblyName.Version
+                            }
+                        };
+
+                        foreach (var referencedAssembly in assembly.GetReferencedAssemblies())
+                        {
+                            assemblyInfo.ReferencedAssemblies.Add(new AssemblyName()
+                            {
+                                FullName = referencedAssembly.FullName,
+                                Name = referencedAssembly.Name,
+                                Version = referencedAssembly.Version
+                            });
+                        }
                     }
                 }
             }
@@ -467,6 +496,5 @@ namespace SynchroFeed.Command.Catalog
         public string FullName { get; set; }
         public string Name { get; set; }
         public Version Version { get; set; }
-        public string FrameworkVersion { get; set; }
     }
 }

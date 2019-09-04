@@ -47,19 +47,11 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
-    <PackageReference Include="SharpZipLib" Version="1.1.0" />
+    <PackageReference Include="SharpZipLib" Version="1.2.0" />
     <PackageReference Include="EntityFramework" Version="6.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\JustDecompileEngine\Mono.Cecil\Mono.Cecil.csproj" />
     <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\JustDecompileEngine\Mono.Cecil\bin\$(Configuration) JustAssembly\Telerik.JustDecompile.Mono.Cecil.dll">
-      <PackagePath>lib\net47</PackagePath>
-      <Pack>true</Pack>
-      <Visible>false</Visible>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
