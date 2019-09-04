@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -138,7 +139,18 @@ namespace SynchroFeed.Command.Log4netReview
             }
             else
             {
-                var message = $"{package.Id} (v{package.Version}) has invalid log4net configuration: {string.Join(", ", issues)}";
+                var sb = new StringBuilder();
+
+                sb.AppendLine($"{package.Id} (v{package.Version}) has invalid log4net configuration:");
+                sb.AppendLine();
+
+                foreach (var issue in issues)
+                {
+                    sb.Append(" * ");
+                    sb.AppendLine(issue);
+                }
+
+                var message = sb.ToString();
 
                 Logger.LogWarning(message);
 
@@ -179,6 +191,8 @@ namespace SynchroFeed.Command.Log4netReview
 
             if (this.Settings.Settings.TryGetValue(Setting_ConversionPattern, out var expectedConversionPattern) && !string.IsNullOrWhiteSpace(expectedConversionPattern))
             {
+                Logger.LogDebug("Checking for conversion pattern: {0}", expectedConversionPattern);
+
                 var conversionPatterns = doc.XPathSelectElements(@"/configuration/log4net/appender/layout/conversionPattern[@value]");
 
                 foreach (var conversionPattern in conversionPatterns)
@@ -186,7 +200,10 @@ namespace SynchroFeed.Command.Log4netReview
                     var pattern = conversionPattern.Attribute("value")?.Value.Trim();
 
                     if (!string.Equals(pattern, expectedConversionPattern, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        Logger.LogInformation($"{0} failed ConversionPattern Test with: {1}", fileName, pattern);
                         issues.Add($"{fileName}: 'conversionPattern' does not match expected pattern");
+                    }
                 }
             }
             else
