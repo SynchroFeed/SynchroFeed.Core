@@ -180,7 +180,9 @@ namespace SynchroFeed.Command.Log4netReview
 
                             if ((currentLogLevel != null) && !availableLogLevels.Contains(currentLogLevel.Value))
                             {
-                                issues.Add($"{fileName}: '{currentLogLevel}' is not a valid log level for {xpath}");
+                                var elementName = GetLoggerName(element);
+
+                                issues.Add($"{fileName}: '{currentLogLevel}' is not a valid for {elementName}");
                             }
                         }
                     }
@@ -246,6 +248,26 @@ namespace SynchroFeed.Command.Log4netReview
                 return null;
 
             return level;
+        }
+
+        private static string GetLoggerName(XElement element)
+        {
+            if (element.Name.LocalName.Equals("level", StringComparison.InvariantCultureIgnoreCase))
+                element = element.Parent;
+
+            if (element.Name.LocalName.Equals("logger", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var name = element?.Attribute("name")?.Value;
+
+                if (!string.IsNullOrWhiteSpace(name))
+                    return name;
+            }
+            else if (element.Name.LocalName.Equals("root", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return "root";
+            }
+
+            return "Unknown element";
         }
     }
 }
