@@ -40,7 +40,7 @@ namespace SynchroFeed.Command.Catalog.Entity
         [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
         public PackageVersion()
         {
-            AssemblyVersions = new HashSet<AssemblyVersion>();
+            PackageVersionAssemblies = new HashSet<PackageVersionAssembly>();
             PackageEnvironments = new HashSet<PackageVersionEnvironment>();
             CreatedUtcDateTime = DateTimeOffset.UtcNow;
         }
@@ -95,7 +95,7 @@ namespace SynchroFeed.Command.Catalog.Entity
         /// <summary>Gets or sets the assembly versions associated with this package version.</summary>
         /// <value>The assembly versions associated with this package version.</value>
         [SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AssemblyVersion> AssemblyVersions { get; set; }
+        public virtual ICollection<PackageVersionAssembly> PackageVersionAssemblies { get; set; }
 
         /// <summary>Gets or sets the date and time this entity was added to the database.</summary>
         /// <value>The date and time this entity was added to the database.</value>

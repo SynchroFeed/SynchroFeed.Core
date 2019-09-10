@@ -1,20 +1,21 @@
 ﻿#region header
+
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright company="Robert Vandehey" file="Is32bitExecutableAssemblyValidator.cs">
+// <copyright company="Robert Vandehey" file="IAssemblyValidator.cs">
 // MIT License
-// 
+//
 // Copyright(c) 2018 Robert Vandehey
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,38 +25,23 @@
 // SOFTWARE.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-#endregion
-using System;
-using System.Reflection;
-using SynchroFeed.Library.DomainLoader;
 
-namespace SynchroFeed.Command.ApplicationIs64bit
+#endregion header
+
+using System.Reflection;
+
+namespace SynchroFeed.Library.DomainLoader
 {
     /// <summary>
-    /// The Is32bitExecutableAssemblyValidator class takes an assembly and checks if
-    /// it is a 32-bit assembly. The Validate method will fail if the assembly is 32-bit.
+    /// The IAssemblyOperation interface defines an interface for operating on assemblies.
     /// </summary>
-    /// <seealso cref="SynchroFeed.Library.DomainLoader.IAssemblyValidator" />
-    public class Is32bitExecutableAssemblyValidator : IAssemblyValidator
+    public interface IAssemblyOperation
     {
         /// <summary>
-        /// Validates the specified assembly to determine if the assembly is 32-bit.
+        /// Operates on the assembly and, optionally, returning an object.
         /// </summary>
-        /// <param name="assembly">The assembly to validate.</param>
-        /// <returns>
-        /// <c>true</c> if the assembly is not 32-bit (meaning it is either 64 bit or MSIL),
-        /// <c>false if the assembly is 32-bit</c> otherwise.
-        /// </returns>
-        public bool Validate(Assembly assembly)
-        {
-            foreach (var module in assembly.GetModules())
-            {
-                module.GetPEKind(out var peKind, out _);
-                if (peKind.HasFlag(PortableExecutableKinds.Preferred32Bit) || peKind.HasFlag(PortableExecutableKinds.Required32Bit))
-                    return true;
-            }
-
-            return false;
-        }
+        /// <param name="assembly">The assembly to operate on.</param>
+        /// <returns>The resulting serializable object returned by the operation.</returns>
+        object Operation(Assembly assembly);
     }
 }

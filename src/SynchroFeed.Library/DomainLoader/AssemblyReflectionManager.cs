@@ -79,7 +79,7 @@ namespace SynchroFeed.Library.DomainLoader
                 return null;
             try
             {
-                proxy = (AssemblyReflectionProxy)_appDomain.CreateInstanceFrom(proxyType.Assembly.Location, proxyType.FullName).Unwrap();
+                proxy = (AssemblyReflectionProxy)_appDomain.CreateInstanceFromAndUnwrap(proxyType.Assembly.Location, proxyType.FullName);
                 proxy.LoadAssembly(assemblyBytes);
             }
             catch (BadImageFormatException)

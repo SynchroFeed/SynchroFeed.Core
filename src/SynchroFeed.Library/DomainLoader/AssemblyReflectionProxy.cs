@@ -1,20 +1,21 @@
 ﻿#region header
+
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright company="Robert Vandehey" file="AssemblyReflectionProxy.cs">
 // MIT License
-// 
+//
 // Copyright(c) 2018 Robert Vandehey
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,7 +25,9 @@
 // SOFTWARE.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-#endregion
+
+#endregion header
+
 using System;
 using System.Reflection;
 
@@ -49,13 +52,16 @@ namespace SynchroFeed.Library.DomainLoader
         /// <value>The name of the proxied assembly.</value>
         public AssemblyName AssemblyName { get; private set; }
 
-        /// <summary>Validate the assembly by calling the specifier of type T.</summary>
-        /// <typeparam name="T">Returns true if the validator is able to successfully validate the assembly.</typeparam>
-        public bool ValidateAssembly<T>()
-            where T : IAssemblyValidator
+        /// <summary>Loads the specified type into the AppDomain and performs the operation.</summary>
+        /// <param name="assemblyName">The full name of the assembly.</param>
+        /// <param name="typeName">The full name of the type.</param>
+        /// <returns>The 'Serializable' object returned by the operation.</returns>
+        public object PerformOperation(string assemblyName, string typeName)
         {
-            var validator = (T)Activator.CreateInstance(typeof(T), new object[] { });
-            return validator.Validate(Assembly);
+            var t = (IAssemblyOperation)AppDomain.CurrentDomain.CreateInstanceAndUnwrap(assemblyName, typeName);
+            var data = t.Operation(this.Assembly);
+
+            return data;
         }
 
         /// <summary>

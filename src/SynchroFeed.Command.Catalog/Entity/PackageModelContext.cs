@@ -64,10 +64,6 @@ namespace SynchroFeed.Command.Catalog.Entity
         /// <value>The package version environments database set.</value>
         public virtual DbSet<PackageVersionEnvironment> PackageEnvironments { get; set; }
 
-        //public virtual DbSet<AssemblyVersionsView> AssemblyVersionsViews { get; set; }
-        //public virtual DbSet<MaxPackageVersion> MaxPackageVersions { get; set; }
-        //public virtual DbSet<PackageVersionAssembliesView> PackageVersionAssembliesViews { get; set; }
-
         /// <summary>
         /// This method is called when the model for a derived context has been initialized, but
         /// before the model has been locked down and used to initialize the context.  The default
@@ -95,9 +91,8 @@ namespace SynchroFeed.Command.Catalog.Entity
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<AssemblyVersion>()
-                .HasMany(e => e.PackageVersions)
-                .WithMany(e => e.AssemblyVersions)
-                .Map(m => m.ToTable("PackageVersionAssemblies").MapLeftKey("AssemblyVersionId").MapRightKey("PackageVersionId"));
+                .HasMany(e => e.PackageVersionAssemblies)
+                .WithRequired(e => e.AssemblyVersion);
 
             modelBuilder.Entity<Package>()
                 .HasMany(e => e.PackageVersions)

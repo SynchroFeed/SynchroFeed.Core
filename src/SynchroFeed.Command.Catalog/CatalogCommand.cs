@@ -39,6 +39,7 @@ using SynchroFeed.Command.Catalog.Entity;
 using SynchroFeed.Library;
 using SynchroFeed.Library.Action;
 using SynchroFeed.Library.Command;
+using SynchroFeed.Library.DomainLoader;
 using SynchroFeed.Library.Model;
 using SynchroFeed.Library.Repository;
 using Assembly = SynchroFeed.Command.Catalog.Entity.Assembly;
@@ -52,6 +53,8 @@ namespace SynchroFeed.Command.Catalog
     {
         private readonly PackageModelContext dbContext;
         private readonly Regex normalizeNameRegex;
+        private readonly string operationFullAssemblyName;
+        private readonly string operationFullTypeName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CatalogCommand" /> class.
@@ -91,12 +94,17 @@ namespace SynchroFeed.Command.Catalog
             {
                 normalizeNameRegex = new Regex(commandSettings.Settings.NormalizeRegEx());
             }
+
+            var operationType = typeof(GetReferencesOperation);
+
+            operationFullAssemblyName = operationType.Assembly.FullName;
+            operationFullTypeName = operationType.FullName;
         }
 
         /// <summary>Initializes the CatalogCommand by making sure the database has been created and all migrations have been run.</summary>
         public void Initialize()
         {
-            CreateOrUpdateDatabase(dbContext);
+            CreateOrUpdateDatabase();
         }
 
         /// <summary>
@@ -135,7 +143,7 @@ namespace SynchroFeed.Command.Catalog
         {
             try
             {
-                var packageEntity = GetPackageEntity(dbContext, package);
+                var packageEntity = GetPackageEntity(package);
                 if (packageEntity == null)
                 {
                     return new CommandResult(this);
@@ -173,15 +181,15 @@ namespace SynchroFeed.Command.Catalog
         }
 
         /// <summary>Processes a package that was added to a repository.</summary>
-        /// <param name="package">The package that was added to the respository.</param>
+        /// <param name="package">The package that was added to the repository.</param>
         /// <returns>CommandResult.</returns>
         protected virtual CommandResult ProcessPackageAdded(Package package)
         {
             try
             {
-                var packageEntity = GetorAddPackageEntity(dbContext, package);
+                var packageEntity = GetorAddPackageEntity(package);
                 // ReSharper disable once UnusedVariable
-                var packageVersionEntity = GetorAddPackageVersionEntity(dbContext, Action.SourceRepository, package, packageEntity);
+                var packageVersionEntity = GetorAddPackageVersionEntity(Action.SourceRepository, package, packageEntity);
                 // ReSharper disable once UnusedVariable
                 var packageEnvironmentEntity = GetOrAddPackageEnvironmentEntity(Action.SourceRepository, packageEntity, packageVersionEntity);
 
@@ -201,32 +209,32 @@ namespace SynchroFeed.Command.Catalog
             }
         }
 
-        private void CreateOrUpdateDatabase(PackageModelContext dbcontext)
+        private void CreateOrUpdateDatabase()
         {
             if (Logger.IsEnabled(LogLevel.Trace))
-                dbcontext.Database.Log = Console.Write;
+                dbContext.Database.Log = Console.Write;
 
             if (Settings.Settings.CreateDatabaseIfNotFound())
             {
-                Logger.LogDebug($"Setting to \"create database if not found\" for CatalogAction for connection string:{dbcontext.Database.Connection.ConnectionString}");
-                if (dbcontext.Database.CreateIfNotExists())
+                Logger.LogDebug($"Setting to \"create database if not found\" for CatalogAction for connection string:{dbContext.Database.Connection.ConnectionString}");
+                if (dbContext.Database.CreateIfNotExists())
                 {
-                    Logger.LogInformation($"Database created for CatalogAction for connection string:{dbcontext.Database.Connection.ConnectionString}");
+                    Logger.LogInformation($"Database created for CatalogAction for connection string:{dbContext.Database.Connection.ConnectionString}");
                 }
 
-                dbcontext.Database.Initialize(true);
+                dbContext.Database.Initialize(true);
             }
         }
 
-        private Entity.Package GetPackageEntity(PackageModelContext dbcontext, Package package)
+        private Entity.Package GetPackageEntity(Package package)
         {
-            return dbcontext.Packages.FirstOrDefault(s => s.Name == package.Id);
+            return dbContext.Packages.FirstOrDefault(s => s.Name == package.Id);
         }
 
-        private Entity.Package GetorAddPackageEntity(PackageModelContext dbcontext, Package package)
+        private Entity.Package GetorAddPackageEntity(Package package)
         {
             // Get package from database or add it if not found
-            var packageEntity = GetPackageEntity(dbcontext, package);
+            var packageEntity = GetPackageEntity(package);
             if (packageEntity == null)
             {
                 // Package not found in database. Add it.
@@ -235,7 +243,9 @@ namespace SynchroFeed.Command.Catalog
                     Name = package.Id,
                     Title = string.IsNullOrEmpty(package.Title) ? package.Id : package.Title
                 };
-                dbcontext.Packages.Add(packageEntity);
+                dbContext.Packages.Add(packageEntity);
+                dbContext.SaveChanges();
+
                 Logger.LogInformation($"Package {packageEntity.Name} added to database");
             }
 
@@ -258,6 +268,8 @@ namespace SynchroFeed.Command.Catalog
                     Name = repository.Name
                 };
                 packageVersionEntity.PackageEnvironments.Add(packageEnvironment);
+                dbContext.SaveChanges();
+
                 Logger.LogInformation($"Environment {packageEnvironment.Name} for Package {packageEntity.Name} added to database");
             }
 
@@ -269,7 +281,7 @@ namespace SynchroFeed.Command.Catalog
             return packageEntity.PackageVersions.FirstOrDefault(s => s.PackageId == packageEntity.PackageId && s.Version == package.Version);
         }
 
-        private PackageVersion GetorAddPackageVersionEntity(PackageModelContext dbcontext, IRepository<Package> repository, Package package, Entity.Package packageEntity)
+        private PackageVersion GetorAddPackageVersionEntity(IRepository<Package> repository, Package package, Entity.Package packageEntity)
         {
             var packageVersionEntity = GetPackageVersionEntity(package, packageEntity);
 
@@ -292,28 +304,35 @@ namespace SynchroFeed.Command.Catalog
                 RevisionVersion = Math.Max(0, tempVersion.Revision)
             };
             packageEntity.PackageVersions.Add(packageVersionEntity);
+            dbContext.SaveChanges();
+
             Logger.LogInformation($"{package.Id}.{package.Version} package version added to database.");
 
-            PopulatePackageAssembliesFromPackageContent(dbcontext, packageWithContent, packageEntity, packageVersionEntity);
+            PopulatePackageAssembliesFromPackageContent(packageWithContent, packageEntity, packageVersionEntity);
 
             return packageVersionEntity;
         }
 
-        private void PopulatePackageAssembliesFromPackageContent(PackageModelContext dbcontext, Package packageWithContent, Entity.Package packageEntity, PackageVersion packageVersionEntity)
+        private void PopulatePackageAssembliesFromPackageContent(Package packageWithContent, Entity.Package packageEntity, PackageVersion packageVersionEntity)
         {
             var uniqueAssemblies = new Dictionary<string, AssemblyName>();
+            var includedAssemblies = new HashSet<string>();
+
             using (var packageZipFileStream = new MemoryStream(packageWithContent.Content))
             using (var zipFile = new ZipFile(packageZipFileStream))
             {
                 foreach (ZipEntry zipEntry in zipFile)
                 {
-                    if (!zipEntry.IsFile)
+                    if (!zipEntry.IsFile || !zipEntry.Name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
                         continue;
 
-                    AssemblyInfo assemblyInfo = GetAssemblyInfoFromZipEntry(packageVersionEntity, zipFile, zipEntry);
+                    AssemblyInfo assemblyInfo = GetAssemblyInfoFromZipEntry(packageEntity, packageVersionEntity, zipFile, zipEntry);
+
                     // Result is null if not a .NET assembly
                     if (assemblyInfo == null)
                         continue;
+
+                    includedAssemblies.Add(assemblyInfo.AssemblyName.FullName);
 
                     foreach (var referencedAssembly in assemblyInfo.ReferencedAssemblies)
                     {
@@ -325,10 +344,10 @@ namespace SynchroFeed.Command.Catalog
                     var version = assemblyInfo.AssemblyName.Version;
                     Logger.LogDebug($"Processing assembly {assemblyInfo.AssemblyName.Name}, version={version}");
 
-                    var assemblyEntity = GetOrAddAssemblyEntity(dbcontext, assemblyInfo.AssemblyName);
-                    var assemblyVersionEntity = GetOrAddAssemblyVersionEntity(dbcontext, assemblyEntity, assemblyInfo.AssemblyName);
-                    // ReSharper disable once UnusedVariable
+                    var assemblyEntity = GetOrAddAssemblyEntity(assemblyInfo.AssemblyName);
+                    var assemblyVersionEntity = GetOrAddAssemblyVersionEntity(assemblyEntity, assemblyInfo.AssemblyName);
                     var packageAssemblyVersionEntity = GetOrAddPackageAssemblyVersionEntity(packageEntity, packageVersionEntity, assemblyEntity, assemblyVersionEntity);
+                    packageAssemblyVersionEntity.ReferenceIncluded = true;
                 }
             }
 
@@ -336,33 +355,40 @@ namespace SynchroFeed.Command.Catalog
             {
                 Logger.LogDebug($"Processing referenced assembly {uniqueAssembly.Name}, version={uniqueAssembly.Version}");
 
-                var assemblyEntity = GetOrAddAssemblyEntity(dbcontext, uniqueAssembly);
-                var assemblyVersionEntity = GetOrAddAssemblyVersionEntity(dbcontext, assemblyEntity, uniqueAssembly);
+                var assemblyEntity = GetOrAddAssemblyEntity(uniqueAssembly);
+                var assemblyVersionEntity = GetOrAddAssemblyVersionEntity(assemblyEntity, uniqueAssembly);
+
                 // ReSharper disable once UnusedVariable
                 var packageAssemblyVersionEntity = GetOrAddPackageAssemblyVersionEntity(packageEntity, packageVersionEntity, assemblyEntity, assemblyVersionEntity);
             }
         }
 
-        private object GetOrAddPackageAssemblyVersionEntity(Entity.Package packageEntity, PackageVersion packageVersionEntity, Assembly assemblyEntity, AssemblyVersion assemblyVersionEntity)
+        private PackageVersionAssembly GetOrAddPackageAssemblyVersionEntity(Entity.Package packageEntity, PackageVersion packageVersionEntity, Assembly assemblyEntity, AssemblyVersion assemblyVersionEntity)
         {
-            var packageAssemblyVersionEntity = packageVersionEntity.AssemblyVersions.FirstOrDefault(s => s.AssemblyId == assemblyVersionEntity.AssemblyId && s.Version == assemblyVersionEntity.Version);
-            if (packageAssemblyVersionEntity == null)
+            var packageVersionAssemblyEntity = packageVersionEntity.PackageVersionAssemblies.FirstOrDefault(pva => (pva.AssemblyVersion.AssemblyId == assemblyEntity.AssemblyId) && (pva.AssemblyVersion.Version == assemblyVersionEntity.Version));
+            if (packageVersionAssemblyEntity == null)
             {
-                packageVersionEntity.AssemblyVersions.Add(assemblyVersionEntity);
-                Logger.LogInformation($"{assemblyEntity.Name}.{assemblyVersionEntity.Version} assembly for package {packageEntity.Name}.{packageVersionEntity.Version} added to PackageVersion database");
+                packageVersionAssemblyEntity = new PackageVersionAssembly()
+                {
+                    AssemblyVersion = assemblyVersionEntity,
+                    PackageVersion = packageVersionEntity,
+                };
+
+                packageVersionEntity.PackageVersionAssemblies.Add(packageVersionAssemblyEntity);
+                Logger.LogInformation($"{assemblyEntity.Name}.{assemblyVersionEntity.Version} assembly for package {packageEntity.Name}.{packageVersionEntity.Version} added to PackageVersionAssembly.");
             }
             else
             {
                 Logger.LogDebug($"{assemblyEntity.Name}.{assemblyVersionEntity.Version} assembly found for package {packageEntity.Name}.{packageVersionEntity.Version}. Ignoring.");
             }
 
-            return packageAssemblyVersionEntity;
+            return packageVersionAssemblyEntity;
         }
 
-        private AssemblyVersion GetOrAddAssemblyVersionEntity(PackageModelContext dbcontext, Assembly assemblyEntity, AssemblyName assemblyName)
+        private AssemblyVersion GetOrAddAssemblyVersionEntity(Assembly assemblyEntity, AssemblyName assemblyName)
         {
             var assemblyVersion = assemblyName.Version.ToString();
-            var assemblyVersionEntity = dbcontext.AssemblyVersions.FirstOrDefault(s => s.AssemblyId == assemblyEntity.AssemblyId && s.Version == assemblyVersion);
+            var assemblyVersionEntity = dbContext.AssemblyVersions.FirstOrDefault(s => s.AssemblyId == assemblyEntity.AssemblyId && s.Version == assemblyVersion);
             if (assemblyVersionEntity == null)
             {
                 assemblyVersionEntity = new AssemblyVersion
@@ -375,6 +401,8 @@ namespace SynchroFeed.Command.Catalog
                     RevisionVersion = Math.Max(0, assemblyName.Version.Revision),
                 };
                 assemblyEntity.AssemblyVersions.Add(assemblyVersionEntity);
+                dbContext.SaveChanges();
+
                 Logger.LogInformation($"{assemblyEntity.Name}.{assemblyVersionEntity.Version} assembly added to Assembly database");
             }
             else
@@ -385,76 +413,55 @@ namespace SynchroFeed.Command.Catalog
             return assemblyVersionEntity;
         }
 
-        private AssemblyInfo GetAssemblyInfoFromZipEntry(PackageVersion packageVersionEntity, ZipFile zipFile, ZipEntry zipEntry)
+        private AssemblyInfo GetAssemblyInfoFromZipEntry(Entity.Package packageEntity, PackageVersion packageVersionEntity, ZipFile zipFile, ZipEntry zipEntry)
         {
-            AssemblyInfo assemblyInfo = null;
-
-            if (zipEntry.Name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
+            using (var entryStream = zipFile.GetInputStream(zipEntry))
+            using (var memoryStream = new MemoryStream((int)zipEntry.Size))
             {
-                using (Stream zipStream = zipFile.GetInputStream(zipEntry))
-                {
-                    System.Reflection.Assembly assembly = null;
+                entryStream.CopyTo(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
 
+                using (var arm = new AssemblyReflectionManager())
+                {
                     try
                     {
-                        using (var ms = new MemoryStream())
-                        {
-                            zipStream.CopyTo(ms);
-                            ms.Position = 0;
+                        var proxy = arm.LoadAssembly(memoryStream.ToArray());
 
-                            assembly = System.Reflection.Assembly.ReflectionOnlyLoad(ms.ToArray());
+                        if (proxy == null)
+                        {
+                            Logger.LogDebug($"Ignoring non-.NET assembly - {zipEntry.Name}");
+                            return null;
                         }
+
+                        return proxy.PerformOperation(this.operationFullAssemblyName, this.operationFullTypeName) as AssemblyInfo;
                     }
                     catch (BadImageFormatException)
                     {
-                        Logger.LogError($"{packageVersionEntity.Package.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - had a bad image.");
+                        Logger.LogError($"{packageEntity.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - had a bad image.");
                     }
                     catch (FileLoadException)
                     {
-                        Logger.LogError($"{packageVersionEntity.Package.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - could not be loaded.");
-                    }
-
-                    if (assembly != null)
-                    {
-                        var assemblyName = assembly.GetName();
-
-                        assemblyInfo = new AssemblyInfo
-                        {
-                            AssemblyName = new AssemblyName()
-                            {
-                                FullName = assemblyName.FullName,
-                                Name = assemblyName.Name,
-                                Version = assemblyName.Version
-                            }
-                        };
-
-                        foreach (var referencedAssembly in assembly.GetReferencedAssemblies())
-                        {
-                            assemblyInfo.ReferencedAssemblies.Add(new AssemblyName()
-                            {
-                                FullName = referencedAssembly.FullName,
-                                Name = referencedAssembly.Name,
-                                Version = referencedAssembly.Version
-                            });
-                        }
+                        Logger.LogError($"{packageEntity.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - could not be loaded.");
                     }
                 }
             }
 
-            return assemblyInfo;
+            return null;
         }
-
-        private Assembly GetOrAddAssemblyEntity(PackageModelContext dbcontext, AssemblyName assemblyName)
+        
+        private Assembly GetOrAddAssemblyEntity(AssemblyName assemblyName)
         {
             var normalizedAssemblyName = NormalizedName(assemblyName.Name);
-            var assemblyEntity = dbcontext.Assemblies.FirstOrDefault(s => s.Name == normalizedAssemblyName);
+            var assemblyEntity = dbContext.Assemblies.FirstOrDefault(s => s.Name == normalizedAssemblyName);
             if (assemblyEntity == null)
             {
                 assemblyEntity = new Assembly()
                 {
                     Name = normalizedAssemblyName,
                 };
-                dbcontext.Assemblies.Add(assemblyEntity);
+                dbContext.Assemblies.Add(assemblyEntity);
+                dbContext.SaveChanges();
+
                 Logger.LogInformation($"Assembly ({assemblyEntity.Name}) added to database");
             }
             else
@@ -478,23 +485,5 @@ namespace SynchroFeed.Command.Catalog
 
             return assemblyName;
         }
-    }
-
-    internal class AssemblyInfo
-    {
-        public AssemblyInfo()
-        {
-            ReferencedAssemblies = new List<AssemblyName>();
-        }
-
-        public AssemblyName AssemblyName { get; set; }
-        public List<AssemblyName> ReferencedAssemblies { get; }
-    }
-
-    internal class AssemblyName
-    {
-        public string FullName { get; set; }
-        public string Name { get; set; }
-        public Version Version { get; set; }
     }
 }

@@ -120,6 +120,10 @@ namespace SynchroFeed.Command.ApplicationIs64bit
         /// <returns><c>true</c> if the package contains a 32-bit executable, <c>false</c> otherwise.</returns>
         private (bool contains32BitExecutable, string assemblyName) DoesPackageContain32bitExecutable(Package package)
         {
+            var operationType = typeof(Is32bitExecutableAssemblyOperation);
+            var fullAssemblyName = operationType.Assembly.FullName;
+            var fullTypeName = operationType.FullName;
+
             using (var byteStream = new MemoryStream(package.Content))
             using (var zipFile = new ZipFile(byteStream))
             {
@@ -146,7 +150,9 @@ namespace SynchroFeed.Command.ApplicationIs64bit
                                         continue;
                                     }
 
-                                    return (proxy.ValidateAssembly<Is32bitExecutableAssemblyValidator>(), zipEntry.Name);
+                                    var is32bit = (bool)proxy.PerformOperation(fullAssemblyName, fullTypeName);
+
+                                    return (is32bit, zipEntry.Name);
                                 }
                             }
                         }

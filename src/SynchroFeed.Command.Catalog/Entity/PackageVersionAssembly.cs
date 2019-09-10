@@ -1,6 +1,6 @@
 ﻿#region header
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright company="Robert Vandehey" file="IAssemblyValidator.cs">
+// <copyright company="Robert Vandehey" file="PackageVersion.cs">
 // MIT License
 // 
 // Copyright(c) 2018 Robert Vandehey
@@ -25,22 +25,27 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-using System;
-using System.Reflection;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SynchroFeed.Library.DomainLoader
+namespace SynchroFeed.Command.Catalog.Entity
 {
-    /// <summary>
-    /// The IAssemblyValidator interface defines an interface
-    /// for validating assemblies.
-    /// </summary>
-    public interface IAssemblyValidator
+    public class PackageVersionAssembly
     {
-        /// <summary>
-        /// Validates the specified assembly.
-        /// </summary>
-        /// <param name="assembly">The assembly to validate.</param>
-        /// <returns><c>true</c> if the assembly is considered valid by the validator, <c>false</c> otherwise.</returns>
-        bool Validate(Assembly assembly);
+        [Key, Column(Order = 0)]
+        [ForeignKey(nameof(AssemblyVersion))]
+        public int AssemblyVersionId { get; set; }
+
+        [Key, Column(Order = 1)]
+        [ForeignKey(nameof(PackageVersion))]
+        public int PackageVersionId { get; set; }
+
+        [Required]
+        public virtual AssemblyVersion AssemblyVersion { get; set; }
+
+        [Required]
+        public virtual PackageVersion PackageVersion { get; set; }
+
+        public bool ReferenceIncluded { get; set; }
     }
 }
