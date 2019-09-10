@@ -131,7 +131,7 @@ namespace SynchroFeed.Command.Catalog
             {
                 return ProcessPackageDeleted(package);
             }
-            else if (packageEvent == PackageEvent.Added || packageEvent == PackageEvent.Promoted)
+            else if (packageEvent == PackageEvent.Added || packageEvent == PackageEvent.Promoted || packageEvent == PackageEvent.Processed)
             {
                 return ProcessPackageAdded(package);
             }
