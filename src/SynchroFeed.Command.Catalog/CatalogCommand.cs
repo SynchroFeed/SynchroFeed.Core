@@ -95,6 +95,11 @@ namespace SynchroFeed.Command.Catalog
                 normalizeNameRegex = new Regex(commandSettings.Settings.NormalizeRegEx());
             }
 
+            if (action.ActionSettings.IncludePrerelease)
+            {
+                Logger.LogWarning($"The {nameof(CatalogCommand)} does not support pre-release versions.");
+            }
+
             var operationType = typeof(GetReferencesOperation);
 
             operationFullAssemblyName = operationType.Assembly.FullName;
@@ -127,7 +132,11 @@ namespace SynchroFeed.Command.Catalog
         {
             Debug.Assert(package != null);
 
-            if (packageEvent == PackageEvent.Deleted)
+            if (package.IsPrerelease)
+            {
+                Logger.LogWarning($"The {package} skipped because it is a pre-release.");
+            }
+            else if (packageEvent == PackageEvent.Deleted)
             {
                 return ProcessPackageDeleted(package);
             }
@@ -323,7 +332,7 @@ namespace SynchroFeed.Command.Catalog
             {
                 foreach (ZipEntry zipEntry in zipFile)
                 {
-                    if (!zipEntry.IsFile || !zipEntry.Name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
+                    if (!zipEntry.IsFile || (!zipEntry.Name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) && !zipEntry.Name.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase)))
                         continue;
 
                     AssemblyInfo assemblyInfo = GetAssemblyInfoFromZipEntry(packageEntity, packageVersionEntity, zipFile, zipEntry);
