@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Settings = SynchroFeed.Library.Settings;
 
@@ -88,14 +89,33 @@ namespace SynchroFeed.Command.NugetContainsSupportFiles
 
             var assembliesMissingSupportFiles = GetAssembliesMissingSupportFiles(package);
 
-            if (assembliesMissingSupportFiles.Count > 0)
+            if (assembliesMissingSupportFiles.Count < 1)
             {
-                Logger.LogWarning($"{package} missing support files.");
-                return new CommandResult(this, false, $"{package} missing support files for the following assemblies: {string.Join(", ", assembliesMissingSupportFiles)}");
-            }
+                var message = "All support files detected.";
 
-            Logger.LogTrace($"{package} includes all support files.");
-            return new CommandResult(this, true, $"{package} is not missing any support files.");
+                Logger.LogTrace(message);
+
+                return new CommandResult(this, true, message);
+            }
+            else
+            {
+                var sb = new StringBuilder();
+
+                sb.AppendLine($"Missing support files detected:");
+                sb.AppendLine();
+
+                foreach (var issue in assembliesMissingSupportFiles)
+                {
+                    sb.Append(" * ");
+                    sb.AppendLine(issue);
+                }
+
+                var message = sb.ToString();
+
+                Logger.LogWarning(message);
+
+                return new CommandResult(this, false, message);
+            }
         }
 
         private List<string> GetAssembliesMissingSupportFiles(Package package)

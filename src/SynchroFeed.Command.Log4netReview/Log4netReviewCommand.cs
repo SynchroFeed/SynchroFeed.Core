@@ -131,7 +131,7 @@ namespace SynchroFeed.Command.Log4netReview
 
             if (issues.Count < 1)
             {
-                var message = $"{package.Id} (v{package.Version}) has valid log4net configuration.";
+                var message = "Valid log4net configuration.";
 
                 Logger.LogTrace(message);
 
@@ -141,7 +141,7 @@ namespace SynchroFeed.Command.Log4netReview
             {
                 var sb = new StringBuilder();
 
-                sb.AppendLine($"{package.Id} (v{package.Version}) has invalid log4net configuration:");
+                sb.AppendLine($"Invalid log4net configuration detected:");
                 sb.AppendLine();
 
                 foreach (var issue in issues)
