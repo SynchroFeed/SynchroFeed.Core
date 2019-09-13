@@ -40,6 +40,7 @@ namespace SynchroFeed.Library.Settings
         /// Initializes a new instance of the <see cref="SettingsCollection"/> class.
         /// </summary>
         public SettingsCollection()
+            : base(StringComparer.CurrentCultureIgnoreCase)
         {
         }
 
@@ -48,7 +49,7 @@ namespace SynchroFeed.Library.Settings
         /// </summary>
         /// <param name="capacity">The capacity to initilize the collection.</param>
         public SettingsCollection(int capacity)
-            : base(capacity)
+            : base(capacity, StringComparer.CurrentCultureIgnoreCase)
         {
         }
 
@@ -57,7 +58,7 @@ namespace SynchroFeed.Library.Settings
         /// </summary>
         /// <param name="settings">The settings.</param>
         public SettingsCollection(SettingsCollection settings)
-            : base(settings)
+            : base(settings, StringComparer.CurrentCultureIgnoreCase)
         {
         }
 
@@ -66,6 +67,7 @@ namespace SynchroFeed.Library.Settings
         /// </summary>
         /// <param name="settings">The settings.</param>
         public SettingsCollection(IEnumerable<KeyValuePair<string, string>> settings)
+            : base(StringComparer.CurrentCultureIgnoreCase)
         {
             foreach (var setting in settings)
             {

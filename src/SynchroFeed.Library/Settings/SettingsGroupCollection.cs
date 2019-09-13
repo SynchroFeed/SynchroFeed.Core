@@ -43,6 +43,7 @@ namespace SynchroFeed.Library.Settings
         /// Initializes a new instance of the <see cref="SettingsGroupCollection"/> class.
         /// </summary>
         public SettingsGroupCollection()
+            : base(StringComparer.CurrentCultureIgnoreCase)
         {
         }
 
@@ -51,7 +52,7 @@ namespace SynchroFeed.Library.Settings
         /// </summary>
         /// <param name="capacity">The capacity to initialize the collection.</param>
         public SettingsGroupCollection(int capacity)
-            : base(capacity)
+            : base(capacity, StringComparer.CurrentCultureIgnoreCase)
         {
         }
 
@@ -60,7 +61,7 @@ namespace SynchroFeed.Library.Settings
         /// </summary>
         /// <param name="collection">The collection to initialize the collection.</param>
         public SettingsGroupCollection(SettingsGroupCollection collection)
-            : base(collection)
+            : base(collection, StringComparer.CurrentCultureIgnoreCase)
         {
         }
 
@@ -75,11 +76,10 @@ namespace SynchroFeed.Library.Settings
             if (string.IsNullOrEmpty(groupName))
                 return new SettingsCollection();
 
-            var groupSettingsResult = this.FirstOrDefault(s => s.Key.Equals(groupName, StringComparison.CurrentCultureIgnoreCase));
-            if (groupSettingsResult.Key == null)
+            if (!this.TryGetValue(groupName, out var value))
                 throw new InvalidOperationException($"SettingsGroup \"{groupName}\" not found in SettingsGroupCollection");
 
-            return groupSettingsResult.Value;
+            return value;
         }
     }
 }
