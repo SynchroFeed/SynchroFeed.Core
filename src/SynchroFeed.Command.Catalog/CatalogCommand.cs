@@ -27,6 +27,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
 using System.IO;
@@ -301,25 +302,41 @@ namespace SynchroFeed.Command.Catalog
                 return packageVersionEntity;
             }
 
-            // Get package contents from repository
-            var packageWithContent = repository.Fetch(package);
-            var tempVersion = new Version(packageWithContent.Version);
-            packageVersionEntity = new PackageVersion
+            DbContextTransaction transaction = null;
+
+            try
             {
-                Version = packageWithContent.Version,
-                MajorVersion = Math.Max(0, tempVersion.Major),
-                MinorVersion = Math.Max(0, tempVersion.Minor),
-                BuildVersion = Math.Max(0, tempVersion.Build),
-                RevisionVersion = Math.Max(0, tempVersion.Revision)
-            };
-            packageEntity.PackageVersions.Add(packageVersionEntity);
-            dbContext.SaveChanges();
+                transaction = dbContext.Database.BeginTransaction();
 
-            Logger.LogInformation($"{package.Id}.{package.Version} package version added to database.");
+                // Get package contents from repository
+                var packageWithContent = repository.Fetch(package);
+                var tempVersion = new Version(packageWithContent.Version);
+                packageVersionEntity = new PackageVersion
+                {
+                    Version = packageWithContent.Version,
+                    MajorVersion = Math.Max(0, tempVersion.Major),
+                    MinorVersion = Math.Max(0, tempVersion.Minor),
+                    BuildVersion = Math.Max(0, tempVersion.Build),
+                    RevisionVersion = Math.Max(0, tempVersion.Revision)
+                };
+                packageEntity.PackageVersions.Add(packageVersionEntity);
+                dbContext.SaveChanges();
 
-            PopulatePackageAssembliesFromPackageContent(packageWithContent, packageEntity, packageVersionEntity);
+                Logger.LogInformation($"{package.Id}.{package.Version} package version added to database.");
 
-            return packageVersionEntity;
+                PopulatePackageAssembliesFromPackageContent(packageWithContent, packageEntity, packageVersionEntity);
+
+                transaction.Commit();
+
+                return packageVersionEntity;
+            }
+            catch
+            {
+                Logger.LogError("Exception thrown.  Rolling back changes.");
+
+                transaction?.Rollback();
+                throw;
+            }
         }
 
         private void PopulatePackageAssembliesFromPackageContent(Package packageWithContent, Entity.Package packageEntity, PackageVersion packageVersionEntity)
