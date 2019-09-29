@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace SynchroFeed.Command.Catalog
 {
-    [Serializable]
     internal class AssemblyInfo
     {
         public AssemblyInfo()

@@ -2,7 +2,6 @@
 
 namespace SynchroFeed.Command.Catalog
 {
-    [Serializable]
     internal class AssemblyName
     {
         public string FullName { get; set; }
