@@ -1,20 +1,21 @@
 ﻿#region header
+
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright company="Robert Vandehey" file="DependencyInjectionTest.cs">
 // MIT License
-// 
+//
 // Copyright(c) 2018 Robert Vandehey
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,17 +25,17 @@
 // SOFTWARE.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-#endregion
-using System;
-using System.Collections.Generic;
-using System.Reflection;
+
+#endregion header
+
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using SynchroFeed.Library.Action.Observer;
 using SynchroFeed.Library.DependencyInjection;
 using SynchroFeed.Library.DomainLoader;
 using SynchroFeed.Library.Settings;
-using SynchroFeed.Library.TestFramework;
+using System.Collections.Generic;
+using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -56,7 +57,7 @@ namespace SynchroFeed.Library.Test.Application
             AssemblyLoader.AssemblyLoaderFunc = pattern => new List<Assembly> { Assembly.GetExecutingAssembly() };
             var mock = new Mock<IServiceCollection>();
             mock.Setup(a => a.Add(It.IsAny<ServiceDescriptor>()))
-                .Callback((ServiceDescriptor sd) => 
+                .Callback((ServiceDescriptor sd) =>
                 {
                     sdCollection.Add(sd);
                     testOutputHelper.WriteLine($"Service Descriptor: {sd.ServiceType.AssemblyQualifiedName}");

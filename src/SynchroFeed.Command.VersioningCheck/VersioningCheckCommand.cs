@@ -2,12 +2,14 @@
 using Microsoft.Extensions.Logging;
 using SynchroFeed.Library.Action;
 using SynchroFeed.Library.Command;
-using SynchroFeed.Library.DomainLoader;
 using SynchroFeed.Library.Model;
+using SynchroFeed.Library.Reflection;
+using SynchroFeed.Library.Zip;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Settings = SynchroFeed.Library.Settings;
 
@@ -110,8 +112,11 @@ namespace SynchroFeed.Command.VersioningCheck
                 return new List<string>();
             }
 
+            var coreAssembly = typeof(object).Assembly;
+
             using (var byteStream = new MemoryStream(package.Content))
             using (var zipFile = new ZipFile(byteStream))
+            using (var lc = new MetadataLoadContext(new ZipAssemblyResolver(zipFile, coreAssembly), coreAssembly.FullName))
             {
                 foreach (ZipEntry zipEntry in zipFile)
                 {
@@ -123,7 +128,7 @@ namespace SynchroFeed.Command.VersioningCheck
                     if (!Regex.IsMatch(fileName, fileRegex, RegexOptions.IgnoreCase))
                         continue;
 
-                    var binaryVersion = GetBinaryVersion(zipFile, zipEntry);
+                    var binaryVersion = GetBinaryVersion(lc, zipFile, zipEntry);
 
                     if (binaryVersion == null)
                         continue;
@@ -151,25 +156,13 @@ namespace SynchroFeed.Command.VersioningCheck
             return new Version();
         }
 
-        private Version GetBinaryVersion(ZipFile zipFile, ZipEntry zipEntry)
+        private Version GetBinaryVersion(MetadataLoadContext metaDataLoadContext, ZipFile zipFile, ZipEntry zipEntry)
         {
-            using (var entryStream = zipFile.GetInputStream(zipEntry))
-            using (var memoryStream = new MemoryStream((int)zipEntry.Size))
+            using (var memoryStream = ZipUtility.ReadFromZip(zipFile, zipEntry))
             {
-                entryStream.CopyTo(memoryStream);
-                memoryStream.Seek(0, SeekOrigin.Begin);
+                var assembly = metaDataLoadContext.LoadFromStream(memoryStream);
 
-                using (var arm = new AssemblyReflectionManager())
-                {
-                    var proxy = arm.LoadAssembly(memoryStream.ToArray());
-                    if (proxy == null)
-                    {
-                        Logger.LogDebug($"Ignoring non-.NET assembly - {zipEntry.Name}");
-                        return null;
-                    }
-
-                    return proxy.AssemblyName.Version;
-                }
+                return assembly.GetName().Version;
             }
         }
 

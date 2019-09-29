@@ -32,6 +32,7 @@ using System.Data.Entity.Validation;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Extensions.Configuration;
@@ -40,9 +41,10 @@ using SynchroFeed.Command.Catalog.Entity;
 using SynchroFeed.Library;
 using SynchroFeed.Library.Action;
 using SynchroFeed.Library.Command;
-using SynchroFeed.Library.DomainLoader;
 using SynchroFeed.Library.Model;
+using SynchroFeed.Library.Reflection;
 using SynchroFeed.Library.Repository;
+using SynchroFeed.Library.Zip;
 using Assembly = SynchroFeed.Command.Catalog.Entity.Assembly;
 using Package = SynchroFeed.Library.Model.Package;
 using Settings = SynchroFeed.Library.Settings;
@@ -54,8 +56,6 @@ namespace SynchroFeed.Command.Catalog
     {
         private readonly PackageModelContext dbContext;
         private readonly Regex normalizeNameRegex;
-        private readonly string operationFullAssemblyName;
-        private readonly string operationFullTypeName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CatalogCommand" /> class.
@@ -100,11 +100,6 @@ namespace SynchroFeed.Command.Catalog
             {
                 Logger.LogWarning($"The {nameof(CatalogCommand)} does not support pre-release versions.");
             }
-
-            var operationType = typeof(GetReferencesOperation);
-
-            operationFullAssemblyName = operationType.Assembly.FullName;
-            operationFullTypeName = operationType.FullName;
         }
 
         /// <summary>Initializes the CatalogCommand by making sure the database has been created and all migrations have been run.</summary>
@@ -343,16 +338,18 @@ namespace SynchroFeed.Command.Catalog
         {
             var uniqueAssemblies = new Dictionary<string, AssemblyName>();
             var includedAssemblies = new HashSet<string>();
+            var coreAssembly = typeof(object).Assembly;
 
-            using (var packageZipFileStream = new MemoryStream(packageWithContent.Content))
-            using (var zipFile = new ZipFile(packageZipFileStream))
+            using (var byteStream = new MemoryStream(packageWithContent.Content))
+            using (var zipFile = new ZipFile(byteStream))
+            using (var lc = new MetadataLoadContext(new ZipAssemblyResolver(zipFile, coreAssembly), coreAssembly.FullName))
             {
                 foreach (ZipEntry zipEntry in zipFile)
                 {
                     if (!zipEntry.IsFile || (!zipEntry.Name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) && !zipEntry.Name.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase)))
                         continue;
 
-                    AssemblyInfo assemblyInfo = GetAssemblyInfoFromZipEntry(packageEntity, packageVersionEntity, zipFile, zipEntry);
+                    AssemblyInfo assemblyInfo = GetAssemblyInfoFromZipEntry(lc, packageEntity, packageVersionEntity, zipFile, zipEntry);
 
                     // Result is null if not a .NET assembly
                     if (assemblyInfo == null)
@@ -439,36 +436,50 @@ namespace SynchroFeed.Command.Catalog
             return assemblyVersionEntity;
         }
 
-        private AssemblyInfo GetAssemblyInfoFromZipEntry(Entity.Package packageEntity, PackageVersion packageVersionEntity, ZipFile zipFile, ZipEntry zipEntry)
+        private AssemblyInfo GetAssemblyInfoFromZipEntry(MetadataLoadContext metadataLoadContext, Entity.Package packageEntity, PackageVersion packageVersionEntity, ZipFile zipFile, ZipEntry zipEntry)
         {
-            using (var entryStream = zipFile.GetInputStream(zipEntry))
-            using (var memoryStream = new MemoryStream((int)zipEntry.Size))
+            using (var memoryStream = ZipUtility.ReadFromZip(zipFile, zipEntry))
             {
-                entryStream.CopyTo(memoryStream);
-                memoryStream.Seek(0, SeekOrigin.Begin);
-
-                using (var arm = new AssemblyReflectionManager())
+                try
                 {
-                    try
-                    {
-                        var proxy = arm.LoadAssembly(memoryStream.ToArray());
+                    var assembly = metadataLoadContext.LoadFromStream(memoryStream);
 
-                        if (proxy == null)
+                    if (assembly == null)
+                    {
+                        Logger.LogDebug($"Ignoring non-.NET assembly - {zipEntry.Name}");
+                        return null;
+                    }
+
+                    var assemblyName = assembly.GetName();
+                    var assemblyInfo = new AssemblyInfo
+                    {
+                        AssemblyName = new AssemblyName()
                         {
-                            Logger.LogDebug($"Ignoring non-.NET assembly - {zipEntry.Name}");
-                            return null;
+                            FullName = assemblyName.FullName,
+                            Name = assemblyName.Name,
+                            Version = assemblyName.Version
                         }
+                    };
 
-                        return proxy.PerformOperation(this.operationFullAssemblyName, this.operationFullTypeName) as AssemblyInfo;
-                    }
-                    catch (BadImageFormatException)
+                    foreach (var referencedAssembly in assembly.GetReferencedAssemblies())
                     {
-                        Logger.LogError($"{packageEntity.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - had a bad image.");
+                        assemblyInfo.ReferencedAssemblies.Add(new AssemblyName()
+                        {
+                            FullName = referencedAssembly.FullName,
+                            Name = referencedAssembly.Name,
+                            Version = referencedAssembly.Version
+                        });
                     }
-                    catch (FileLoadException)
-                    {
-                        Logger.LogError($"{packageEntity.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - could not be loaded.");
-                    }
+
+                    return assemblyInfo;
+                }
+                catch (FileLoadException)
+                {
+                    Logger.LogError($"{packageEntity.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - could not be loaded.");
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e, $"{packageEntity.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - threw an exception.");
                 }
             }
 

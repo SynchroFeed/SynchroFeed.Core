@@ -32,10 +32,12 @@ using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Extensions.Logging;
 using SynchroFeed.Library.Action;
 using SynchroFeed.Library.Command;
-using SynchroFeed.Library.DomainLoader;
 using SynchroFeed.Library.Model;
+using SynchroFeed.Library.Reflection;
+using SynchroFeed.Library.Zip;
 using System;
 using System.IO;
+using System.Reflection;
 using Settings = SynchroFeed.Library.Settings;
 
 namespace SynchroFeed.Command.ApplicationIs64bit
@@ -120,12 +122,11 @@ namespace SynchroFeed.Command.ApplicationIs64bit
         /// <returns><c>true</c> if the package contains a 32-bit executable, <c>false</c> otherwise.</returns>
         private (bool contains32BitExecutable, string assemblyName) DoesPackageContain32bitExecutable(Package package)
         {
-            var operationType = typeof(Is32bitExecutableAssemblyOperation);
-            var fullAssemblyName = operationType.Assembly.FullName;
-            var fullTypeName = operationType.FullName;
+            var coreAssembly = typeof(object).Assembly;
 
             using (var byteStream = new MemoryStream(package.Content))
             using (var zipFile = new ZipFile(byteStream))
+            using (var lc = new MetadataLoadContext(new ZipAssemblyResolver(zipFile, coreAssembly), coreAssembly.FullName))
             {
                 foreach (ZipEntry zipEntry in zipFile)
                 {
@@ -134,25 +135,17 @@ namespace SynchroFeed.Command.ApplicationIs64bit
 
                     if (zipEntry.Name.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        using (Stream zipStream = zipFile.GetInputStream(zipEntry))
+                        using (var memoryStream = ZipUtility.ReadFromZip(zipFile, zipEntry))
                         {
-                            using (var memoryStream = new MemoryStream((int)zipEntry.Size))
+                            var assembly = lc.LoadFromStream(memoryStream);
+
+                            foreach (var module in assembly.GetModules())
                             {
-                                zipStream.CopyTo(memoryStream);
-                                memoryStream.Seek(0, SeekOrigin.Begin);
+                                module.GetPEKind(out var peKind, out _);
 
-                                using (AssemblyReflectionManager arm = new AssemblyReflectionManager())
+                                if (peKind.HasFlag(PortableExecutableKinds.Preferred32Bit) || peKind.HasFlag(PortableExecutableKinds.Required32Bit))
                                 {
-                                    var proxy = arm.LoadAssembly(memoryStream.ToArray());
-                                    if (proxy == null)
-                                    {
-                                        Logger.LogDebug($"Ignoring non-.NET assembly - {zipEntry.Name}");
-                                        continue;
-                                    }
-
-                                    var is32bit = (bool)proxy.PerformOperation(fullAssemblyName, fullTypeName);
-
-                                    return (is32bit, zipEntry.Name);
+                                    return (true, zipEntry.Name);
                                 }
                             }
                         }
@@ -160,7 +153,7 @@ namespace SynchroFeed.Command.ApplicationIs64bit
                 }
             }
 
-            return (false, "");
+            return (false, string.Empty);
         }
     }
 }
