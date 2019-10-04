@@ -194,7 +194,7 @@ namespace SynchroFeed.Command.Catalog
             {
                 var packageEntity = GetorAddPackageEntity(package);
                 // ReSharper disable once UnusedVariable
-                var packageVersionEntity = GetorAddPackageVersionEntity(Action.SourceRepository, package, packageEntity);
+                var packageVersionEntity = GetorAddPackageVersionEntity(package, packageEntity);
                 // ReSharper disable once UnusedVariable
                 var packageEnvironmentEntity = GetOrAddPackageEnvironmentEntity(Action.SourceRepository, packageEntity, packageVersionEntity);
 
@@ -286,7 +286,7 @@ namespace SynchroFeed.Command.Catalog
             return packageEntity.PackageVersions.FirstOrDefault(s => s.PackageId == packageEntity.PackageId && s.Version == package.Version);
         }
 
-        private PackageVersion GetorAddPackageVersionEntity(IRepository<Package> repository, Package package, Entity.Package packageEntity)
+        private PackageVersion GetorAddPackageVersionEntity(Package package, Entity.Package packageEntity)
         {
             var packageVersionEntity = GetPackageVersionEntity(package, packageEntity);
 
@@ -304,11 +304,10 @@ namespace SynchroFeed.Command.Catalog
                 transaction = dbContext.Database.BeginTransaction();
 
                 // Get package contents from repository
-                var packageWithContent = repository.Fetch(package);
-                var tempVersion = new Version(packageWithContent.Version);
+                var tempVersion = new Version(package.Version);
                 packageVersionEntity = new PackageVersion
                 {
-                    Version = packageWithContent.Version,
+                    Version = package.Version,
                     MajorVersion = Math.Max(0, tempVersion.Major),
                     MinorVersion = Math.Max(0, tempVersion.Minor),
                     BuildVersion = Math.Max(0, tempVersion.Build),
@@ -319,7 +318,7 @@ namespace SynchroFeed.Command.Catalog
 
                 Logger.LogInformation($"{package.Id}.{package.Version} package version added to database.");
 
-                PopulatePackageAssembliesFromPackageContent(packageWithContent, packageEntity, packageVersionEntity);
+                PopulatePackageAssembliesFromPackageContent(package, packageEntity, packageVersionEntity);
 
                 transaction.Commit();
 
@@ -334,41 +333,60 @@ namespace SynchroFeed.Command.Catalog
             }
         }
 
-        private void PopulatePackageAssembliesFromPackageContent(Package packageWithContent, Entity.Package packageEntity, PackageVersion packageVersionEntity)
+        private void PopulatePackageAssembliesFromPackageContent(Package package, Entity.Package packageEntity, PackageVersion packageVersionEntity)
         {
             var uniqueAssemblies = new Dictionary<string, AssemblyName>();
-            var includedAssemblies = new HashSet<string>();
             var coreAssembly = typeof(object).Assembly;
 
-            using (var byteStream = new MemoryStream(packageWithContent.Content))
+            using (var byteStream = new MemoryStream(package.Content))
             using (var zipFile = new ZipFile(byteStream))
             using (var lc = new MetadataLoadContext(new ZipAssemblyResolver(zipFile, coreAssembly), coreAssembly.FullName))
             {
                 foreach (ZipEntry zipEntry in zipFile)
                 {
-                    if (!zipEntry.IsFile || (!zipEntry.Name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) && !zipEntry.Name.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase)))
+                    if (!zipEntry.IsFile
+                        || (!zipEntry.Name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) && !zipEntry.Name.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase)))
                         continue;
 
-                    AssemblyInfo assemblyInfo = GetAssemblyInfoFromZipEntry(lc, packageEntity, packageVersionEntity, zipFile, zipEntry);
+                    System.Reflection.Assembly assembly;
 
-                    // Result is null if not a .NET assembly
-                    if (assemblyInfo == null)
-                        continue;
+                    using (var memoryStream = ZipUtility.ReadFromZip(zipFile, zipEntry))
+                    {
+                        try
+                        {
+                            assembly = lc.LoadFromStream(memoryStream);
 
-                    includedAssemblies.Add(assemblyInfo.AssemblyName.FullName);
+                            if (assembly == null)
+                            {
+                                Logger.LogDebug($"Ignoring non-.NET assembly - {zipEntry.Name}");
+                                continue;
+                            }
+                        }
+                        catch (FileLoadException)
+                        {
+                            Logger.LogError($"{packageEntity.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - could not be loaded.");
+                            continue;
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.LogError(e, $"{packageEntity.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - threw an exception.");
+                            continue;
+                        }
+                    }
 
-                    foreach (var referencedAssembly in assemblyInfo.ReferencedAssemblies)
+                    foreach (var referencedAssembly in assembly.GetReferencedAssemblies())
                     {
                         if (!uniqueAssemblies.ContainsKey(referencedAssembly.FullName))
                         {
                             uniqueAssemblies.Add(referencedAssembly.FullName, referencedAssembly);
                         }
                     }
-                    var version = assemblyInfo.AssemblyName.Version;
-                    Logger.LogDebug($"Processing assembly {assemblyInfo.AssemblyName.Name}, version={version}");
 
-                    var assemblyEntity = GetOrAddAssemblyEntity(assemblyInfo.AssemblyName);
-                    var assemblyVersionEntity = GetOrAddAssemblyVersionEntity(assemblyEntity, assemblyInfo.AssemblyName);
+                    var assemblyName = assembly.GetName();
+                    Logger.LogDebug($"Processing assembly {assemblyName.Name}, version={assemblyName.Version}");
+
+                    var assemblyEntity = GetOrAddAssemblyEntity(assemblyName);
+                    var assemblyVersionEntity = GetOrAddAssemblyVersionEntity(assemblyEntity, assemblyName);
                     var packageAssemblyVersionEntity = GetOrAddPackageAssemblyVersionEntity(packageEntity, packageVersionEntity, assemblyEntity, assemblyVersionEntity);
                     packageAssemblyVersionEntity.ReferenceIncluded = true;
                 }
@@ -434,56 +452,6 @@ namespace SynchroFeed.Command.Catalog
             }
 
             return assemblyVersionEntity;
-        }
-
-        private AssemblyInfo GetAssemblyInfoFromZipEntry(MetadataLoadContext metadataLoadContext, Entity.Package packageEntity, PackageVersion packageVersionEntity, ZipFile zipFile, ZipEntry zipEntry)
-        {
-            using (var memoryStream = ZipUtility.ReadFromZip(zipFile, zipEntry))
-            {
-                try
-                {
-                    var assembly = metadataLoadContext.LoadFromStream(memoryStream);
-
-                    if (assembly == null)
-                    {
-                        Logger.LogDebug($"Ignoring non-.NET assembly - {zipEntry.Name}");
-                        return null;
-                    }
-
-                    var assemblyName = assembly.GetName();
-                    var assemblyInfo = new AssemblyInfo
-                    {
-                        AssemblyName = new AssemblyName()
-                        {
-                            FullName = assemblyName.FullName,
-                            Name = assemblyName.Name,
-                            Version = assemblyName.Version
-                        }
-                    };
-
-                    foreach (var referencedAssembly in assembly.GetReferencedAssemblies())
-                    {
-                        assemblyInfo.ReferencedAssemblies.Add(new AssemblyName()
-                        {
-                            FullName = referencedAssembly.FullName,
-                            Name = referencedAssembly.Name,
-                            Version = referencedAssembly.Version
-                        });
-                    }
-
-                    return assemblyInfo;
-                }
-                catch (FileLoadException)
-                {
-                    Logger.LogError($"{packageEntity.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - could not be loaded.");
-                }
-                catch (Exception e)
-                {
-                    Logger.LogError(e, $"{packageEntity.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - threw an exception.");
-                }
-            }
-
-            return null;
         }
         
         private Assembly GetOrAddAssemblyEntity(AssemblyName assemblyName)
