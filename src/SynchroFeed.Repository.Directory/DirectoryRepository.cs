@@ -106,7 +106,7 @@ namespace SynchroFeed.Repository.Directory
             if (!File.Exists(filename))
                 return null;
 
-            return Package.CreateFromFile(filename, true);
+            return Package.CreateFromFile(filename);
         }
 
         /// <summary>

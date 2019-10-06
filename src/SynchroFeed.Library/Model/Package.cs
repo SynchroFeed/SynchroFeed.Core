@@ -232,9 +232,8 @@ namespace SynchroFeed.Library.Model
         /// Creates a package from a file.
         /// </summary>
         /// <param name="filename">The filename to create the package from.</param>
-        /// <param name="loadContent">if set to <c>true</c> the binary contents should be loaded.</param>
         /// <returns>Returns an instance of a Package from the filename.</returns>
-        public static Package CreateFromFile(string filename, bool loadContent = false)
+        public static Package CreateFromFile(string filename)
         {
             var package = new Package();
 
@@ -291,10 +290,7 @@ namespace SynchroFeed.Library.Model
                     }
                 }
 
-                if (loadContent)
-                {
-                    package.Content = contentBytes;
-                }
+                package.Content = contentBytes;
             }
 
             return package;

@@ -27,7 +27,7 @@ namespace SynchroFeed.Library.TestFramework
                 .Returns(mockRepository.Object);
 
             var commandUnderTest = commandFactory(mockAction.Object, commandSettings, loggerFactory);
-            var package = Package.CreateFromFile(packageFileName, true);
+            var package = Package.CreateFromFile(packageFileName);
 
             return commandUnderTest.Execute(package, packageEvent);
         }
