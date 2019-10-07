@@ -146,7 +146,7 @@ namespace SynchroFeed.Command.NugetContainsSupportFiles
                 {
                     foreach (ZipEntry zipEntry in zipFile)
                     {
-                        if (!zipEntry.IsFile || (zipEntry.Name == null) || !zipEntry.Name.EndsWith(".dll"))
+                        if (!zipEntry.IsFile || (zipEntry.Name == null) || !zipEntry.Name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
                             continue;
 
                         var fileName = Path.GetFileNameWithoutExtension(zipEntry.Name);

@@ -109,7 +109,7 @@ namespace SynchroFeed.Command.Log4netReview
 
                     try
                     {
-                        using (Stream zipStream = zipFile.GetInputStream(zipEntry))
+                        using (var zipStream = zipFile.GetInputStream(zipEntry))
                         {
                             using (var memoryStream = new MemoryStream((int)zipEntry.Size))
                             {

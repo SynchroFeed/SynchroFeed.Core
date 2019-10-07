@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ProjectGuid>{6A4C9E5D-6944-4145-A194-CA74D7D4810A}</ProjectGuid>
+    <TargetFramework>net47</TargetFramework>
+    <AssemblyTitle>SynchroFeed.Command.ConfigReview</AssemblyTitle>
+    <Product>SynchroFeed.Command.ConfigReview</Product>
+    <Copyright>Copyright ©  2018</Copyright>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for validating packages to make sure the log4net config included in the package is valid.</Description>
+    <Authors>SynchroFeed</Authors>
+    <Company>SynchroFeed</Company>
+    <Version>0.0.0.0</Version>
+    <PackageIconUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/SynchroFeed.png?raw=true</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
+    <RepositoryType>nuget</RepositoryType>
+    <PackageTags>nuget chocolately sync feed package config addon command</PackageTags>
+    <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Command.ConfigReview/</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,65 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ProjectGuid>{3DC2CD09-0C24-4AE3-A6C3-83AA8067184E}</ProjectGuid>
+    <RootNamespace>SynchroFeed.Command.ConfigReview.Test</RootNamespace>
+    <AssemblyName>SynchroFeed.Command.ConfigReview.Test</AssemblyName>
+    <TargetFramework>net47</TargetFramework>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <AssemblyTitle>SynchroFeed.Command.ConfigReview.Test</AssemblyTitle>
+    <Product>SynchroFeed.Command.ConfigReview.Test</Product>
+    <Copyright>Copyright ©  2018</Copyright>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="local.choco\.gitignore" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.0.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoFixture.SeedExtensions" Version="4.11.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
+    <PackageReference Include="Moq" Version="4.13.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SynchroFeed.Command.ConfigReview\SynchroFeed.Command.ConfigReview.csproj" />
+    <ProjectReference Include="..\..\src\SynchroFeed.Library.TestFramework\SynchroFeed.Library.TestFramework.csproj" />
+    <ProjectReference Include="..\..\src\SynchroFeed.Library\SynchroFeed.Library.csproj" />
+    <ProjectReference Include="..\..\src\SynchroFeed.Repository.Directory\SynchroFeed.Repository.Directory.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="local.choco\InvalidConfig.Package.1.0.0.nupkg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.choco\NoConfig.Package.1.0.0.nupkg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.choco\NoExe.Package.1.0.0.nupkg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.choco\Test.Package.1.0.0.nupkg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.choco\Test.Package.1.0.1.nupkg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.choco\Test.Package.1.0.2.nupkg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
