@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using Settings = SynchroFeed.Library.Settings;
 
@@ -86,14 +87,33 @@ namespace SynchroFeed.Command.VersioningCheck
 
             var binariesWithDifferentVersions = GetBinariesWithDifferentVersions(package);
 
-            if (binariesWithDifferentVersions.Count > 0)
+            if (binariesWithDifferentVersions.Count < 1)
             {
-                Logger.LogWarning($"{package} has binaries with versions that differ from the package version.");
-                return new CommandResult(this, false, $"{package} contains the following binaries with a different version from the package: {string.Join(", ", binariesWithDifferentVersions)}");
-            }
+                var message = "No version issues detected.";
 
-            Logger.LogTrace($"{package} contains no differences between package and binary versions.");
-            return new CommandResult(this, true, $"{package} contains no differences between package and binary versions.");
+                Logger.LogTrace(message);
+
+                return new CommandResult(this, true, message);
+            }
+            else
+            {
+                var sb = new StringBuilder();
+
+                sb.AppendLine($"Binaries with versions different from the package detected:");
+                sb.AppendLine();
+
+                foreach (var issue in binariesWithDifferentVersions)
+                {
+                    sb.Append(" * ");
+                    sb.AppendLine(issue);
+                }
+
+                var message = sb.ToString();
+
+                Logger.LogWarning(message);
+
+                return new CommandResult(this, false, message);
+            }
         }
 
         private List<string> GetBinariesWithDifferentVersions(Package package)
