@@ -45,6 +45,9 @@
     <EmbeddedResource Update="Migrations\201909091537086_InitialCreate.resx">
       <DependentUpon>201909091537086_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Update="Migrations\201910130159186_UpdateViews.resx">
+      <DependentUpon>201910130159186_UpdateViews.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
