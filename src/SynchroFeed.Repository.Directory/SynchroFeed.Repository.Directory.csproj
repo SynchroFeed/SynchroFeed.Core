@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{BB452E80-BE2C-44C9-AD7F-5B79FD6F9868}</ProjectGuid>
-    <TargetFramework>net47</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AssemblyTitle>SynchroFeed.Repository.Directory</AssemblyTitle>
     <Product>SynchroFeed.Repository.Directory</Product>
     <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for using a directory as a repository.</Description>
@@ -11,7 +11,6 @@
     <PackageId>SynchroFeed.Repository.Directory</PackageId>
     <PackageLicenseUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/SynchroFeed.png?raw=true</PackageIconUrl>
     <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Repository.Directory/</RepositoryUrl>
     <PackageTags>nuget chocolately sync feed package catalog addon repository</PackageTags>
     <RepositoryType>nuget</RepositoryType>
@@ -24,6 +23,7 @@
   <PropertyGroup>
     <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIcon>SynchroFeed.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,12 +34,11 @@
     <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\SynchroFeed.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
-    <PackageReference Include="System.Buffers" Version="4.5.0" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

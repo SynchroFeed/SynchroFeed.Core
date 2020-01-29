@@ -1,4 +1,4 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
+﻿using SharpCompress.Archives;
 using System.IO;
 
 namespace SynchroFeed.Library.Zip
@@ -6,17 +6,16 @@ namespace SynchroFeed.Library.Zip
     public static class ZipUtility
     {
         /// <summary>
-        /// Loads the <see cref="ZipEntry"/> into a <see cref="MemoryStream"/>.
+        /// Uncompresses the <see cref="IArchiveEntry"/> into a <see cref="MemoryStream"/>.
         /// </summary>
-        /// <param name="zipFile">The <see cref="ZipFile"/> containing the entry.</param>
-        /// <param name="zipEntry">The <see cref="ZipEntry"/> to push into a <see cref="MemoryStream"/>.</param>
-        /// <returns>The <see cref="MemoryStream"/> containing the entry.</returns>
-        public static MemoryStream ReadFromZip(ZipFile zipFile, ZipEntry zipEntry)
+        /// <param name="archiveEntry">The <see cref="IArchiveEntry"/> to uncompress into a <see cref="MemoryStream"/>.</param>
+        /// <returns>The <see cref="MemoryStream"/> containing the uncompressed <see cref="IArchiveEntry"/>.</returns>
+        public static MemoryStream ExtractToStream(this IArchiveEntry archiveEntry)
         {
-            using (var inputStream = zipFile.GetInputStream(zipEntry))
+            using (var compressedStream = archiveEntry.OpenEntryStream())
             {
                 var memoryStream = new MemoryStream();
-                inputStream.CopyTo(memoryStream);
+                compressedStream.CopyTo(memoryStream);
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
                 return memoryStream;

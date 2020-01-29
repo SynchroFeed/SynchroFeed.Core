@@ -1,5 +1,5 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using SharpCompress.Archives;
 using SynchroFeed.Library.Action;
 using SynchroFeed.Library.Command;
 using SynchroFeed.Library.Model;
@@ -142,14 +142,14 @@ namespace SynchroFeed.Command.NugetContainsSupportFiles
             else
             {
                 using (var byteStream = new MemoryStream(package.Content))
-                using (var zipFile = new ZipFile(byteStream))
+                using (var archive = ArchiveFactory.Open(byteStream))
                 {
-                    foreach (ZipEntry zipEntry in zipFile)
+                    foreach (var archiveEntry in archive.Entries)
                     {
-                        if (!zipEntry.IsFile || (zipEntry.Name == null) || !zipEntry.Name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
+                        if (archiveEntry.IsDirectory || (archiveEntry.Key == null) || !archiveEntry.Key.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
                             continue;
 
-                        var fileName = Path.GetFileNameWithoutExtension(zipEntry.Name);
+                        var fileName = Path.GetFileNameWithoutExtension(archiveEntry.Key);
 
                         if (!Regex.IsMatch(fileName, fileRegex, RegexOptions.IgnoreCase))
                             continue;
@@ -158,16 +158,16 @@ namespace SynchroFeed.Command.NugetContainsSupportFiles
 
                         if (checkForXml)
                         {
-                            var xmlFileName = Path.ChangeExtension(zipEntry.Name, "xml");
+                            var xmlFileName = Path.ChangeExtension(archiveEntry.Key, "xml");
 
-                            hasMissingSupportFiles |= (zipFile.GetEntry(xmlFileName) == null);
+                            hasMissingSupportFiles |= !archive.Entries.Any(x => x.Key.Equals(xmlFileName, StringComparison.InvariantCultureIgnoreCase));
                         }
 
                         if (checkForPdb)
                         {
-                            var pdbFileName = Path.ChangeExtension(zipEntry.Name, "pdb");
+                            var pdbFileName = Path.ChangeExtension(archiveEntry.Key, "pdb");
 
-                            hasMissingSupportFiles |= (zipFile.GetEntry(pdbFileName) == null);
+                            hasMissingSupportFiles |= !archive.Entries.Any(x => x.Key.Equals(pdbFileName, StringComparison.InvariantCultureIgnoreCase));
                         }
 
                         if (hasMissingSupportFiles)

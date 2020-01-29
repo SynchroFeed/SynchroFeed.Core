@@ -1,8 +1,9 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using SharpCompress.Archives;
 using SynchroFeed.Library.Action;
 using SynchroFeed.Library.Command;
 using SynchroFeed.Library.Model;
+using SynchroFeed.Library.Zip;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -87,19 +88,19 @@ namespace SynchroFeed.Command.ConfigReview
             var issues = new List<string>();
 
             using (var byteStream = new MemoryStream(package.Content))
-            using (var zipFile = new ZipFile(byteStream))
+            using (var archive = ArchiveFactory.Open(byteStream))
             {
-                foreach (ZipEntry zipEntry in zipFile)
+                foreach (var archiveEntry in archive.Entries)
                 {
-                    if (!zipEntry.IsFile || !zipEntry.Name.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase))
+                    if (archiveEntry.IsDirectory || !archiveEntry.Key.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase))
                         continue;
 
-                    Logger.LogTrace($"Executable found: {zipEntry.Name}");
+                    Logger.LogTrace($"Executable found: {archiveEntry.Key}");
 
-                    var configFileName = zipEntry.Name + ".config";
-                    var configZipEntry = zipFile.GetEntry(configFileName);
+                    var configFileName = archiveEntry.Key + ".config";
+                    var configArchiveEntry = archive.Entries.FirstOrDefault(x => x.Key.Equals(configFileName, StringComparison.InvariantCultureIgnoreCase));
 
-                    if (configZipEntry == null)
+                    if (configArchiveEntry == null)
                     {
                         Logger.LogDebug($"Skipping, no config file found for : {configFileName}");
                         continue;
@@ -107,22 +108,16 @@ namespace SynchroFeed.Command.ConfigReview
 
                     try
                     {
-                        using (var zipStream = zipFile.GetInputStream(configZipEntry))
+                        using (var configStream = configArchiveEntry.ExtractToStream())
                         {
-                            using (var memoryStream = new MemoryStream((int)configZipEntry.Size))
-                            {
-                                zipStream.CopyTo(memoryStream);
-                                memoryStream.Seek(0, SeekOrigin.Begin);
+                            var doc = XDocument.Load(configStream);
 
-                                var doc = XDocument.Load(memoryStream);
-
-                                ValidateConfig(configZipEntry.Name, doc, issues);
-                            }
+                            ValidateConfig(configFileName, doc, issues);
                         }
                     }
                     catch (Exception e)
                     {
-                        Logger.LogInformation(e, "Unable to parse: {0}", configZipEntry.Name);
+                        Logger.LogInformation(e, "Unable to parse: {0}", configFileName);
                     }
                 }
             }

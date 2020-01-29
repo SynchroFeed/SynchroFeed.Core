@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{C8B95609-4B3D-44A8-9F9A-ABB352E83327}</ProjectGuid>
-    <TargetFramework>net47</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AssemblyTitle>SynchroFeed.Command.Catalog</AssemblyTitle>
     <Product>SynchroFeed.Command.Catalog</Product>
     <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for cataloging packages and the included assemblies into a database.</Description>
@@ -10,7 +10,6 @@
     <Authors>Bob Vandehey</Authors>
     <PackageId>SynchroFeed.Command.Catalog</PackageId>
     <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/SynchroFeed.png?raw=true</PackageIconUrl>
     <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Command.Catalog/</RepositoryUrl>
     <PackageTags>nuget chocolately sync feed package catalog addon command</PackageTags>
   </PropertyGroup>
@@ -27,6 +26,7 @@
     <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>SynchroFeed.png</PackageIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -61,17 +61,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
-    <PackageReference Include="SharpZipLib" Version="1.2.0" />
-    <PackageReference Include="EntityFramework" Version="6.3.0-preview9-19423-04" />
+    <PackageReference Include="EntityFramework" Version="6.4.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\..\SynchroFeed.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

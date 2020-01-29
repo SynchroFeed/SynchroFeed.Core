@@ -1,5 +1,5 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using SharpCompress.Archives;
 using SynchroFeed.Library.Action;
 using SynchroFeed.Library.Command;
 using SynchroFeed.Library.Model;
@@ -135,20 +135,20 @@ namespace SynchroFeed.Command.VersioningCheck
             var coreAssembly = typeof(object).Assembly;
 
             using (var byteStream = new MemoryStream(package.Content))
-            using (var zipFile = new ZipFile(byteStream))
-            using (var lc = new MetadataLoadContext(new ZipAssemblyResolver(zipFile, coreAssembly), coreAssembly.FullName))
+            using (var archive = ArchiveFactory.Open(byteStream))
+            using (var lc = new MetadataLoadContext(new ZipAssemblyResolver(archive, coreAssembly), coreAssembly.FullName))
             {
-                foreach (ZipEntry zipEntry in zipFile)
+                foreach (var archiveEntry in archive.Entries)
                 {
-                    if (!zipEntry.IsFile || (zipEntry.Name == null))
+                    if (archiveEntry.IsDirectory || (archiveEntry.Key == null))
                         continue;
 
-                    var fileName = Path.GetFileName(zipEntry.Name);
+                    var fileName = Path.GetFileName(archiveEntry.Key);
 
                     if (!Regex.IsMatch(fileName, fileRegex, RegexOptions.IgnoreCase))
                         continue;
 
-                    var binaryVersion = GetBinaryVersion(lc, zipFile, zipEntry);
+                    var binaryVersion = GetBinaryVersion(lc, archiveEntry);
 
                     if (binaryVersion == null)
                         continue;
@@ -176,11 +176,11 @@ namespace SynchroFeed.Command.VersioningCheck
             return new Version();
         }
 
-        private Version GetBinaryVersion(MetadataLoadContext metaDataLoadContext, ZipFile zipFile, ZipEntry zipEntry)
+        private Version GetBinaryVersion(MetadataLoadContext metaDataLoadContext, IArchiveEntry archiveEntry)
         {
-            using (var memoryStream = ZipUtility.ReadFromZip(zipFile, zipEntry))
+            using (var entryStream = archiveEntry.ExtractToStream())
             {
-                var assembly = metaDataLoadContext.LoadFromStream(memoryStream);
+                var assembly = metaDataLoadContext.LoadFromStream(entryStream);
 
                 return assembly.GetName().Version;
             }

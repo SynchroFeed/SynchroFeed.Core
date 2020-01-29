@@ -28,8 +28,8 @@
 
 #endregion header
 
-using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Extensions.Logging;
+using SharpCompress.Archives;
 using SynchroFeed.Library.Action;
 using SynchroFeed.Library.Command;
 using SynchroFeed.Library.Model;
@@ -125,19 +125,19 @@ namespace SynchroFeed.Command.ApplicationIs64bit
             var coreAssembly = typeof(object).Assembly;
 
             using (var byteStream = new MemoryStream(package.Content))
-            using (var zipFile = new ZipFile(byteStream))
-            using (var lc = new MetadataLoadContext(new ZipAssemblyResolver(zipFile, coreAssembly), coreAssembly.FullName))
+            using (var archive = ArchiveFactory.Open(byteStream))
+            using (var lc = new MetadataLoadContext(new ZipAssemblyResolver(archive, coreAssembly), coreAssembly.FullName))
             {
-                foreach (ZipEntry zipEntry in zipFile)
+                foreach (var archiveEntry in archive.Entries)
                 {
-                    if (!zipEntry.IsFile)
+                    if (archiveEntry.IsDirectory)
                         continue;
 
-                    if (zipEntry.Name.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase))
+                    if (archiveEntry.Key.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        using (var memoryStream = ZipUtility.ReadFromZip(zipFile, zipEntry))
+                        using (var entryStream = archiveEntry.ExtractToStream())
                         {
-                            var assembly = lc.LoadFromStream(memoryStream);
+                            var assembly = lc.LoadFromStream(entryStream);
 
                             foreach (var module in assembly.GetModules())
                             {
@@ -145,7 +145,7 @@ namespace SynchroFeed.Command.ApplicationIs64bit
 
                                 if (peKind.HasFlag(PortableExecutableKinds.Preferred32Bit) || peKind.HasFlag(PortableExecutableKinds.Required32Bit))
                                 {
-                                    return (true, zipEntry.Name);
+                                    return (true, archiveEntry.Key);
                                 }
                             }
                         }

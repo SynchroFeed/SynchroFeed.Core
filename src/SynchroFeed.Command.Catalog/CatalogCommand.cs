@@ -34,9 +34,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SharpCompress.Archives;
 using SynchroFeed.Command.Catalog.Entity;
 using SynchroFeed.Library;
 using SynchroFeed.Library.Action;
@@ -339,37 +339,37 @@ namespace SynchroFeed.Command.Catalog
             var coreAssembly = typeof(object).Assembly;
 
             using (var byteStream = new MemoryStream(package.Content))
-            using (var zipFile = new ZipFile(byteStream))
-            using (var lc = new MetadataLoadContext(new ZipAssemblyResolver(zipFile, coreAssembly), coreAssembly.FullName))
+            using (var archive = ArchiveFactory.Open(byteStream))
+            using (var lc = new MetadataLoadContext(new ZipAssemblyResolver(archive, coreAssembly), coreAssembly.FullName))
             {
-                foreach (ZipEntry zipEntry in zipFile)
+                foreach (var archiveEntry in archive.Entries)
                 {
-                    if (!zipEntry.IsFile
-                        || (!zipEntry.Name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) && !zipEntry.Name.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase)))
+                    if (archiveEntry.IsDirectory
+                        || (!archiveEntry.Key.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) && !archiveEntry.Key.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase)))
                         continue;
 
                     System.Reflection.Assembly assembly;
 
-                    using (var memoryStream = ZipUtility.ReadFromZip(zipFile, zipEntry))
+                    using (var entryStream = archiveEntry.ExtractToStream())
                     {
                         try
                         {
-                            assembly = lc.LoadFromStream(memoryStream);
+                            assembly = lc.LoadFromStream(entryStream);
 
                             if (assembly == null)
                             {
-                                Logger.LogDebug($"Ignoring non-.NET assembly - {zipEntry.Name}");
+                                Logger.LogDebug($"Ignoring non-.NET assembly - {archiveEntry.Key}");
                                 continue;
                             }
                         }
                         catch (FileLoadException)
                         {
-                            Logger.LogError($"{packageEntity.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - could not be loaded.");
+                            Logger.LogError($"{packageEntity.Name} (v{packageVersionEntity.Version}) - {archiveEntry.Key} - could not be loaded.");
                             continue;
                         }
                         catch (Exception e)
                         {
-                            Logger.LogError(e, $"{packageEntity.Name} (v{packageVersionEntity.Version}) - {zipEntry.Name} - threw an exception.");
+                            Logger.LogError(e, $"{packageEntity.Name} (v{packageVersionEntity.Version}) - {archiveEntry.Key} - threw an exception.");
                             continue;
                         }
                     }

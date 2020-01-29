@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{49DFC645-3127-4BF4-AC8D-8FEDC256BCB1}</ProjectGuid>
-    <TargetFramework>net47</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AssemblyTitle>SynchroFeed.Command.Log4netReview</AssemblyTitle>
     <Product>SynchroFeed.Command.Log4netReview</Product>
     <Copyright>Copyright ©  2018</Copyright>
@@ -13,24 +13,19 @@
     <Authors>SynchroFeed</Authors>
     <Company>SynchroFeed</Company>
     <Version>0.0.0.0</Version>
-    <PackageIconUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/SynchroFeed.png?raw=true</PackageIconUrl>
     <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
     <RepositoryType>nuget</RepositoryType>
     <PackageTags>nuget chocolately sync feed package log4net addon command</PackageTags>
     <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Command.Log4netReview/</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>SynchroFeed.png</PackageIcon>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\..\SynchroFeed.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

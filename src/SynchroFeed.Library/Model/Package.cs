@@ -1,20 +1,21 @@
 ﻿#region header
+
 // --------------------------------------------------------------------------------------------------------------------
 // <copyright company="Robert Vandehey" file="Package.cs">
 // MIT License
-// 
+//
 // Copyright(c) 2018 Robert Vandehey
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,13 +25,16 @@
 // SOFTWARE.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-#endregion
+
+#endregion header
+
+using SharpCompress.Archives;
+using SynchroFeed.Library.Zip;
 using System;
-using System.Linq;
 using System.Data.Services.Common;
 using System.IO;
+using System.Linq;
 using System.Xml.Linq;
-using ICSharpCode.SharpZipLib.Zip;
 
 namespace SynchroFeed.Library.Model
 {
@@ -237,60 +241,53 @@ namespace SynchroFeed.Library.Model
         {
             var package = new Package();
 
-            using (var inStream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var archive = ArchiveFactory.Open(filename))
             {
-                var contentBytes = new byte[inStream.Length];
-                using (var memoryStream = new MemoryStream(contentBytes))
+                foreach (var archiveEntry in archive.Entries)
                 {
-                    inStream.CopyTo(memoryStream);
-                    using (var zipFile = new ZipFile(memoryStream))
+                    if (archiveEntry.Key.EndsWith(".nuspec", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        foreach (ZipEntry zipEntry in zipFile)
+                        using (var stream = archiveEntry.ExtractToStream())
+                        using (var reader = new StreamReader(stream, true))
                         {
-                            if (zipEntry.Name.EndsWith(".nuspec", StringComparison.CurrentCultureIgnoreCase))
+                            var xdoc = XElement.Load(reader);
+                            package.Id = GetXmlValue<string>("id");
+                            package.Version = GetXmlValue<string>("version");
+                            package.Authors = GetXmlValue<string>("authors");
+                            package.Owners = GetXmlValue<string>("owners");
+                            package.LicenseUrl = GetXmlValue<string>("licenseUrl");
+                            package.ProjectUrl = GetXmlValue<string>("projectUrl");
+                            package.IconUrl = GetXmlValue<string>("iconUrl");
+                            package.RequireLicenseAcceptance = GetXmlValue<bool>("requireLicenseAcceptance");
+                            package.Description = GetXmlValue<string>("description");
+                            package.ReleaseNotes = GetXmlValue<string>("releaseNotes");
+                            package.Copyright = GetXmlValue<string>("copyright");
+                            package.Tags = GetXmlValue<string>("tags");
+                            package.IsPrerelease = package.Version.IsPrerelease();
+
+                            // Dependencies should have the following format:
+                            // Common.Logging:3.3.1|Common.Logging.Core:3.3.1|Newtonsoft.Json:8.0.3
+                            if (xdoc.Descendants().Any(e => e.Name.LocalName == "dependency"))
                             {
-                                using (var reader = new StreamReader(zipFile.GetInputStream(zipEntry), true))
-                                {
-                                    var xdoc = XElement.Load(reader);
-                                    package.Id = GetXmlValue<string>("id");
-                                    package.Version = GetXmlValue<string>("version");
-                                    package.Authors = GetXmlValue<string>("authors");
-                                    package.Owners = GetXmlValue<string>("owners");
-                                    package.LicenseUrl = GetXmlValue<string>("licenseUrl");
-                                    package.ProjectUrl = GetXmlValue<string>("projectUrl");
-                                    package.IconUrl = GetXmlValue<string>("iconUrl");
-                                    package.RequireLicenseAcceptance = GetXmlValue<bool>("requireLicenseAcceptance");
-                                    package.Description = GetXmlValue<string>("description");
-                                    package.ReleaseNotes = GetXmlValue<string>("releaseNotes");
-                                    package.Copyright = GetXmlValue<string>("copyright");
-                                    package.Tags = GetXmlValue<string>("tags");
-                                    package.IsPrerelease = package.Version.IsPrerelease();
+                                package.Dependencies = xdoc.Descendants().Where(e => e.Name.LocalName == "dependency")
+                                    .Select(a => $"{a.Attribute("id")?.Value}:{a.Attribute("version")?.Value}")
+                                    .Aggregate((current, next) => current + "|" + next);
+                            }
 
-                                    // Dependencies should have the following format:
-                                    // Common.Logging:3.3.1|Common.Logging.Core:3.3.1|Newtonsoft.Json:8.0.3
-                                    if (xdoc.Descendants().Any(e => e.Name.LocalName == "dependency"))
-                                    {
-                                        package.Dependencies = xdoc.Descendants().Where(e => e.Name.LocalName == "dependency")
-                                            .Select(a => $"{a.Attribute("id")?.Value}:{a.Attribute("version")?.Value}")
-                                            .Aggregate((current, next) => current + "|" + next);
-                                    }
-
-                                    T GetXmlValue<T>(string elementName)
-                                    {
-                                        var value = xdoc.Descendants().FirstOrDefault(e => e.Name.LocalName == elementName)?.Value;
-                                        if (value == null)
-                                            return default(T);
-                                        return (T)Convert.ChangeType(value, typeof(T));
-                                    }
-                                }
-
-                                break;
+                            T GetXmlValue<T>(string elementName)
+                            {
+                                var value = xdoc.Descendants().FirstOrDefault(e => e.Name.LocalName == elementName)?.Value;
+                                if (value == null)
+                                    return default(T);
+                                return (T)Convert.ChangeType(value, typeof(T));
                             }
                         }
+
+                        break;
                     }
                 }
 
-                package.Content = contentBytes;
+                package.Content = File.ReadAllBytes(filename);
             }
 
             return package;

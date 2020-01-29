@@ -29,7 +29,6 @@
 #endregion header
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Internal;
 using System;
 using System.Collections.Generic;
 
@@ -65,14 +64,6 @@ namespace SynchroFeed.Library.TestFramework
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            var logValues = state as FormattedLogValues;
-            if (logValues != null)
-            {
-                foreach (var logValue in logValues)
-                {
-                    Console.WriteLine(logValue.Value);
-                }
-            }
             LoggedMessages.Add(new LoggedMessage(logLevel, eventId, state, exception));
         }
 

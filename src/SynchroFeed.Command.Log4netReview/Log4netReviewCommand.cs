@@ -1,8 +1,9 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using SharpCompress.Archives;
 using SynchroFeed.Library.Action;
 using SynchroFeed.Library.Command;
 using SynchroFeed.Library.Model;
+using SynchroFeed.Library.Zip;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -100,31 +101,25 @@ namespace SynchroFeed.Command.Log4netReview
             var issues = new List<string>();
 
             using (var byteStream = new MemoryStream(package.Content))
-            using (var zipFile = new ZipFile(byteStream))
+            using (var archive = ArchiveFactory.Open(byteStream))
             {
-                foreach (ZipEntry zipEntry in zipFile)
+                foreach (var archiveEntry in archive.Entries)
                 {
-                    if (!zipEntry.IsFile || !zipEntry.Name.EndsWith(".config"))
+                    if (archiveEntry.IsDirectory || !archiveEntry.Key.EndsWith(".config"))
                         continue;
 
                     try
                     {
-                        using (var zipStream = zipFile.GetInputStream(zipEntry))
+                        using (var entryStream = archiveEntry.ExtractToStream())
                         {
-                            using (var memoryStream = new MemoryStream((int)zipEntry.Size))
-                            {
-                                zipStream.CopyTo(memoryStream);
-                                memoryStream.Seek(0, SeekOrigin.Begin);
+                            var doc = XDocument.Load(entryStream);
 
-                                var doc = XDocument.Load(memoryStream);
-
-                                ParseConfig(zipEntry.Name, doc, issues);
-                            }
+                            ParseConfig(archiveEntry.Key, doc, issues);
                         }
                     }
                     catch (Exception e)
                     {
-                        Logger.LogInformation(e, "Unable to parse: {0}", zipEntry.Name);
+                        Logger.LogInformation(e, "Unable to parse: {0}", archiveEntry.Key);
                     }
                 }
             }
