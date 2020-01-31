@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -98,7 +98,13 @@ namespace SynchroFeed.Library.Action
             Enabled = ActionSettings.Enabled;
 
             ObserverManager = ActivatorUtilities.CreateInstance<ActionObserverManager>(ServiceProvider, this, loggerFactory);
+
+            packagesToIgnoreRegex = this.ActionSettings.PackagesToIgnore
+                .Select(x => new Regex(x, RegexOptions.IgnoreCase | RegexOptions.Compiled))
+                .ToList();
         }
+
+        private List<Regex> packagesToIgnoreRegex;
 
         /// <summary>
         /// Gets the action settings.
@@ -206,8 +212,7 @@ namespace SynchroFeed.Library.Action
         /// <returns><c>true</c> if the package should be ignored, <c>false</c> otherwise.</returns>
         protected bool IgnorePackage(string packageId)
         {
-            // TODO - Should convert this to a regex
-            return ActionSettings.PackagesToIgnore.Any(p => p.Equals(packageId, StringComparison.CurrentCultureIgnoreCase));
+            return packagesToIgnoreRegex.Any(regex => regex.IsMatch(packageId));
         }
 
         /// <summary>
