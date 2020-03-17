@@ -198,7 +198,7 @@ namespace SynchroFeed.Command.Log4netReview
 
                     if (!string.Equals(pattern, expectedConversionPattern, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        Logger.LogInformation($"{0} failed ConversionPattern Test with: {1}", fileName, pattern);
+                        Logger.LogInformation($"{fileName} failed ConversionPattern Test with: {pattern}", fileName, pattern);
                         issues.Add($"{fileName}: 'conversionPattern' does not match expected pattern");
                     }
                 }
@@ -250,14 +250,14 @@ namespace SynchroFeed.Command.Log4netReview
             if (element.Name.LocalName.Equals("level", StringComparison.InvariantCultureIgnoreCase))
                 element = element.Parent;
 
-            if (element.Name.LocalName.Equals("logger", StringComparison.InvariantCultureIgnoreCase))
+            if (element != null && element.Name.LocalName.Equals("logger", StringComparison.InvariantCultureIgnoreCase))
             {
-                var name = element?.Attribute("name")?.Value;
+                var name = element.Attribute("name")?.Value;
 
                 if (!string.IsNullOrWhiteSpace(name))
                     return name;
             }
-            else if (element.Name.LocalName.Equals("root", StringComparison.InvariantCultureIgnoreCase))
+            else if (element != null && element.Name.LocalName.Equals("root", StringComparison.InvariantCultureIgnoreCase))
             {
                 return "root";
             }

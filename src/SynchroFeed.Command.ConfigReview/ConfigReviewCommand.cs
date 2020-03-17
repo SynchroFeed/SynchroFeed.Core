@@ -160,7 +160,7 @@ namespace SynchroFeed.Command.ConfigReview
                 configuredSettings = doc
                     .XPathSelectElements("/configuration/appSettings/add")
                     .Where(x => (x.Attribute("key") != null) && (x.Attribute("value") != null))
-                    .ToDictionary(x => x.Attribute("key").Value, x => x.Attribute("value").Value);
+                    .ToDictionary(x => x.Attribute("key")?.Value, x => x.Attribute("value")?.Value);
             }
             catch (ArgumentException)
             {

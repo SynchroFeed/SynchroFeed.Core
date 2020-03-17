@@ -32,7 +32,6 @@ using AutoFixture;
 using Microsoft.Extensions.DependencyInjection;
 using SynchroFeed.Library.Factory;
 using SynchroFeed.Library.Settings;
-using SynchroFeed.Library.TestFramework;
 using System;
 using System.Web;
 using Xunit;

@@ -117,7 +117,6 @@ namespace SynchroFeed.Command.ApplicationIs64bit
         /// <summary>
         /// Determines if the package contains a 32-bit executable.
         /// </summary>
-        /// <param name="repository">The repository containing the package.</param>
         /// <param name="package">The package to examine if it contains a 32-bit executable.</param>
         /// <returns><c>true</c> if the package contains a 32-bit executable, <c>false</c> otherwise.</returns>
         private (bool contains32BitExecutable, string assemblyName) DoesPackageContain32bitExecutable(Package package)

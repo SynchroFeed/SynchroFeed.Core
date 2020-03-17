@@ -24,40 +24,38 @@ namespace SynchroFeed.Library.Reflection
     public class ZipAssemblyResolver : MetadataAssemblyResolver
     {
         private readonly Dictionary<string, List<IArchiveEntry>> _zipEntries = new Dictionary<string, List<IArchiveEntry>>(StringComparer.OrdinalIgnoreCase);
-        private readonly IArchive _archive;
         private readonly string _coreAssemblyPath;
         private readonly string _coreAssemblyName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="System.Reflection.PathAssemblyResolver"/> class.
         /// </summary>
-        /// <param name="zipFile">The <see cref="ZipFile" /> to load assemblies from.</param>
+        /// <param name="archive">The archive file to load assemblies from.</param>
         /// <param name="coreAssembly">The core <see cref="Assembly"/>.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when <paramref name="zipFile"/> or <paramref name="coreAssembly"/> is null.</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when <paramref name="archive"/> or <paramref name="coreAssembly"/> is null.</exception>
         public ZipAssemblyResolver(IArchive archive, Assembly coreAssembly)
         {
             if (archive == null)
                 throw new ArgumentNullException(nameof(archive));
+            if (coreAssembly == null)
+                throw new ArgumentNullException(nameof(coreAssembly));
 
-            _archive = archive;
             _coreAssemblyName = coreAssembly.GetName().Name;
             _coreAssemblyPath = coreAssembly.Location;
 
-            foreach (var archiveEntry in _archive.Entries)
+            foreach (var archiveEntry in archive.Entries)
             {
                 if (archiveEntry.IsDirectory)
                     continue;
 
                 var extension = Path.GetExtension(archiveEntry.Key);
 
-                if (extension.Equals(".dll", StringComparison.InvariantCultureIgnoreCase)
-                    || extension.Equals(".exe", StringComparison.InvariantCultureIgnoreCase))
+                if (extension != null && (extension.Equals(".dll", StringComparison.InvariantCultureIgnoreCase)
+                                          || extension.Equals(".exe", StringComparison.InvariantCultureIgnoreCase)))
                 {
                     var file = Path.GetFileNameWithoutExtension(archiveEntry.Key);
 
-                    List<IArchiveEntry> archiveEntries;
-
-                    if (!_zipEntries.TryGetValue(file, out archiveEntries))
+                    if (!_zipEntries.TryGetValue(file, out var archiveEntries))
                         _zipEntries.Add(file, archiveEntries = new List<IArchiveEntry>());
 
                     archiveEntries.Add(archiveEntry);
