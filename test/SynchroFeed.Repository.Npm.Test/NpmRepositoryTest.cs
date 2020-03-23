@@ -48,6 +48,8 @@ namespace SynchroFeed.Repository.Npm.Test
         private string ApiKey { get; }
         private IServiceProvider ServiceProvider { get; }
         private ILoggerFactory LoggerFactory { get; }
+        private NpmRepository SourceRepo { get; }
+        private NpmRepository TargetRepo { get; }
 
         public NpmRepositoryTest(ITestOutputHelper testOutputHelper)
         {
@@ -63,6 +65,23 @@ namespace SynchroFeed.Repository.Npm.Test
                 .BuildServiceProvider();
 
             LoggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
+
+            var sourceRepoFeedConfig = new Settings.Feed
+            {
+                Name = "npm.test-source",
+            };
+            sourceRepoFeedConfig.Settings.Add("Uri", (RepoUrl.EndsWith("/") ? RepoUrl.Substring(0, RepoUrl.Length - 1) : RepoUrl) + "-source/");
+            sourceRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
+
+            var targetRepoFeedConfig = new Settings.Feed
+            {
+                Name = "npm.test",
+            };
+            targetRepoFeedConfig.Settings.Add("Uri", RepoUrl);
+            targetRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
+
+            SourceRepo = new NpmRepository(sourceRepoFeedConfig, LoggerFactory);
+            TargetRepo = new NpmRepository(targetRepoFeedConfig, LoggerFactory);
         }
 
         [IgnoreUnlessIntegrationTest]
@@ -101,14 +120,12 @@ namespace SynchroFeed.Repository.Npm.Test
         {
             var repoFeedConfig = new Settings.Feed
             {
-                Name = "npm.test"
+                Name = "npm.test",
             };
-
             repoFeedConfig.Settings.Add("Uri", RepoUrl);
+            var targetRepo = new NpmRepository(repoFeedConfig, LoggerFactory);
 
-            var sourceRepo = new NpmRepository(repoFeedConfig, LoggerFactory);
-
-            Assert.Throws<WebException>(() => sourceRepo.Fetch(p => p.Title == ""));
+            Assert.Throws<WebException>(() => targetRepo.Fetch(p => p.Title == ""));
         }
 
         [IgnoreUnlessIntegrationTest]
@@ -129,31 +146,15 @@ namespace SynchroFeed.Repository.Npm.Test
         [IgnoreUnlessIntegrationTest]
         public void Test_NpmRepository_Fetch_Package_Not_Found()
         {
-            var sourceRepoFeedConfig = new Settings.Feed
-            {
-                Name = "npm.test"
-            };
-            sourceRepoFeedConfig.Settings.Add("Uri", RepoUrl);
-            sourceRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
-
-            var sourceRepo = new NpmRepository(sourceRepoFeedConfig, LoggerFactory);
             var package = new Package { Id = "PackageJunkName@1.0.0", Title = "PackageJunkName", Version = "1.0.0" };
-            Assert.Null(sourceRepo.Fetch(package));
+            Assert.Null(TargetRepo.Fetch(package));
         }
 
         [IgnoreUnlessIntegrationTest]
         public void Test_NpmRepository_Fetch_Package_Found()
         {
-            var sourceRepoFeedConfig = new Settings.Feed
-            {
-                Name = "npm.test"
-            };
-            sourceRepoFeedConfig.Settings.Add("Uri", RepoUrl);
-            sourceRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
-
-            var sourceRepo = new NpmRepository(sourceRepoFeedConfig, LoggerFactory);
             var package = new Package { Id = "vandehey-test@0.0.1", Title = "vandehey-test", Version = "0.0.1" };
-            var fetchedPackage = sourceRepo.Fetch(package);
+            var fetchedPackage = TargetRepo.Fetch(package);
             Assert.NotNull(fetchedPackage);
             Assert.Equal(package.Id, fetchedPackage.Id);
             Assert.Equal(package.Title, fetchedPackage.Title);
@@ -163,15 +164,7 @@ namespace SynchroFeed.Repository.Npm.Test
         [IgnoreUnlessIntegrationTest]
         public void Test_NpmRepository_Fetch_Packages()
         {
-            var sourceRepoFeedConfig = new Settings.Feed
-            {
-                Name = "npm.test",
-            };
-            sourceRepoFeedConfig.Settings.Add("Uri", RepoUrl);
-            sourceRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
-
-            var sourceRepo = new NpmRepository(sourceRepoFeedConfig, LoggerFactory);
-            var packages = sourceRepo.Fetch(p => true);
+            var packages = TargetRepo.Fetch(p => true);
             Assert.NotNull(packages);
             Assert.True(packages.Any());
         }
@@ -179,43 +172,26 @@ namespace SynchroFeed.Repository.Npm.Test
         [IgnoreUnlessIntegrationTest]
         public void Test_NpmRepository_Copy_And_Delete_Packages()
         {
-            var sourceRepoFeedConfig = new Settings.Feed
-            {
-                Name = "npm.test-source",
-            };
-            sourceRepoFeedConfig.Settings.Add("Uri", RepoUrl.Substring(0, RepoUrl.Length - 1) + "-source/");
-            sourceRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
-
-            var targetRepoFeedConfig = new Settings.Feed
-            {
-                Name = "npm.test",
-            };
-            targetRepoFeedConfig.Settings.Add("Uri", RepoUrl);
-            targetRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
-
-            var sourceRepo = new NpmRepository(sourceRepoFeedConfig, LoggerFactory);
-            var targetRepo = new NpmRepository(targetRepoFeedConfig, LoggerFactory);
-
-            var sourcePackages = sourceRepo.Fetch(p => true).ToArray();
-            var targetPackagesCountBefore = targetRepo.Fetch(t => true).Count();
+            var sourcePackages = SourceRepo.Fetch(p => true).ToArray();
+            var targetPackagesCountBefore = TargetRepo.Fetch(t => true).Count();
 
             foreach (var package in sourcePackages)
             {
-                var p = sourceRepo.Fetch(package);
-                targetRepo.Add(p);
+                var p = SourceRepo.Fetch(package);
+                TargetRepo.Add(p);
             }
 
-            var targetPackages = targetRepo.Fetch(t => true).ToArray();
+            var targetPackages = TargetRepo.Fetch(t => true).ToArray();
 
             Assert.True(targetPackages.Length > targetPackagesCountBefore);
 
             // Only delete the packages that were added from the source
             foreach (var targetPackage in sourcePackages)
             {
-                targetRepo.Delete(targetPackage);
+                TargetRepo.Delete(targetPackage);
             }
 
-            targetPackages = targetRepo.Fetch(t => true).ToArray();
+            targetPackages = TargetRepo.Fetch(t => true).ToArray();
             Assert.Equal(targetPackages.Length, targetPackagesCountBefore);
         }
     }

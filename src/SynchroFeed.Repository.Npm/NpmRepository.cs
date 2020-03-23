@@ -148,8 +148,7 @@ namespace SynchroFeed.Repository.Npm
             if (package == null)
                 throw new ArgumentNullException(nameof(package));
 
-            var (name, scope) = Client.ParseNpmName(package.Title);
-            var (foundNpmPackage, error) = Client.NpmGetPackageAsync(name, scope, package.Version).Result;
+            var (foundNpmPackage, error) = Client.NpmGetPackageAsync(package.Title, package.Version).Result;
             if (error != null)
             {
                 if (error.StatusCode == HttpStatusCode.NotFound)
