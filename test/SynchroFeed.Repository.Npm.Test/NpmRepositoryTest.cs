@@ -183,7 +183,7 @@ namespace SynchroFeed.Repository.Npm.Test
             {
                 Name = "npm.test-source",
             };
-            sourceRepoFeedConfig.Settings.Add("Uri", RepoUrl + "-source");
+            sourceRepoFeedConfig.Settings.Add("Uri", RepoUrl.Substring(0, RepoUrl.Length - 1) + "-source/");
             sourceRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
 
             var targetRepoFeedConfig = new Settings.Feed

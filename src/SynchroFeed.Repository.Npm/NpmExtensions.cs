@@ -92,7 +92,7 @@ namespace SynchroFeed.Repository.Npm
             var content = new StringContent(JsonConvert.SerializeObject(publishPackage, new JsonSerializerSettings{ MissingMemberHandling = MissingMemberHandling.Ignore }), Encoding.UTF8, "application/json");
 			content.Headers.Add(ApiKeyHeaderName, client.ApiKey);
 			// TODO: Scope is included in the package.Name - need to do some testing to see if scope if actually needed
-            using (var response = await client.HttpClient.PutAsync(new Uri(new Uri(client.Uri), GetNpmPath(client.FeedName, package.Name, "", package.Version)), content))
+            using (var response = await client.HttpClient.PutAsync(new Uri(new Uri(client.Uri), GetNpmPath(package.Name, "", package.Version)), content))
             {
                 if (response.IsSuccessStatusCode)
                 {
@@ -105,7 +105,7 @@ namespace SynchroFeed.Repository.Npm
 
 		public static async Task<(NpmPackage Package, Error Error)> NpmGetPackageAsync(this NpmClient client, string packageName, string scope, string version)
         {
-            using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(client.Uri), GetNpmPath(client.FeedName, packageName, scope, version))))
+            using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(client.Uri), GetNpmPath(packageName, scope, version))))
             {
                 requestMessage.Headers.Add(ApiKeyHeaderName, client.ApiKey);
                 requestMessage.Headers.Add("Accept", "application/json");
@@ -273,11 +273,11 @@ namespace SynchroFeed.Repository.Npm
 			return sb.ToString();
 		}
 
-		private static string GetNpmPath(string feedName, string packageName, string scope, string version)
+		private static string GetNpmPath(string packageName, string scope, string version)
 		{
 			var result = string.IsNullOrEmpty(scope) ?
-				$"{feedName}/{packageName}/{version}" :
-				$"{feedName}/@{scope}/{packageName}/{version}";
+				$"{packageName}/{version}" :
+				$"@{scope}/{packageName}/{version}";
 
 			return result;
 		}

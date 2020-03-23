@@ -14,7 +14,7 @@ namespace SynchroFeed.Repository.Npm
         {
             this.Repository = repository;
             this.HttpClient = new HttpClient();
-            this.Uri = feedUri;
+            this.Uri = feedUri.EndsWith("/") ? feedUri : feedUri + "/";
             this.ApiKey = apiKey;
             this.FeedName = feedName;
             this.Logger = logger;
