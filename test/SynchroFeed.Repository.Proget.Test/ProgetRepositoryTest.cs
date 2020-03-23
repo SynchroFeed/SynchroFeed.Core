@@ -28,7 +28,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Web;
+using System.Net;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SynchroFeed.Library.Model;
@@ -103,7 +103,7 @@ namespace SynchroFeed.Repository.Directory.Test
 
             var sourceRepo = new ProgetRepository(repoFeedConfig, LoggerFactory);
 
-            Assert.Throws<HttpException>(() => sourceRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId && !t.IsPrerelease));
+            Assert.Throws<WebException>(() => sourceRepo.Fetch(t => t.Id == NotepadPlusPlusPackageId && !t.IsPrerelease));
         }
 
 #if DEBUG

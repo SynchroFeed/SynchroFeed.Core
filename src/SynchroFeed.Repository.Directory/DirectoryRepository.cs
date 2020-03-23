@@ -27,7 +27,6 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq.Expressions;
 using Microsoft.Extensions.Logging;
@@ -99,7 +98,6 @@ namespace SynchroFeed.Repository.Directory
         /// used to determine the keys to fetch the entity from the repository.</param>
         /// <returns>Returns the Package with the package contents or null if the package is not found.</returns>
         /// <exception cref="ArgumentNullException">Thrown if the package is null.</exception>
-        /// <exception cref="ObjectNotFoundException">Throws ObjectNotFoundException if the package was not found in the repo.</exception>
         public override Package Fetch(Package package)
         {
             var filename = Path.Combine(Uri, $"{package.Id}.{package.Version}.nupkg");

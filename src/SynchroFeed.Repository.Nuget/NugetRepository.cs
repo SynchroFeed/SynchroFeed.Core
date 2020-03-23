@@ -27,7 +27,6 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Services.Client;
 using System.IO;
 using System.Linq;
@@ -36,7 +35,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Web;
 using Microsoft.Extensions.Logging;
 using SynchroFeed.Library;
 using SynchroFeed.Library.Repository;
@@ -168,7 +166,6 @@ namespace SynchroFeed.Repository.Nuget
         /// used to determine the keys to fetch the entity from the repository.</param>
         /// <returns>Returns the Package with the package contents or null if the package is not found.</returns>
         /// <exception cref="ArgumentNullException">Thrown if the package is null.</exception>
-        /// <exception cref="ObjectNotFoundException">Throws ObjectNotFoundException if the package was not found in the repo.</exception>
         /// <exception cref="WebException">Thrown if an error occurs with the communication to the web server.</exception>
         public override Package Fetch(Package package)
         {
@@ -289,7 +286,7 @@ namespace SynchroFeed.Repository.Nuget
                 if (ex.Response.StatusCode == 404)
                     return new List<Package>();
                 if (ex.Response.StatusCode == 401)
-                    throw new HttpException(401, "Access unauthorized", ex);
+                    throw new WebException("Access unauthorized (401)", ex);
                 if (ex.InnerException is DataServiceClientException)
                     throw ex.InnerException;
                 throw;
