@@ -14,6 +14,15 @@
     <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
     <PackageIcon>SynchroFeed.png</PackageIcon>
     <PackageIconUrl />
+    <PackageId>SynchroFeed.Library.TestFramework</PackageId>
+    <Authors>Bob Vandehey</Authors>
+    <Copyright>Copyright(c) 2020 Robert Vandehey</Copyright>
+    <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
+    <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Library/</RepositoryUrl>
+    <RepositoryType>nuget</RepositoryType>
+    <PackageTags>nuget chocolately sync feed package catalog test framework</PackageTags>
+    <Description>SynchroFeed TestFramework is the testing framework used for Synchrofeed.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
