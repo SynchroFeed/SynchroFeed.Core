@@ -211,9 +211,9 @@ namespace SynchroFeed.Action.Sync
         {
             try
             {
-                Logger.LogInformation($"Deleting package: {package.Id}.{package.Version} from {TargetRepository.Name}");
+                Logger.LogInformation($"Deleting package: {package.Id} v{package.Version} from {TargetRepository.Name}");
                 TargetRepository.Delete(package);
-                Logger.LogTrace($"Deleting package: {package.Id}.{package.Version} from {TargetRepository.Name}...done");
+                Logger.LogTrace($"Deleting package: {package.Id} v{package.Version} from {TargetRepository.Name}...done");
             }
             catch (Exception ex)
             {

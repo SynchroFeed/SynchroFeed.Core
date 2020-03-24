@@ -170,10 +170,56 @@ namespace SynchroFeed.Repository.Npm.Test
         }
 
         [IgnoreUnlessIntegrationTest]
+        public void Test_NpmRepository_Delete_Single_Package_Version_Without_Deleting_Other_Versions()
+        {
+            // Exclusively use the express package from this test
+            var sourcePackages = SourceRepo.Fetch(p => true)
+                .Where(p => p.Id.StartsWith("express"))
+                .ToArray();
+
+            // Copy the packages from the source feed to the target feed
+            foreach (var package in sourcePackages)
+            {
+                var p = SourceRepo.Fetch(package);
+                TargetRepo.Add(p);
+            }
+
+            var targetPackages = TargetRepo.Fetch(t => true)
+                .Where(p => p.Id.StartsWith("express"))
+                .ToArray();
+
+            try
+            {
+                Assert.True(targetPackages.Length > 1);
+                var counter = 0;
+                foreach (var targetPackage in targetPackages)
+                {
+                    TargetRepo.Delete(targetPackage);
+                    var remainingPackageCount = TargetRepo.Fetch(t => true)
+                        .Count(p => p.Id.StartsWith("express"));
+                    counter++;
+                    Assert.True(remainingPackageCount == targetPackages.Length - counter);
+                }
+            }
+            finally
+            {
+                // Only delete the packages that were added from the source
+                foreach (var targetPackage in sourcePackages)
+                {
+                    TargetRepo.Delete(targetPackage);
+                }
+            }
+        }
+
+        [IgnoreUnlessIntegrationTest]
         public void Test_NpmRepository_Copy_And_Delete_Packages()
         {
-            var sourcePackages = SourceRepo.Fetch(p => true).ToArray();
-            var targetPackagesCountBefore = TargetRepo.Fetch(t => true).Count();
+            // Exclude the express package from this test because it is used in another test
+            var sourcePackages = SourceRepo.Fetch(p => true)
+                .Where(p => !p.Id.StartsWith("express"))
+                .ToArray();
+            var targetPackagesCountBefore = TargetRepo.Fetch(t => true)
+                .Count(p => !p.Id.StartsWith("express"));
 
             foreach (var package in sourcePackages)
             {

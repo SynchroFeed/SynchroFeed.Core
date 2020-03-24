@@ -33,7 +33,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SynchroFeed.Library.Factory;
 using SynchroFeed.Library.Settings;
 using System;
-using System.Net;
 using System.Web;
 using Xunit;
 

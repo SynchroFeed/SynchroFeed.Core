@@ -122,7 +122,7 @@ namespace SynchroFeed.Library.Factory
 
             Debug.Assert(feedSettings.Type.Equals(Type, StringComparison.CurrentCultureIgnoreCase));
 
-            Logger.LogDebug($"Creating Nuget Repository named \"{feedSettings.Name}\"");
+            Logger.LogDebug($"Creating Repository named \"{feedSettings.Name}\" of type \"{feedSettings.Type}\"");
             var repository = ActivatorUtilities.CreateInstance<T>(
                                                                   ServiceProvider,
                                                                   feedSettings.CloneAndMergeSettings(ApplicationSettings.SettingsGroups.Find(feedSettings.SettingsGroup)));

@@ -107,8 +107,7 @@ namespace SynchroFeed.Repository.Npm
             if (package == null)
                 throw new ArgumentNullException(nameof(package));
 
-            var (name, scope) = Client.ParseNpmName(package.Title);
-            var error = Client.NpmDeletePackageAsync(name, scope, package.Version).Result;
+            var error = Client.NpmDeletePackageAsync(package).Result;
             if (error != null)
                 throw new WebException(error.ErrorMessage);
         }

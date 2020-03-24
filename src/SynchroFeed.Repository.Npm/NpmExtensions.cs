@@ -127,7 +127,7 @@ namespace SynchroFeed.Repository.Npm
             }
         }
 
-        public static async Task<Error> NpmDeletePackageAsync(this NpmClient client, string packageName, string scope, string version)
+        public static async Task<Error> NpmDeletePackageAsync(this NpmClient client, Package package)
         {
             var uri = new Uri(client.Uri);
             var hostUri = uri.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped);
@@ -140,7 +140,8 @@ namespace SynchroFeed.Repository.Npm
             {
                 return new Error(HttpStatusCode.NotFound, $"NPM Feed not found {client.FeedName} on {client.Uri}");
             }
-            var result = sourceClient.NpmPackages_DeletePackageAsync(sourceFeed.Feed_Id, packageName, scope, version).Result;
+            var (name, version, scope) = ParseNpmId(package.Id);
+            var result = sourceClient.NpmPackages_DeletePackageAsync(sourceFeed.Feed_Id, name, scope, version).Result;
 
             if (result)
             {
@@ -189,27 +190,33 @@ namespace SynchroFeed.Repository.Npm
             return package;
         }
 
-        public static (string Name, string Scope) ParseNpmName(this NpmClient client, string npmName)
+        public static (string Name, string Version, string Scope) ParseNpmId(string npmId)
         {
+            // NPM ID has the following format: @alkami/albus@0.1.0
+            // Need to break that down into its components
             string name;
+            string version;
             string scope;
-            var parts = npmName.Split('/');
+            var parts = npmId.Split('/');
             if (parts.Length == 2)
             {
-                name = parts[1];
+                name = parts[1].Substring(0, parts[1].IndexOf("@", StringComparison.Ordinal));
+                version = parts[1].Substring(parts[1].IndexOf("@", StringComparison.Ordinal) + 1);
+                // Remove @ from scope
                 scope = parts[0].Substring(1);
             }
             else if (parts.Length == 1)
             {
-                name = parts[0];
+                name = parts[0].Substring(0, parts[0].IndexOf("@", StringComparison.Ordinal));
+                version = parts[0].Substring(parts[0].IndexOf("@", StringComparison.Ordinal) + 1);
                 scope = "";
             }
             else
             {
-                throw new InvalidOperationException($"NPM ID not in expected format {npmName}");
+                throw new InvalidOperationException($"NPM ID not in expected format {npmId}");
             }
 
-            return (name, scope);
+            return (name, version, scope);
         }
 
         private static string ConvertNpmPackageNameToId(NpmPackageAllVersions npmPackageVersion)
