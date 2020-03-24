@@ -68,14 +68,14 @@ namespace SynchroFeed.Repository.Npm.Test
 
             var sourceRepoFeedConfig = new Settings.Feed
             {
-                Name = "npm.test-source",
+                Name = "packagerepo.npm.test-source",
             };
             sourceRepoFeedConfig.Settings.Add("Uri", (RepoUrl.EndsWith("/") ? RepoUrl.Substring(0, RepoUrl.Length - 1) : RepoUrl) + "-source/");
             sourceRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
 
             var targetRepoFeedConfig = new Settings.Feed
             {
-                Name = "npm.test",
+                Name = "packagerepo.npm.test",
             };
             targetRepoFeedConfig.Settings.Add("Uri", RepoUrl);
             targetRepoFeedConfig.Settings.Add("ApiKey", ApiKey);
@@ -136,7 +136,7 @@ namespace SynchroFeed.Repository.Npm.Test
                 Name = "npm.notfound"
             };
 
-            repoFeedConfig.Settings.Add("Uri", RepoUrl);
+            repoFeedConfig.Settings.Add("Uri", RepoUrl+"npm.notfound");
             repoFeedConfig.Settings.Add("ApiKey", ApiKey);
 
             var sourceRepo = new NpmRepository(repoFeedConfig, LoggerFactory);
@@ -183,12 +183,17 @@ namespace SynchroFeed.Repository.Npm.Test
 
             var targetPackages = TargetRepo.Fetch(t => true).ToArray();
 
-            Assert.True(targetPackages.Length > targetPackagesCountBefore);
-
-            // Only delete the packages that were added from the source
-            foreach (var targetPackage in sourcePackages)
+            try
             {
-                TargetRepo.Delete(targetPackage);
+                Assert.True(targetPackages.Length > targetPackagesCountBefore);
+            }
+            finally
+            {
+                // Only delete the packages that were added from the source
+                foreach (var targetPackage in sourcePackages)
+                {
+                    TargetRepo.Delete(targetPackage);
+                }
             }
 
             targetPackages = TargetRepo.Fetch(t => true).ToArray();

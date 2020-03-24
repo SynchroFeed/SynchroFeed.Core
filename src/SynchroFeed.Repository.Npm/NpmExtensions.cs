@@ -23,13 +23,17 @@ namespace SynchroFeed.Repository.Npm
 
         public static async Task<(IEnumerable<Package> Packages, Error Error)> NpmFetchPackagesAsync(this NpmClient client, Expression<Func<Package, bool>> expression, bool downloadPackageContent)
         {
-            var hostUri = new Uri(client.Uri).GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped);
+            var uri = new Uri(client.Uri);
+
+            var hostUri = uri.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped);
+            var feedName = uri.Segments.Last().Replace("/", "");
+
             var sourceClient = new ProGetClient(hostUri, client.ApiKey);
             Feed sourceFeed;
             try
             {
                 sourceFeed = (await sourceClient.Feeds_GetFeedsAsync(false))
-                    .SingleOrDefault(f => f.Feed_Name.Equals(client.FeedName, StringComparison.CurrentCultureIgnoreCase));
+                    .SingleOrDefault(f => f.Feed_Name.Equals(feedName, StringComparison.CurrentCultureIgnoreCase));
             }
             catch (FlurlHttpException ex)
             {
@@ -125,10 +129,13 @@ namespace SynchroFeed.Repository.Npm
 
         public static async Task<Error> NpmDeletePackageAsync(this NpmClient client, string packageName, string scope, string version)
         {
-            var hostUri = new Uri(client.Uri).GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped);
+            var uri = new Uri(client.Uri);
+            var hostUri = uri.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped);
+            var feedName = uri.Segments.Last().Replace("/", "");
+
             var sourceClient = new ProGetClient(hostUri, client.ApiKey);
             var sourceFeeds = await sourceClient.Feeds_GetFeedsAsync(false);
-            var sourceFeed = sourceFeeds.SingleOrDefault(f => f.Feed_Name.Equals(client.FeedName, StringComparison.CurrentCultureIgnoreCase));
+            var sourceFeed = sourceFeeds.SingleOrDefault(f => f.Feed_Name.Equals(feedName, StringComparison.CurrentCultureIgnoreCase));
             if (sourceFeed == null)
             {
                 return new Error(HttpStatusCode.NotFound, $"NPM Feed not found {client.FeedName} on {client.Uri}");
