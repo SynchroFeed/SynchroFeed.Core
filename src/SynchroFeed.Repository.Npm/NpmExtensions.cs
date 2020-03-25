@@ -140,8 +140,8 @@ namespace SynchroFeed.Repository.Npm
             {
                 return new Error(HttpStatusCode.NotFound, $"NPM Feed not found {client.FeedName} on {client.Uri}");
             }
-            var (name, version, scope) = ParseNpmId(package.Id);
-            var result = sourceClient.NpmPackages_DeletePackageAsync(sourceFeed.Feed_Id, name, scope, version).Result;
+            var (name, scope) = ParseNpmId(package.Id);
+            var result = sourceClient.NpmPackages_DeletePackageAsync(sourceFeed.Feed_Id, name, scope, package.Version).Result;
 
             if (result)
             {
@@ -181,7 +181,6 @@ namespace SynchroFeed.Repository.Npm
             var package = new Package
             {
                 Id = ConvertNpmPackageNameToId(npmPackageAllVersions),
-                Title = ConvertNpmPackageNameToTitle(npmPackageAllVersions),
                 Version = npmPackageAllVersions.Version_Text,
                 PackageDownloadUrl = npmPackage.Dist[NpmPackage.ArchiveKey],
                 PackageHash = npmPackage.Dist[NpmPackage.HashKey]
@@ -190,25 +189,25 @@ namespace SynchroFeed.Repository.Npm
             return package;
         }
 
-        public static (string Name, string Version, string Scope) ParseNpmId(string npmId)
+        public static (string Name, string Scope) ParseNpmId(string npmId)
         {
             // NPM ID has the following format: @alkami/albus@0.1.0
             // Need to break that down into its components
-            string name;
-            string version;
-            string scope;
-            var parts = npmId.Split('/');
+            string name = "";
+            string scope = "";
+
+            var npmIdNoVersion = npmId.LastIndexOf('@', 1) == -1 ? npmId : npmId.Substring(0, npmId.LastIndexOf('@'));
+
+            var parts = npmIdNoVersion.Split('/');
             if (parts.Length == 2)
             {
                 name = parts[1].Substring(0, parts[1].IndexOf("@", StringComparison.Ordinal));
-                version = parts[1].Substring(parts[1].IndexOf("@", StringComparison.Ordinal) + 1);
                 // Remove @ from scope
                 scope = parts[0].Substring(1);
             }
             else if (parts.Length == 1)
             {
-                name = parts[0].Substring(0, parts[0].IndexOf("@", StringComparison.Ordinal));
-                version = parts[0].Substring(parts[0].IndexOf("@", StringComparison.Ordinal) + 1);
+                name = parts[0];
                 scope = "";
             }
             else
@@ -216,17 +215,10 @@ namespace SynchroFeed.Repository.Npm
                 throw new InvalidOperationException($"NPM ID not in expected format {npmId}");
             }
 
-            return (name, version, scope);
+            return (name, scope);
         }
 
         private static string ConvertNpmPackageNameToId(NpmPackageAllVersions npmPackageVersion)
-        {
-            return string.IsNullOrEmpty(npmPackageVersion.Scope_Name)
-                ? npmPackageVersion.Package_Name + $"@{npmPackageVersion.Version_Text}"
-                : $"@{npmPackageVersion.Scope_Name}/{npmPackageVersion.Package_Name}" + $"@{npmPackageVersion.Version_Text}";
-        }
-
-        private static string ConvertNpmPackageNameToTitle(NpmPackageAllVersions npmPackageVersion)
         {
             return string.IsNullOrEmpty(npmPackageVersion.Scope_Name)
                 ? npmPackageVersion.Package_Name
@@ -254,7 +246,8 @@ namespace SynchroFeed.Repository.Npm
         {
             var package = new Package()
             {
-                Id = npmPackage.Id,
+                // Remove the version from the NPM Package ID. SynchroFeed uses Id and Version together to uniquely identify a package.
+                Id = npmPackage.Id.Substring(1).LastIndexOf('@') == -1 ? npmPackage.Id : npmPackage.Id.Substring(0, npmPackage.Id.LastIndexOf('@')),
                 Version = npmPackage.Version,
                 Title = npmPackage.Name,
                 PackageDownloadUrl = npmPackage.Dist[NpmPackage.ArchiveKey],

@@ -153,11 +153,10 @@ namespace SynchroFeed.Repository.Npm.Test
         [IgnoreUnlessIntegrationTest]
         public void Test_NpmRepository_Fetch_Package_Found()
         {
-            var package = new Package { Id = "vandehey-test@0.0.1", Title = "vandehey-test", Version = "0.0.1" };
+            var package = new Package { Id = "vandehey-test", Version = "0.0.1" };
             var fetchedPackage = TargetRepo.Fetch(package);
             Assert.NotNull(fetchedPackage);
             Assert.Equal(package.Id, fetchedPackage.Id);
-            Assert.Equal(package.Title, fetchedPackage.Title);
             Assert.Equal(package.Version, fetchedPackage.Version);
         }
 
@@ -174,7 +173,7 @@ namespace SynchroFeed.Repository.Npm.Test
         {
             // Exclusively use the express package from this test
             var sourcePackages = SourceRepo.Fetch(p => true)
-                .Where(p => p.Id.StartsWith("express"))
+                .Where(p => p.Id.Equals("express"))
                 .ToArray();
 
             // Copy the packages from the source feed to the target feed
@@ -216,10 +215,10 @@ namespace SynchroFeed.Repository.Npm.Test
         {
             // Exclude the express package from this test because it is used in another test
             var sourcePackages = SourceRepo.Fetch(p => true)
-                .Where(p => !p.Id.StartsWith("express"))
+                .Where(p => !p.Id.Equals("express", StringComparison.Ordinal))
                 .ToArray();
             var targetPackagesCountBefore = TargetRepo.Fetch(t => true)
-                .Count(p => !p.Id.StartsWith("express"));
+                .Count(p => !p.Id.Equals("express", StringComparison.Ordinal));
 
             foreach (var package in sourcePackages)
             {
@@ -242,8 +241,9 @@ namespace SynchroFeed.Repository.Npm.Test
                 }
             }
 
-            targetPackages = TargetRepo.Fetch(t => true).ToArray();
-            Assert.Equal(targetPackages.Length, targetPackagesCountBefore);
+            var targetPackagesCountAfter = TargetRepo.Fetch(t => true)
+                .Count(p => !p.Id.Equals("express", StringComparison.Ordinal));
+            Assert.Equal(targetPackagesCountAfter, targetPackagesCountBefore);
         }
     }
 }
