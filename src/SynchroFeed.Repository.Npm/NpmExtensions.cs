@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Flurl.Http;
 using Newtonsoft.Json;
@@ -20,6 +21,7 @@ namespace SynchroFeed.Repository.Npm
     public static class NpmExtensions
     {
         private const string ApiKeyHeaderName = "X-ApiKey";
+        private const string prereleaseRegEx = @"(?<PackageId>.*\d+\.\d+\.\d+)(?<Prerelease>.*)";
 
         public static async Task<(IEnumerable<Package> Packages, Error Error)> NpmFetchPackagesAsync(this NpmClient client, Expression<Func<Package, bool>> expression, bool downloadPackageContent)
         {
@@ -172,29 +174,12 @@ namespace SynchroFeed.Repository.Npm
             }
         }
 
-        private static async Task<Package> ConvertNpmPackageVersionToPackageAsync(NpmClient client, NpmPackageAllVersions npmPackageAllVersions)
-        {
-            var (npmPackage, error) = await client.NpmGetPackageAsync(GetNpmName(npmPackageAllVersions.Package_Name, npmPackageAllVersions.Scope_Name), npmPackageAllVersions.Version_Text);
-            if (error != null)
-                throw new WebException(error.ErrorMessage);
-
-            var package = new Package
-            {
-                Id = ConvertNpmPackageNameToId(npmPackageAllVersions),
-                Version = npmPackageAllVersions.Version_Text,
-                PackageDownloadUrl = npmPackage.Dist[NpmPackage.ArchiveKey],
-                PackageHash = npmPackage.Dist[NpmPackage.HashKey]
-            };
-
-            return package;
-        }
-
         public static (string Name, string Scope) ParseNpmId(string npmId)
         {
             // NPM ID has the following format: @alkami/albus@0.1.0
             // Need to break that down into its components
-            string name = "";
-            string scope = "";
+            string name;
+            string scope;
 
             var npmIdNoVersion = npmId.LastIndexOf('@', 1) == -1 ? npmId : npmId.Substring(0, npmId.LastIndexOf('@'));
 
@@ -242,8 +227,30 @@ namespace SynchroFeed.Repository.Npm
             return npmPackage;
         }
 
+        private static async Task<Package> ConvertNpmPackageVersionToPackageAsync(NpmClient client, NpmPackageAllVersions npmPackageAllVersions)
+        {
+            var (npmPackage, error) = await client.NpmGetPackageAsync(GetNpmName(npmPackageAllVersions.Package_Name, npmPackageAllVersions.Scope_Name), npmPackageAllVersions.Version_Text);
+            if (error != null)
+                throw new WebException(error.ErrorMessage);
+
+            var match = Regex.Match(npmPackage.Id, prereleaseRegEx);
+            var prerelease = match.Groups["Prerelease"].Value.Any();
+            var package = new Package
+            {
+                Id = ConvertNpmPackageNameToId(npmPackageAllVersions),
+                Version = npmPackageAllVersions.Version_Text,
+                PackageDownloadUrl = npmPackage.Dist[NpmPackage.ArchiveKey],
+                PackageHash = npmPackage.Dist[NpmPackage.HashKey],
+                IsPrerelease = prerelease
+            };
+
+            return package;
+        }
+
         public static Package ToPackage(this NpmPackage npmPackage)
         {
+            var match = Regex.Match(npmPackage.Id, prereleaseRegEx);
+            var prerelease = match.Groups["Prerelease"].Value.Any();
             var package = new Package()
             {
                 // Remove the version from the NPM Package ID. SynchroFeed uses Id and Version together to uniquely identify a package.
@@ -251,7 +258,8 @@ namespace SynchroFeed.Repository.Npm
                 Version = npmPackage.Version,
                 Title = npmPackage.Name,
                 PackageDownloadUrl = npmPackage.Dist[NpmPackage.ArchiveKey],
-                PackageHash = npmPackage.Dist[NpmPackage.HashKey]
+                PackageHash = npmPackage.Dist[NpmPackage.HashKey],
+                IsPrerelease = prerelease
             };
 
             return package;

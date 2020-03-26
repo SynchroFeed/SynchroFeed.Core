@@ -245,5 +245,13 @@ namespace SynchroFeed.Repository.Npm.Test
                 .Count(p => !p.Id.Equals("express", StringComparison.Ordinal));
             Assert.Equal(targetPackagesCountAfter, targetPackagesCountBefore);
         }
+
+        [IgnoreUnlessIntegrationTest]
+        public void Test_NpmRepository_Test_Prerelease_Packages()
+        {
+            var sourcePackageCount = SourceRepo.Fetch(p => p.IsPrerelease)
+                .Count();
+            Assert.Equal(7, sourcePackageCount);
+        }
     }
 }
