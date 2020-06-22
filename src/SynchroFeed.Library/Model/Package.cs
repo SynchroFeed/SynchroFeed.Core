@@ -243,51 +243,58 @@ namespace SynchroFeed.Library.Model
 
             using (var archive = ArchiveFactory.Open(filename))
             {
-                foreach (var archiveEntry in archive.Entries)
+                try
                 {
-                    if (archiveEntry.Key.EndsWith(".nuspec", StringComparison.CurrentCultureIgnoreCase))
+                    foreach (var archiveEntry in archive.Entries)
                     {
-                        using (var stream = archiveEntry.ExtractToStream())
-                        using (var reader = new StreamReader(stream, true))
+                        if (archiveEntry.Key.EndsWith(".nuspec", StringComparison.CurrentCultureIgnoreCase))
                         {
-                            var xdoc = XElement.Load(reader);
-                            package.Id = GetXmlValue<string>("id");
-                            package.Version = GetXmlValue<string>("version");
-                            package.Authors = GetXmlValue<string>("authors");
-                            package.Owners = GetXmlValue<string>("owners");
-                            package.LicenseUrl = GetXmlValue<string>("licenseUrl");
-                            package.ProjectUrl = GetXmlValue<string>("projectUrl");
-                            package.IconUrl = GetXmlValue<string>("iconUrl");
-                            package.RequireLicenseAcceptance = GetXmlValue<bool>("requireLicenseAcceptance");
-                            package.Description = GetXmlValue<string>("description");
-                            package.ReleaseNotes = GetXmlValue<string>("releaseNotes");
-                            package.Copyright = GetXmlValue<string>("copyright");
-                            package.Tags = GetXmlValue<string>("tags");
-                            package.IsPrerelease = package.Version.IsPrerelease();
-
-                            // Dependencies should have the following format:
-                            // Common.Logging:3.3.1|Common.Logging.Core:3.3.1|Newtonsoft.Json:8.0.3
-                            if (xdoc.Descendants().Any(e => e.Name.LocalName == "dependency"))
+                            using (var stream = archiveEntry.ExtractToStream())
+                            using (var reader = new StreamReader(stream, true))
                             {
-                                package.Dependencies = xdoc.Descendants().Where(e => e.Name.LocalName == "dependency")
-                                    .Select(a => $"{a.Attribute("id")?.Value}:{a.Attribute("version")?.Value}")
-                                    .Aggregate((current, next) => current + "|" + next);
+                                var xdoc = XElement.Load(reader);
+                                package.Id = GetXmlValue<string>("id");
+                                package.Version = GetXmlValue<string>("version");
+                                package.Authors = GetXmlValue<string>("authors");
+                                package.Owners = GetXmlValue<string>("owners");
+                                package.LicenseUrl = GetXmlValue<string>("licenseUrl");
+                                package.ProjectUrl = GetXmlValue<string>("projectUrl");
+                                package.IconUrl = GetXmlValue<string>("iconUrl");
+                                package.RequireLicenseAcceptance = GetXmlValue<bool>("requireLicenseAcceptance");
+                                package.Description = GetXmlValue<string>("description");
+                                package.ReleaseNotes = GetXmlValue<string>("releaseNotes");
+                                package.Copyright = GetXmlValue<string>("copyright");
+                                package.Tags = GetXmlValue<string>("tags");
+                                package.IsPrerelease = package.Version.IsPrerelease();
+
+                                // Dependencies should have the following format:
+                                // Common.Logging:3.3.1|Common.Logging.Core:3.3.1|Newtonsoft.Json:8.0.3
+                                if (xdoc.Descendants().Any(e => e.Name.LocalName == "dependency"))
+                                {
+                                    package.Dependencies = xdoc.Descendants().Where(e => e.Name.LocalName == "dependency")
+                                        .Select(a => $"{a.Attribute("id")?.Value}:{a.Attribute("version")?.Value}")
+                                        .Aggregate((current, next) => current + "|" + next);
+                                }
+
+                                T GetXmlValue<T>(string elementName)
+                                {
+                                    var value = xdoc.Descendants().FirstOrDefault(e => e.Name.LocalName == elementName)?.Value;
+                                    if (value == null)
+                                        return default(T);
+                                    return (T)Convert.ChangeType(value, typeof(T));
+                                }
                             }
 
-                            T GetXmlValue<T>(string elementName)
-                            {
-                                var value = xdoc.Descendants().FirstOrDefault(e => e.Name.LocalName == elementName)?.Value;
-                                if (value == null)
-                                    return default(T);
-                                return (T)Convert.ChangeType(value, typeof(T));
-                            }
+                            break;
                         }
-
-                        break;
                     }
-                }
 
-                package.Content = File.ReadAllBytes(filename);
+                    package.Content = File.ReadAllBytes(filename);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException($"Exception processing package {filename}", ex);
+                }
             }
 
             return package;
