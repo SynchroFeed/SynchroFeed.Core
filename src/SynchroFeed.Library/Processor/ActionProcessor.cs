@@ -153,7 +153,9 @@ namespace SynchroFeed.Library.Processor
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error running {actionSettings.Type} on \"{actionSettings.Name}\" Action. Error: {ex.Message}. Ignoring.");
+                    Logger.LogError($"Error running {actionSettings.Type} on \"{actionSettings.Name}\" Action. Error: {ex.Message}.");
+                    if (actionSettings.FailOnError)
+                        throw;
                 }
             }
         }
