@@ -136,16 +136,34 @@ namespace SynchroFeed.Command.ApplicationIs64bit
                     {
                         using (var entryStream = archiveEntry.ExtractToStream())
                         {
-                            var assembly = lc.LoadFromStream(entryStream);
-
-                            foreach (var module in assembly.GetModules())
+                            try
                             {
-                                module.GetPEKind(out var peKind, out _);
+                                var assembly = lc.LoadFromStream(entryStream);
 
-                                if (peKind.HasFlag(PortableExecutableKinds.Preferred32Bit) || peKind.HasFlag(PortableExecutableKinds.Required32Bit))
+                                foreach (var module in assembly.GetModules())
                                 {
-                                    return (true, archiveEntry.Key);
+                                    module.GetPEKind(out var peKind, out _);
+
+                                    if (peKind.HasFlag(PortableExecutableKinds.Preferred32Bit) || peKind.HasFlag(PortableExecutableKinds.Required32Bit))
+                                    {
+                                        return (true, archiveEntry.Key);
+                                    }
                                 }
+                            }
+                            catch (BadImageFormatException)
+                            {
+                                Logger.LogDebug($"{package} - {archiveEntry.Key} - {nameof(BadImageFormatException)}.");
+                                continue;
+                            }
+                            catch (FileLoadException)
+                            {
+                                Logger.LogError($"{package} - {archiveEntry.Key} - could not be loaded.");
+                                continue;
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.LogError(e, $"{package} - {archiveEntry.Key} - threw an exception.");
+                                continue;
                             }
                         }
                     }
