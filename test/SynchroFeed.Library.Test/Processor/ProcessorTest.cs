@@ -100,6 +100,7 @@ namespace SynchroFeed.Library.Test.Processor
         {
             var appSettings = new ApplicationSettings();
             Fixture.AddManyTo(appSettings.Actions, 25);
+            appSettings.Actions.ForEach(x => x.FailOnError = false);
 
             var sut = new ActionProcessor(ServiceProvider, LoggerFactory, appSettings);
 
@@ -132,6 +133,8 @@ namespace SynchroFeed.Library.Test.Processor
             const int actionCount = 8;
             var appSettings = new ApplicationSettings();
             Fixture.AddManyTo(appSettings.Actions, actionCount);
+            appSettings.Actions.ForEach(x => x.FailOnError = false);
+
             var sut = new ActionProcessor(ServiceProvider, LoggerFactory, appSettings);
 
             sut.Execute();
