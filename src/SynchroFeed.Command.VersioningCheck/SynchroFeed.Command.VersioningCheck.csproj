@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{F5BCF341-75E3-4440-932E-1F263D409B6C}</ProjectGuid>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net50</TargetFramework>
     <AssemblyTitle>SynchroFeed.Command.VersioningCheck</AssemblyTitle>
     <Product>SynchroFeed.Command.VersioningCheck</Product>
     <Copyright>Copyright(c) 2018 SynchroFeed</Copyright>
@@ -20,9 +20,6 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>SynchroFeed.png</PackageIcon>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-  </ItemGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">
       <Pack>True</Pack>

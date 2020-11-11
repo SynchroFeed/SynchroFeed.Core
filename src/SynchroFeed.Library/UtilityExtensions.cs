@@ -29,13 +29,38 @@ using System;
 using System.Linq;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
-using System.Web.UI;
 using Microsoft.Extensions.DependencyInjection;
+using SynchroFeed.Library.Exceptions;
 using SynchroFeed.Library.Factory;
 using SynchroFeed.Library.Settings;
 
 namespace SynchroFeed.Library
 {
+    public static class DataBinder
+    {
+        // TODO: Finish implementation.
+        public static object Eval(object container, string expression)
+        {
+            if (container == null) throw new ArgumentNullException(nameof(container));
+            if (expression == null) throw new ArgumentNullException(nameof(expression));
+            var r = new Regex(@"(?<property>[\w\[\]]+)", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+
+            var matches = r.Matches(expression);
+            object value = container;
+            for (var i = 0; i < matches.Count && value != null; i++)
+            {
+                var type = value.GetType();
+                var propertyName = matches[i].Captures[0].Value;
+                value = type.GetProperty(propertyName)?.GetValue(value, null);
+            }
+
+            if (value == null)
+                throw new ArgumentNullException(expression);
+
+            return value;
+        }
+    }
+
     /// <summary>
     /// A static utility class that contains some useful extension methods.
     /// </summary>
@@ -124,10 +149,10 @@ namespace SynchroFeed.Library
                                                        return string.Format(provider, "{0" + formatGroup.Value + "}",
                                                                             DataBinder.Eval(source, propertyGroup.Value));
                                                    }
-                                                   catch (Exception)
+                                                   catch (Exception ex)
                                                    {
                                                        if (throwException)
-                                                           throw;
+                                                           throw new ParsingException($"Unable to parse {propertyGroup.Value}", ex);
 
                                                        return "{" + propertyGroup.Value + "}";
                                                    }

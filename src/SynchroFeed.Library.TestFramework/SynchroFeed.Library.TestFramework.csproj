@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net50</TargetFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Version>0.0.0</Version>
   </PropertyGroup>
@@ -24,21 +24,12 @@
     <Description>SynchroFeed TestFramework is the testing framework used for Synchrofeed.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging">
-      <Version>3.1.8</Version>
-    </PackageReference>
-    <PackageReference Include="Moq">
-      <Version>4.14.6</Version>
-    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Moq" Version="4/15/1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

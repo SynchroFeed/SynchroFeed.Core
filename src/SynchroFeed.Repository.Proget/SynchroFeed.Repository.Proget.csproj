@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{1D475789-4665-46F8-A3CD-5AA972E61DE5}</ProjectGuid>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net50</TargetFramework>
     <AssemblyTitle>SynchroFeed.Repository.Proget</AssemblyTitle>
     <Product>SynchroFeed.Repository.Proget</Product>
     <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for using a Proget feed as a repository.</Description>
@@ -26,9 +26,6 @@
     <PackageIcon>SynchroFeed.png</PackageIcon>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Reference Include="System.Data.Services.Client" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
     <ProjectReference Include="..\SynchroFeed.Repository.Nuget\SynchroFeed.Repository.Nuget.csproj" />

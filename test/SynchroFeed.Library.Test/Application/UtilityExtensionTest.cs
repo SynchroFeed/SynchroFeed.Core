@@ -34,6 +34,7 @@ using SynchroFeed.Library.Factory;
 using SynchroFeed.Library.Settings;
 using System;
 using System.Web;
+using SynchroFeed.Library.Exceptions;
 using Xunit;
 
 namespace SynchroFeed.Library.Test.Application
@@ -111,32 +112,32 @@ namespace SynchroFeed.Library.Test.Application
         [Fact]
         public void Test_FormatWith_Properties_Found()
         {
-            string template = "Name: {Name}, Capital: {Capital}, GdpPerCapita: {GdpPerCapita:F2}";
-            var model = new FormatWithModel { Name = "Malawi", Capital = "Lilongwe", GdpPerCapita = 226.50 };
+            string template = "Name: {Name}, Capital: {Capital}, GdpPerCapita: {GdpPerCapita:F4}, NestedClass.ProjectId: {NestedClass.ProjectId}";
+            var model = new FormatWithModel { Name = "Malawi", Capital = "Lilongwe", GdpPerCapita = 226.50, NestedClass = { ProjectId = "1234" } };
 
             var sut = template.FormatWith(model);
 
-            Assert.Equal("Name: Malawi, Capital: Lilongwe, GdpPerCapita: 226.50", sut);
+            Assert.Equal("Name: Malawi, Capital: Lilongwe, GdpPerCapita: 226.5000, NestedClass.ProjectId: 1234", sut);
         }
 
         [Fact]
         public void Test_FormatWith_Property_Not_Found()
         {
-            string template = "Name: {Name}, Capital: {Capital}, GdpPerCapita: {GdpPerCapita:F2}, NotFound: {NotFound}";
-            var model = new FormatWithModel { Name = "Malawi", Capital = "Lilongwe", GdpPerCapita = 226.50 };
+            string template = "Name: {Name}, Capital: {Capital}, GdpPerCapita: {GdpPerCapita:F4}, NotFound: {NotFound}";
+            var model = new FormatWithModel { Name = "Malawi", Capital = "Lilongwe", GdpPerCapita = 226.50};
 
             var sut = template.FormatWith(model);
 
-            Assert.Equal("Name: Malawi, Capital: Lilongwe, GdpPerCapita: 226.50, NotFound: {NotFound}", sut);
+            Assert.Equal("Name: Malawi, Capital: Lilongwe, GdpPerCapita: 226.5000, NotFound: {NotFound}", sut);
         }
 
         [Fact]
         public void Test_FormatWith_Property_Not_Found_Throws_Exception()
         {
-            string template = "Name: {Name}, Capital: {Capital}, GdpPerCapita: {GdpPerCapita:F2}, NotFound: {NotFound}";
+            string template = "Name: {Name}, Capital: {Capital}, GdpPerCapita: {GdpPerCapita:F4}, NotFound: {NotFound}";
             var model = new FormatWithModel { Name = "Malawi", Capital = "Lilongwe", GdpPerCapita = 226.50 };
 
-            Assert.Throws<HttpException>(() => template.FormatWith(model, true));
+            Assert.Throws<ParsingException>(() => template.FormatWith(model, true));
         }
 
         [Fact]
@@ -235,5 +236,14 @@ namespace SynchroFeed.Library.Test.Application
         public string Name { get; set; }
         public string Capital { get; set; }
         public double GdpPerCapita { get; set; }
+
+        public NestedClass NestedClass { get; } = new NestedClass();
+    }
+
+    // ReSharper disable UnusedAutoPropertyAccessor.Local
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    public class NestedClass
+    {
+        public string ProjectId { get; set; }
     }
 }

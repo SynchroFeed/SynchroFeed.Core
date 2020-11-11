@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{6A4C9E5D-6944-4145-A194-CA74D7D4810A}</ProjectGuid>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net50</TargetFramework>
     <AssemblyTitle>SynchroFeed.Command.ConfigReview</AssemblyTitle>
     <Product>SynchroFeed.Command.ConfigReview</Product>
     <Copyright>Copyright ©  2018</Copyright>

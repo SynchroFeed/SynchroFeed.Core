@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{49DFC645-3127-4BF4-AC8D-8FEDC256BCB1}</ProjectGuid>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net50</TargetFramework>
     <AssemblyTitle>SynchroFeed.Command.Log4netReview</AssemblyTitle>
     <Product>SynchroFeed.Command.Log4netReview</Product>
     <Copyright>Copyright ©  2018</Copyright>

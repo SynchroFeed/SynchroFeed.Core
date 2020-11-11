@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{DB1FEF28-91F5-4EFC-940F-DF612569F91F}</ProjectGuid>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net50</TargetFramework>
     <AssemblyTitle>SynchroFeed.Command.NugetContainsSupportFiles</AssemblyTitle>
     <Product>SynchroFeed.Command.NugetContainsSupportFiles</Product>
   </PropertyGroup>

@@ -77,7 +77,7 @@ namespace SynchroFeed.Library.DomainLoader
 
         private static string GetAssemblyCodeBasePath()
         {
-            return typeof(AssemblyLoader).Assembly.CodeBase;
+            return typeof(AssemblyLoader).Assembly.Location;
         }
 
         private static Assembly LoadAssembly(string filename)

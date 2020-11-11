@@ -3,7 +3,7 @@
     <ProjectGuid>{B1F8A5C1-F6E5-48FE-9FBA-0FEAFF99BEEA}</ProjectGuid>
     <RootNamespace>SynchroFeed.Command.ApplicationIs64bit.Tests</RootNamespace>
     <AssemblyName>SynchroFeed.Command.ApplicationIs64bit.Tests</AssemblyName>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net50</TargetFramework>
     <AssemblyTitle>SynchroFeed.Command.ApplicationIs64bit.Tests</AssemblyTitle>
     <Product>SynchroFeed.Command.ApplicationIs64bit.Tests</Product>
     <Copyright>Copyright ©  2018</Copyright>
@@ -13,15 +13,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoFixture.SeedExtensions" Version="4.14.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.8" />
-    <PackageReference Include="Moq" Version="4.14.6" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
+    <PackageReference Include="Moq" Version="4.15.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\SynchroFeed.Command.ApplicationIs64bit\SynchroFeed.Command.ApplicationIs64bit.csproj" />
