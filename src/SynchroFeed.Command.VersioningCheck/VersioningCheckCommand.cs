@@ -134,29 +134,27 @@ namespace SynchroFeed.Command.VersioningCheck
 
             var coreAssembly = typeof(object).Assembly;
 
-            using (var byteStream = new MemoryStream(package.Content))
-            using (var archive = ArchiveFactory.Open(byteStream))
-            using (var lc = new MetadataLoadContext(new ZipAssemblyResolver(archive, coreAssembly), coreAssembly.FullName))
+            using var byteStream = new MemoryStream(package.Content);
+            using var archive = ArchiveFactory.Open(byteStream);
+            using var lc = new MetadataLoadContext(new ZipAssemblyResolver(archive, coreAssembly), coreAssembly.FullName);
+            foreach (var archiveEntry in archive.Entries)
             {
-                foreach (var archiveEntry in archive.Entries)
+                if (archiveEntry.IsDirectory)
+                    continue;
+
+                var fileName = Path.GetFileName(archiveEntry.Key);
+
+                if (!Regex.IsMatch(fileName, fileRegex, RegexOptions.IgnoreCase))
+                    continue;
+
+                var binaryVersion = GetBinaryVersion(lc, archiveEntry);
+
+                if (binaryVersion == null)
+                    continue;
+
+                if (!IsSameVersion(packageVersion, binaryVersion))
                 {
-                    if (archiveEntry.IsDirectory || (archiveEntry.Key == null))
-                        continue;
-
-                    var fileName = Path.GetFileName(archiveEntry.Key);
-
-                    if (!Regex.IsMatch(fileName, fileRegex, RegexOptions.IgnoreCase))
-                        continue;
-
-                    var binaryVersion = GetBinaryVersion(lc, archiveEntry);
-
-                    if (binaryVersion == null)
-                        continue;
-
-                    if (!IsSameVersion(packageVersion, binaryVersion))
-                    {
-                        binariesWithDifferentVersions.Add(fileName);
-                    }
+                    binariesWithDifferentVersions.Add(fileName);
                 }
             }
 

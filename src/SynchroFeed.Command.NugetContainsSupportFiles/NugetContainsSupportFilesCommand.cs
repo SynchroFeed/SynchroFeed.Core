@@ -146,7 +146,7 @@ namespace SynchroFeed.Command.NugetContainsSupportFiles
                 {
                     foreach (var archiveEntry in archive.Entries)
                     {
-                        if (archiveEntry.IsDirectory || (archiveEntry.Key == null) || !archiveEntry.Key.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
+                        if (archiveEntry.IsDirectory || !archiveEntry.Key.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
                             continue;
 
                         var fileName = Path.GetFileNameWithoutExtension(archiveEntry.Key);

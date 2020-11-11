@@ -134,37 +134,32 @@ namespace SynchroFeed.Command.ApplicationIs64bit
 
                     if (archiveEntry.Key.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        using (var entryStream = archiveEntry.ExtractToStream())
+                        using var entryStream = archiveEntry.ExtractToStream();
+                        try
                         {
-                            try
+                            var assembly = lc.LoadFromStream(entryStream);
+
+                            foreach (var module in assembly.GetModules())
                             {
-                                var assembly = lc.LoadFromStream(entryStream);
+                                module.GetPEKind(out var peKind, out _);
 
-                                foreach (var module in assembly.GetModules())
+                                if (peKind.HasFlag(PortableExecutableKinds.Preferred32Bit) || peKind.HasFlag(PortableExecutableKinds.Required32Bit))
                                 {
-                                    module.GetPEKind(out var peKind, out _);
-
-                                    if (peKind.HasFlag(PortableExecutableKinds.Preferred32Bit) || peKind.HasFlag(PortableExecutableKinds.Required32Bit))
-                                    {
-                                        return (true, archiveEntry.Key);
-                                    }
+                                    return (true, archiveEntry.Key);
                                 }
                             }
-                            catch (BadImageFormatException)
-                            {
-                                Logger.LogDebug($"{package} - {archiveEntry.Key} - {nameof(BadImageFormatException)}.");
-                                continue;
-                            }
-                            catch (FileLoadException)
-                            {
-                                Logger.LogError($"{package} - {archiveEntry.Key} - could not be loaded.");
-                                continue;
-                            }
-                            catch (Exception e)
-                            {
-                                Logger.LogError(e, $"{package} - {archiveEntry.Key} - threw an exception.");
-                                continue;
-                            }
+                        }
+                        catch (BadImageFormatException)
+                        {
+                            Logger.LogDebug($"{package} - {archiveEntry.Key} - {nameof(BadImageFormatException)}.");
+                        }
+                        catch (FileLoadException)
+                        {
+                            Logger.LogError($"{package} - {archiveEntry.Key} - could not be loaded.");
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.LogError(e, $"{package} - {archiveEntry.Key} - threw an exception.");
                         }
                     }
                 }

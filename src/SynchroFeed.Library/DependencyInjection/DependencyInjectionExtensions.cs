@@ -53,7 +53,7 @@ namespace SynchroFeed.Library.DependencyInjection
         public static IServiceCollection AddSynchroFeed(this IServiceCollection services)
         {
             return services
-                .AddSingleton(provider => provider.GetService<IOptions<ApplicationSettings>>().Value)
+                .AddSingleton(provider => provider.GetService<IOptions<ApplicationSettings>>()?.Value)
                 .AddTransient<ActionObserverManager>()
                 .Scan(scan => scan
                     .FromAssemblies(AssemblyLoader.AssemblyLoaderFunc("*.dll"))

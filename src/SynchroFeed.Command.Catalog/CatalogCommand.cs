@@ -355,12 +355,6 @@ namespace SynchroFeed.Command.Catalog
                         try
                         {
                             assembly = lc.LoadFromStream(entryStream);
-
-                            if (assembly == null)
-                            {
-                                Logger.LogDebug($"Ignoring non-.NET assembly - {archiveEntry.Key}");
-                                continue;
-                            }
                         }
                         catch (FileLoadException)
                         {
@@ -428,7 +422,11 @@ namespace SynchroFeed.Command.Catalog
 
         private AssemblyVersion GetOrAddAssemblyVersionEntity(Assembly assemblyEntity, AssemblyName assemblyName)
         {
-            var assemblyVersion = assemblyName.Version.ToString();
+            if (assemblyName.Version == null)
+            {
+                throw new ArgumentNullException(nameof(assemblyName.Version));
+            }
+            var assemblyVersion = assemblyName.Version?.ToString();
             var assemblyVersionEntity = dbContext.AssemblyVersions.FirstOrDefault(s => s.AssemblyId == assemblyEntity.AssemblyId && s.Version == assemblyVersion);
             if (assemblyVersionEntity == null)
             {
