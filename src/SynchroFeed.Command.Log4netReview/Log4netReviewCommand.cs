@@ -100,27 +100,23 @@ namespace SynchroFeed.Command.Log4netReview
 
             var issues = new List<string>();
 
-            using (var byteStream = new MemoryStream(package.Content))
-            using (var archive = ArchiveFactory.Open(byteStream))
+            using var byteStream = new MemoryStream(package.Content);
+            using var archive = ArchiveFactory.Open(byteStream);
+            foreach (var archiveEntry in archive.Entries)
             {
-                foreach (var archiveEntry in archive.Entries)
+                if (archiveEntry.IsDirectory || !archiveEntry.Key.EndsWith(".config"))
+                    continue;
+
+                try
                 {
-                    if (archiveEntry.IsDirectory || !archiveEntry.Key.EndsWith(".config"))
-                        continue;
+                    using var entryStream = archiveEntry.ExtractToStream();
+                    var doc = XDocument.Load(entryStream);
 
-                    try
-                    {
-                        using (var entryStream = archiveEntry.ExtractToStream())
-                        {
-                            var doc = XDocument.Load(entryStream);
-
-                            ParseConfig(archiveEntry.Key, doc, issues);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.LogInformation(e, "Unable to parse: {0}", archiveEntry.Key);
-                    }
+                    ParseConfig(archiveEntry.Key, doc, issues);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogInformation(e, "Unable to parse: {0}", archiveEntry.Key);
                 }
             }
 

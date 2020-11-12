@@ -123,9 +123,9 @@ namespace SynchroFeed.Command.ApplicationIs64bit
         {
             var coreAssembly = typeof(object).Assembly;
 
-            using (var byteStream = new MemoryStream(package.Content))
-            using (var archive = ArchiveFactory.Open(byteStream))
-            using (var lc = new MetadataLoadContext(new ZipAssemblyResolver(archive, coreAssembly), coreAssembly.FullName))
+            using var byteStream = new MemoryStream(package.Content);
+            using var archive = ArchiveFactory.Open(byteStream);
+            using var lc = new MetadataLoadContext(new ZipAssemblyResolver(archive, coreAssembly), coreAssembly.FullName);
             {
                 foreach (var archiveEntry in archive.Entries)
                 {

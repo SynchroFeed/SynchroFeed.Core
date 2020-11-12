@@ -87,38 +87,34 @@ namespace SynchroFeed.Command.ConfigReview
 
             var issues = new List<string>();
 
-            using (var byteStream = new MemoryStream(package.Content))
-            using (var archive = ArchiveFactory.Open(byteStream))
+            using var byteStream = new MemoryStream(package.Content);
+            using var archive = ArchiveFactory.Open(byteStream);
+            foreach (var archiveEntry in archive.Entries)
             {
-                foreach (var archiveEntry in archive.Entries)
+                if (archiveEntry.IsDirectory || !archiveEntry.Key.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase))
+                    continue;
+
+                Logger.LogTrace($"Executable found: {archiveEntry.Key}");
+
+                var configFileName = archiveEntry.Key + ".config";
+                var configArchiveEntry = archive.Entries.FirstOrDefault(x => x.Key.Equals(configFileName, StringComparison.InvariantCultureIgnoreCase));
+
+                if (configArchiveEntry == null)
                 {
-                    if (archiveEntry.IsDirectory || !archiveEntry.Key.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase))
-                        continue;
+                    Logger.LogDebug($"Skipping, no config file found for : {configFileName}");
+                    continue;
+                }
 
-                    Logger.LogTrace($"Executable found: {archiveEntry.Key}");
+                try
+                {
+                    using var configStream = configArchiveEntry.ExtractToStream();
+                    var doc = XDocument.Load(configStream);
 
-                    var configFileName = archiveEntry.Key + ".config";
-                    var configArchiveEntry = archive.Entries.FirstOrDefault(x => x.Key.Equals(configFileName, StringComparison.InvariantCultureIgnoreCase));
-
-                    if (configArchiveEntry == null)
-                    {
-                        Logger.LogDebug($"Skipping, no config file found for : {configFileName}");
-                        continue;
-                    }
-
-                    try
-                    {
-                        using (var configStream = configArchiveEntry.ExtractToStream())
-                        {
-                            var doc = XDocument.Load(configStream);
-
-                            ValidateConfig(configFileName, doc, issues);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.LogInformation(e, "Unable to parse: {0}", configFileName);
-                    }
+                    ValidateConfig(configFileName, doc, issues);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogInformation(e, "Unable to parse: {0}", configFileName);
                 }
             }
 

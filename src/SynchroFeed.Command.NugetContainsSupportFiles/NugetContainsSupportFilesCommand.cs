@@ -141,39 +141,37 @@ namespace SynchroFeed.Command.NugetContainsSupportFiles
             }
             else
             {
-                using (var byteStream = new MemoryStream(package.Content))
-                using (var archive = ArchiveFactory.Open(byteStream))
+                using var byteStream = new MemoryStream(package.Content);
+                using var archive = ArchiveFactory.Open(byteStream);
+                foreach (var archiveEntry in archive.Entries)
                 {
-                    foreach (var archiveEntry in archive.Entries)
+                    if (archiveEntry.IsDirectory || !archiveEntry.Key.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
+                        continue;
+
+                    var fileName = Path.GetFileNameWithoutExtension(archiveEntry.Key);
+
+                    if (!Regex.IsMatch(fileName, fileRegex, RegexOptions.IgnoreCase))
+                        continue;
+
+                    var hasMissingSupportFiles = false;
+
+                    if (checkForXml)
                     {
-                        if (archiveEntry.IsDirectory || !archiveEntry.Key.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
-                            continue;
+                        var xmlFileName = Path.ChangeExtension(archiveEntry.Key, "xml");
 
-                        var fileName = Path.GetFileNameWithoutExtension(archiveEntry.Key);
+                        hasMissingSupportFiles |= !archive.Entries.Any(x => x.Key.Equals(xmlFileName, StringComparison.InvariantCultureIgnoreCase));
+                    }
 
-                        if (!Regex.IsMatch(fileName, fileRegex, RegexOptions.IgnoreCase))
-                            continue;
+                    if (checkForPdb)
+                    {
+                        var pdbFileName = Path.ChangeExtension(archiveEntry.Key, "pdb");
 
-                        var hasMissingSupportFiles = false;
+                        hasMissingSupportFiles |= !archive.Entries.Any(x => x.Key.Equals(pdbFileName, StringComparison.InvariantCultureIgnoreCase));
+                    }
 
-                        if (checkForXml)
-                        {
-                            var xmlFileName = Path.ChangeExtension(archiveEntry.Key, "xml");
-
-                            hasMissingSupportFiles |= !archive.Entries.Any(x => x.Key.Equals(xmlFileName, StringComparison.InvariantCultureIgnoreCase));
-                        }
-
-                        if (checkForPdb)
-                        {
-                            var pdbFileName = Path.ChangeExtension(archiveEntry.Key, "pdb");
-
-                            hasMissingSupportFiles |= !archive.Entries.Any(x => x.Key.Equals(pdbFileName, StringComparison.InvariantCultureIgnoreCase));
-                        }
-
-                        if (hasMissingSupportFiles)
-                        {
-                            assembliesMissingSupportFiles.Add(fileName);
-                        }
+                    if (hasMissingSupportFiles)
+                    {
+                        assembliesMissingSupportFiles.Add(fileName);
                     }
                 }
             }

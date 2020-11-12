@@ -40,8 +40,8 @@ namespace SynchroFeed.Repository.Directory.Test
 {
     public class ProgetRepositoryTest
     {
-        const string EnvVar_Url = "NUGETTEST_URL";
-        const string EnvVar_ApiKey = "NUGETTEST_APIKEY";
+        const string EnvVarUrl = "NUGETTEST_URL";
+        const string EnvVarApiKey = "NUGETTEST_APIKEY";
         const string NotepadPlusPlusPackageId = "notepadplusplus";
         const int NotepadPlusPlusPackageCount = 17;
         private string RootFolder { get; }
@@ -55,10 +55,10 @@ namespace SynchroFeed.Repository.Directory.Test
         {
             RootFolder = Environment.CurrentDirectory;
             LocalRepoFolder = Path.Combine(RootFolder, "local.choco");
-            RepoUrl = Environment.GetEnvironmentVariable(EnvVar_Url);
-            ApiKey = Environment.GetEnvironmentVariable(EnvVar_ApiKey);
-            Assert.True(!string.IsNullOrEmpty(RepoUrl), $"No environment variable found for {EnvVar_Url}");
-            Assert.True(!string.IsNullOrEmpty(ApiKey), $"No environment variable found for {EnvVar_ApiKey}");
+            RepoUrl = Environment.GetEnvironmentVariable(EnvVarUrl);
+            ApiKey = Environment.GetEnvironmentVariable(EnvVarApiKey);
+            Assert.True(!string.IsNullOrEmpty(RepoUrl), $"No environment variable found for {EnvVarUrl}");
+            Assert.True(!string.IsNullOrEmpty(ApiKey), $"No environment variable found for {EnvVarApiKey}");
 
             ServiceProvider = new ServiceCollection()
                 .AddLogging(loggingBuilder => { loggingBuilder.AddDebug(); })
@@ -161,6 +161,7 @@ namespace SynchroFeed.Repository.Directory.Test
             foreach (var package in sourcePackages)
             {
                 var p = sourceRepo.Fetch(package);
+                Assert.NotNull(p.Content);
                 targetRepo.Add(p);
             }
 
@@ -171,6 +172,8 @@ namespace SynchroFeed.Repository.Directory.Test
 
             foreach (var targetPackage in targetPackages)
             {
+                var targetPackageWithContent = targetRepo.Fetch(targetPackage);
+                Assert.NotNull(targetPackageWithContent.Content);
                 targetRepo.Delete(targetPackage);
             }
 

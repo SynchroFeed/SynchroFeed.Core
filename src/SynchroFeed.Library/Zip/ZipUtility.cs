@@ -12,14 +12,12 @@ namespace SynchroFeed.Library.Zip
         /// <returns>The <see cref="MemoryStream"/> containing the uncompressed <see cref="IArchiveEntry"/>.</returns>
         public static MemoryStream ExtractToStream(this IArchiveEntry archiveEntry)
         {
-            using (var compressedStream = archiveEntry.OpenEntryStream())
-            {
-                var memoryStream = new MemoryStream();
-                compressedStream.CopyTo(memoryStream);
-                memoryStream.Seek(0, SeekOrigin.Begin);
+            using var compressedStream = archiveEntry.OpenEntryStream();
+            var memoryStream = new MemoryStream();
+            compressedStream.CopyTo(memoryStream);
+            memoryStream.Seek(0, SeekOrigin.Begin);
 
-                return memoryStream;
-            }
+            return memoryStream;
         }
     }
 }

@@ -128,10 +128,8 @@ namespace SynchroFeed.Repository.Directory
             }
 
             Logger.LogTrace($"Creating Package file {filename}");
-            using (var outStream = File.Create(filename))
-            {
-                outStream.WriteAsync(package.Content, 0, package.Content.Length).Wait();
-            }
+            using var outStream = File.Create(filename);
+            outStream.WriteAsync(package.Content, 0, package.Content.Length).Wait();
         }
 
         /// <summary>

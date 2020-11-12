@@ -98,35 +98,29 @@ namespace SynchroFeed.Repository.Npm
             var content = new StringContent(JsonConvert.SerializeObject(publishPackage, new JsonSerializerSettings{ MissingMemberHandling = MissingMemberHandling.Ignore }), Encoding.UTF8, "application/json");
 			content.Headers.Add(ApiKeyHeaderName, client.ApiKey);
 			// TODO: Scope is included in the package.Name - need to do some testing to see if scope if actually needed
-            using (var response = await client.HttpClient.PutAsync(new Uri(new Uri(client.Uri), GetNpmPath(package.Name, package.Version)), content))
+            using var response = await client.HttpClient.PutAsync(new Uri(new Uri(client.Uri), GetNpmPath(package.Name, package.Version)), content);
+            if (response.IsSuccessStatusCode)
             {
-                if (response.IsSuccessStatusCode)
-                {
-                    return (package, null);
-                }
-
-                return (null, new Error(response.StatusCode, response.ReasonPhrase));
+                return (package, null);
             }
+
+            return (null, new Error(response.StatusCode, response.ReasonPhrase));
         }
 
 		public static async Task<(NpmPackage Package, Error Error)> NpmGetPackageAsync(this NpmClient client, string packageName, string version)
         {
-            using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(client.Uri), GetNpmPath(packageName, version))))
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(client.Uri), GetNpmPath(packageName, version)));
+            requestMessage.Headers.Add(ApiKeyHeaderName, client.ApiKey);
+            requestMessage.Headers.Add("Accept", "application/json");
+            using var response = await client.HttpClient.SendAsync(requestMessage);
+            if (response.IsSuccessStatusCode)
             {
-                requestMessage.Headers.Add(ApiKeyHeaderName, client.ApiKey);
-                requestMessage.Headers.Add("Accept", "application/json");
-                using (var response = await client.HttpClient.SendAsync(requestMessage))
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var json = await response.Content.ReadAsStringAsync();
-                        var npmPackage = JsonConvert.DeserializeObject<NpmPackage>(json, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Ignore });
-                        return (npmPackage, null);
-                    }
-
-                    return (null, new Error(response.StatusCode, response.ReasonPhrase));
-                }
+                var json = await response.Content.ReadAsStringAsync();
+                var npmPackage = JsonConvert.DeserializeObject<NpmPackage>(json, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Ignore });
+                return (npmPackage, null);
             }
+
+            return (null, new Error(response.StatusCode, response.ReasonPhrase));
         }
 
         public static async Task<Error> NpmDeletePackageAsync(this NpmClient client, Package package)
@@ -154,24 +148,22 @@ namespace SynchroFeed.Repository.Npm
         }
 
         public static async Task<(byte[] Content, Error Error)> NpmDownloadPackageAsync(this NpmClient client, Package package, bool validateHash = true)
-		{
-            using (var packageDownloadResponse = await client.HttpClient.GetAsync(package.PackageDownloadUrl))
+        {
+            using var packageDownloadResponse = await client.HttpClient.GetAsync(package.PackageDownloadUrl);
+            if (packageDownloadResponse.IsSuccessStatusCode)
             {
-                if (packageDownloadResponse.IsSuccessStatusCode)
+                var content = await packageDownloadResponse.Content.ReadAsByteArrayAsync();
+                if (validateHash && !HashValid(package, content))
                 {
-                    var content = await packageDownloadResponse.Content.ReadAsByteArrayAsync();
-                    if (validateHash && !HashValid(package, content))
-                    {
-                        Console.WriteLine($"SHA1 hash of NPM package downloaded doesn't match expected SHA {package.PackageHash}");
-                        return (content,
-                            new Error(HttpStatusCode.InternalServerError, $"SHA1 hash of NPM package downloaded doesn't match expected SHA {package.PackageHash}"));
-                    }
-
-                    return (content, null);
+                    Console.WriteLine($"SHA1 hash of NPM package downloaded doesn't match expected SHA {package.PackageHash}");
+                    return (content,
+                        new Error(HttpStatusCode.InternalServerError, $"SHA1 hash of NPM package downloaded doesn't match expected SHA {package.PackageHash}"));
                 }
 
-                return (null, new Error(packageDownloadResponse.StatusCode, packageDownloadResponse.ReasonPhrase));
+                return (content, null);
             }
+
+            return (null, new Error(packageDownloadResponse.StatusCode, packageDownloadResponse.ReasonPhrase));
         }
 
         public static (string Name, string Scope) ParseNpmId(string npmId)
@@ -266,14 +258,12 @@ namespace SynchroFeed.Repository.Npm
         }
 
         private static bool HashValid(Package package, byte[] content)
-		{
-            using (var sha = SHA1.Create())
-            {
-                var hashBytes = sha.ComputeHash(content);
-                var shasum = ConvertHashToString(hashBytes);
+        {
+            using var sha = SHA1.Create();
+            var hashBytes = sha.ComputeHash(content);
+            var shasum = ConvertHashToString(hashBytes);
 
-                return shasum.Equals(package.PackageHash, StringComparison.OrdinalIgnoreCase);
-            }
+            return shasum.Equals(package.PackageHash, StringComparison.OrdinalIgnoreCase);
         }
 
 		private static string ConvertHashToString(byte[] hashBytes)

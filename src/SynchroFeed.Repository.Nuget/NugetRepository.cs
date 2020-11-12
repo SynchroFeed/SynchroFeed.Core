@@ -181,17 +181,14 @@ namespace SynchroFeed.Repository.Nuget
 
             byte[] GetContentForPackage(DataServiceContext dataServiceContext, Package packageEntity)
             {
-                DataServiceStreamResponse response = null;
-                dataServiceContext.BeginGetReadStream(packageEntity, new DataServiceRequestArgs(), (asr) => response = dataServiceContext.EndGetReadStream(asr), null);
+                using DataServiceStreamResponse response = dataServiceContext.GetReadStreamAsync(packageEntity, new DataServiceRequestArgs(), null).Result;
+                if (response != null)
                 {
-                    if (response != null)
-                    {
-                        using var byteStream = new MemoryStream(new byte[packageEntity.PackageSize], true);
-                        using var stream = response.Stream;
-                        stream.CopyTo(byteStream);
+                    using var byteStream = new MemoryStream(new byte[packageEntity.PackageSize], true);
+                    using var stream = response.Stream;
+                    stream.CopyTo(byteStream);
 
-                        return byteStream.ToArray();
-                    }
+                    return byteStream.ToArray();
                 }
 
                 return null;
@@ -262,7 +259,8 @@ namespace SynchroFeed.Repository.Nuget
                 .Where(query);
             try
             {
-                var response = DataServiceQueryExecute(entityQuery);
+                var response = entityQuery.ExecuteAsync(null).Result;
+
                 return response.AsEnumerable();
             }
             catch (AggregateException ex)
@@ -300,11 +298,6 @@ namespace SynchroFeed.Repository.Nuget
 
             // It should never get here
             return null;
-        }
-
-        protected IEnumerable<Package> DataServiceQueryExecute(DataServiceQuery<Package> query)
-        {
-            return Task.Run(async () => (await (new TaskFactory<IEnumerable<Package>>()).FromAsync(query.BeginExecute, query.EndExecute, null))).Result;
         }
 
         /// <summary>

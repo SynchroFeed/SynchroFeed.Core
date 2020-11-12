@@ -176,12 +176,10 @@ namespace SynchroFeed.Command.VersioningCheck
 
         private Version GetBinaryVersion(MetadataLoadContext metaDataLoadContext, IArchiveEntry archiveEntry)
         {
-            using (var entryStream = archiveEntry.ExtractToStream())
-            {
-                var assembly = metaDataLoadContext.LoadFromStream(entryStream);
+            using var entryStream = archiveEntry.ExtractToStream();
+            var assembly = metaDataLoadContext.LoadFromStream(entryStream);
 
-                return assembly.GetName().Version;
-            }
+            return assembly.GetName().Version;
         }
 
         private static bool IsSameVersion(Version packageVersion, Version binaryVersion)
