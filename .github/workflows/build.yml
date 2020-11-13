@@ -30,7 +30,7 @@ jobs:
       run: dotnet tool install --global GitVersion.Tool
 
     - name: Run GitVersion
-      run: dotnet-gitversion # /showvariable semver > sem.ver 
+      run: dotnet-gitversion /showvariable semver > sem.ver 
 
     - name: SetVersion
       run: setversion -r "@sem.ver"
