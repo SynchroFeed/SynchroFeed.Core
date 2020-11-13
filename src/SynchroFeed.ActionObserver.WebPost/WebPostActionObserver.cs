@@ -106,18 +106,14 @@ namespace SynchroFeed.ActionObserver.WebPost
             try
             {
                 Logger.LogTrace($"Sending WebPost to {ObserverSettings.Settings.Url()}...");
-                using (var request = new HttpRequestMessage(HttpMethod.Post, ObserverSettings.Settings.Url()))
-                {
-                    var message = messageTemplate.FormatWith(actionEvent);
-                    Logger.LogTrace($"WebPost Message: {message}");
-                    request.Content = new StringContent(message, Encoding.UTF8, ObserverSettings.Settings.ContentType());
+                using var request = new HttpRequestMessage(HttpMethod.Post, ObserverSettings.Settings.Url());
+                var message = messageTemplate.FormatWith(actionEvent);
+                Logger.LogTrace($"WebPost Message: {message}");
+                request.Content = new StringContent(message, Encoding.UTF8, ObserverSettings.Settings.ContentType());
 
-                    using (var response = HttpClientFactory.GetHttpClient().SendAsync(request))
-                    {
-                        response.Wait();
-                        response.Result.EnsureSuccessStatusCode();
-                    }
-                }
+                using var response = HttpClientFactory.GetHttpClient().SendAsync(request);
+                response.Wait();
+                response.Result.EnsureSuccessStatusCode();
                 Logger.LogTrace($"Sending WebPost to {ObserverSettings.Settings.Url()}...done");
             }
             catch (Exception ex)

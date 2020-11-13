@@ -1,12 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{C8B95609-4B3D-44A8-9F9A-ABB352E83327}</ProjectGuid>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net50</TargetFramework>
     <AssemblyTitle>SynchroFeed.Command.Catalog</AssemblyTitle>
     <Product>SynchroFeed.Command.Catalog</Product>
     <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for cataloging packages and the included assemblies into a database.</Description>
     <Copyright>Copyright(c) 2018 Robert Vandehey</Copyright>
-    <Version>0.0.0.0</Version>
+    <Version>1.1.0-Net50.1
+</Version>
     <Authors>Bob Vandehey</Authors>
     <PackageId>SynchroFeed.Command.Catalog</PackageId>
     <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
@@ -17,27 +18,26 @@
     <NoWarn>1701;1702;NU5125</NoWarn>
     <RepositoryType>nuget</RepositoryType>
   </PropertyGroup>
-
   <PropertyGroup>
     <NoWarn>1701;1702;NU5125</NoWarn>
   </PropertyGroup>
-
   <PropertyGroup>
     <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>SynchroFeed.png</PackageIcon>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;test</DefineConstants>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Migrations\201903040047445_InitialCreate.cs" />
     <Compile Remove="Migrations\201903040047445_InitialCreate.Designer.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Update="Migrations\201903040047445_InitialCreate.resx">
       <DependentUpon>201903040047445_InitialCreate.cs</DependentUpon>
@@ -48,17 +48,6 @@
     <EmbeddedResource Update="Migrations\201910130159186_UpdateViews.resx">
       <DependentUpon>201910130159186_UpdateViews.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EntityFramework" Version="6.4.4" />

@@ -29,8 +29,8 @@ using System;
 using System.Linq;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
-using System.Web.UI;
 using Microsoft.Extensions.DependencyInjection;
+using SynchroFeed.Library.Exceptions;
 using SynchroFeed.Library.Factory;
 using SynchroFeed.Library.Settings;
 
@@ -124,10 +124,10 @@ namespace SynchroFeed.Library
                                                        return string.Format(provider, "{0" + formatGroup.Value + "}",
                                                                             DataBinder.Eval(source, propertyGroup.Value));
                                                    }
-                                                   catch (Exception)
+                                                   catch (Exception ex)
                                                    {
                                                        if (throwException)
-                                                           throw;
+                                                           throw new ParsingException($"Unable to parse {propertyGroup.Value}", ex);
 
                                                        return "{" + propertyGroup.Value + "}";
                                                    }

@@ -35,6 +35,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SynchroFeed.Library;
 using SynchroFeed.Library.Repository;
@@ -104,18 +105,14 @@ namespace SynchroFeed.Repository.Nuget
                 request.Headers.Add(ApiKeyHeaderName, ApiKey);
             }
 
-            using (var multiPartContent = new MultipartFormDataContent())
-            {
-                using (var fileContent = new ByteArrayContent(package.Content))
-                {
-                    fileContent.Headers.Add("Content-Type", "application/octet-stream");
-                    multiPartContent.Add(fileContent, "file", package.Id);
-                    request.Content = multiPartContent;
-                    var response = HttpClientFactory.GetHttpClient().SendAsync(request);
-                    response.Wait();
-                    response.Result.EnsureSuccessStatusCode();
-                }
-            }
+            using var multiPartContent = new MultipartFormDataContent();
+            using var fileContent = new ByteArrayContent(package.Content);
+            fileContent.Headers.Add("Content-Type", "application/octet-stream");
+            multiPartContent.Add(fileContent, "file", package.Id);
+            request.Content = multiPartContent;
+            var response = HttpClientFactory.GetHttpClient().SendAsync(request);
+            response.Wait();
+            response.Result.EnsureSuccessStatusCode();
         }
 
         /// <summary>
@@ -184,20 +181,14 @@ namespace SynchroFeed.Repository.Nuget
 
             byte[] GetContentForPackage(DataServiceContext dataServiceContext, Package packageEntity)
             {
-                using (var webresponse = dataServiceContext.GetReadStream(packageEntity))
+                using DataServiceStreamResponse response = dataServiceContext.GetReadStreamAsync(packageEntity, new DataServiceRequestArgs(), null).Result;
+                if (response != null)
                 {
-                    if (webresponse != null)
-                    {
-                        using (var byteStream = new MemoryStream(new byte[packageEntity.PackageSize], true))
-                        {
-                            using (var stream = webresponse.Stream)
-                            {
-                                stream.CopyTo(byteStream);
-                            }
+                    using var byteStream = new MemoryStream(new byte[packageEntity.PackageSize], true);
+                    using var stream = response.Stream;
+                    stream.CopyTo(byteStream);
 
-                            return byteStream.ToArray();
-                        }
-                    }
+                    return byteStream.ToArray();
                 }
 
                 return null;
@@ -264,33 +255,49 @@ namespace SynchroFeed.Repository.Nuget
         /// <exception cref="DataServiceClientException">Thrown if a unknown DataService client error is encountered.</exception>
         protected virtual IEnumerable<Package> GetQueryResponse(DataServiceContext context, Expression<Func<Package, bool>> query)
         {
-            const string ODataContentType = "application/atom+xml";
-
             var entityQuery = (DataServiceQuery<Package>)context.CreateQuery<Package>("Packages")
                 .Where(query);
             try
             {
-                var response = (QueryOperationResponse<Package>)entityQuery.Execute();
-                // The response sometimes comes back as a 200 but the content type is an error page from a proxy server
-                var contentType = response?.Headers["Content-Type"];
-                if (contentType == null || !contentType.Equals(ODataContentType, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    throw new WebException($"Unexpected content type. Expected {ODataContentType}. Response was {contentType}.");
-                }
+                var response = entityQuery.ExecuteAsync(null).Result;
 
                 return response.AsEnumerable();
-
             }
-            catch (DataServiceQueryException ex)
+            catch (AggregateException ex)
             {
-                if (ex.Response.StatusCode == 404)
-                    return new List<Package>();
-                if (ex.Response.StatusCode == 401)
-                    throw new WebException("Access unauthorized (401)", ex);
-                if (ex.InnerException is DataServiceClientException)
-                    throw ex.InnerException;
-                throw;
+                foreach (var e in ex.InnerExceptions)
+                {
+                    if (e is DataServiceQueryException dsqEx)
+                    {
+                        switch (dsqEx.Response.StatusCode)
+                        {
+                            case 401:
+                                throw new WebException("Access unauthorized (401)", ex);
+                            case 404:
+                                return new List<Package>();
+                            default:
+                                throw new WebException($"Unexpected Exception ({dsqEx.Response.StatusCode})", ex);
+                        }
+                    }
+                    if (e is DataServiceClientException dscEx)
+                    {
+                        switch (dscEx.StatusCode)
+                        {
+                            case 401:
+                                throw new WebException("Access unauthorized (401)", ex);
+                            case 404:
+                                return new List<Package>();
+                            default:
+                                throw new WebException($"Unexpected Exception ({dscEx.StatusCode})", ex);
+                        }
+                    }
+
+                    throw new WebException($"Unknown Exception: {e.Message}", e);
+                }
             }
+
+            // It should never get here
+            return null;
         }
 
         /// <summary>
@@ -335,54 +342,31 @@ namespace SynchroFeed.Repository.Nuget
             }
         }
 
-        /// <summary>
-        /// A helper property that gets the Web Service Proxy from the Settings.
-        /// </summary>
-        /// <value>The Proxy or null if the Proxy is not found.</value>
-        protected string Proxy
-        {
-            get
-            {
-                const string ProxySettingName = "Proxy";
-                Settings.TryGetValue(ProxySettingName, out var proxy);
-                return proxy;
-            }
-        }
-
         /// <summary>  Gets the DataServiceContext that is used to access the atom repository.</summary>
         /// <returns>DataServiceContext that is used to access the atom repository.</returns>
         protected virtual DataServiceContext DataServiceContext()
         {
             var context = new DataServiceContext(new Uri(Uri))
             {
-                IgnoreMissingProperties = true,
-                Timeout = 100000
+                IgnoreMissingProperties = true
             };
 
             if (!string.IsNullOrEmpty(Username) || !string.IsNullOrEmpty(Password))
                 context.Credentials = new NetworkCredential(Username, Password);
 
-            context.SendingRequest += OnSendingDataContextRequest;
+            context.SendingRequest2 += OnSendingRequest;
             context.ReadingEntity += OnReadingDataContextEntity;
             context.WritingEntity += OnWritingDataContextEntity;
 
             return context;
         }
 
-        /// <summary>
-        /// A virtual method that allows overriding what occurs before sending the request.
-        /// </summary>
-        /// <param name="sender">The sender (DataServiceContext) of the event.</param>
-        /// <param name="args">The <see cref="SendingRequestEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnSendingDataContextRequest(object sender, SendingRequestEventArgs args)
+        private void OnSendingRequest(object sender, SendingRequest2EventArgs args)
         {
             if (!string.IsNullOrEmpty(ApiKey))
             {
-                args.RequestHeaders.Add(ApiKeyHeaderName, ApiKey);
+                args.RequestMessage.SetHeader(ApiKeyHeaderName, ApiKey);
             }
-
-            if (!string.IsNullOrEmpty(Proxy))
-                args.Request.Proxy = new WebProxy(Proxy);
         }
 
         /// <summary>

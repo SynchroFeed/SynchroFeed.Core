@@ -338,58 +338,48 @@ namespace SynchroFeed.Command.Catalog
             var uniqueAssemblies = new Dictionary<string, AssemblyName>();
             var coreAssembly = typeof(object).Assembly;
 
-            using (var byteStream = new MemoryStream(package.Content))
-            using (var archive = ArchiveFactory.Open(byteStream))
-            using (var lc = new MetadataLoadContext(new ZipAssemblyResolver(archive, coreAssembly), coreAssembly.FullName))
+            using var byteStream = new MemoryStream(package.Content);
+            using var archive = ArchiveFactory.Open(byteStream);
+            using var lc = new MetadataLoadContext(new ZipAssemblyResolver(archive, coreAssembly), coreAssembly.FullName);
+            foreach (var archiveEntry in archive.Entries)
             {
-                foreach (var archiveEntry in archive.Entries)
+                if (archiveEntry.IsDirectory
+                    || (!archiveEntry.Key.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) && !archiveEntry.Key.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase)))
+                    continue;
+
+                System.Reflection.Assembly assembly;
+
+                using var entryStream = archiveEntry.ExtractToStream();
+                try
                 {
-                    if (archiveEntry.IsDirectory
-                        || (!archiveEntry.Key.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) && !archiveEntry.Key.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase)))
-                        continue;
-
-                    System.Reflection.Assembly assembly;
-
-                    using (var entryStream = archiveEntry.ExtractToStream())
-                    {
-                        try
-                        {
-                            assembly = lc.LoadFromStream(entryStream);
-
-                            if (assembly == null)
-                            {
-                                Logger.LogDebug($"Ignoring non-.NET assembly - {archiveEntry.Key}");
-                                continue;
-                            }
-                        }
-                        catch (FileLoadException)
-                        {
-                            Logger.LogError($"{packageEntity.Name} (v{packageVersionEntity.Version}) - {archiveEntry.Key} - could not be loaded.");
-                            continue;
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.LogError(e, $"{packageEntity.Name} (v{packageVersionEntity.Version}) - {archiveEntry.Key} - threw an exception.");
-                            continue;
-                        }
-                    }
-
-                    foreach (var referencedAssembly in assembly.GetReferencedAssemblies())
-                    {
-                        if (!uniqueAssemblies.ContainsKey(referencedAssembly.FullName))
-                        {
-                            uniqueAssemblies.Add(referencedAssembly.FullName, referencedAssembly);
-                        }
-                    }
-
-                    var assemblyName = assembly.GetName();
-                    Logger.LogDebug($"Processing assembly {assemblyName.Name}, version={assemblyName.Version}");
-
-                    var assemblyEntity = GetOrAddAssemblyEntity(assemblyName);
-                    var assemblyVersionEntity = GetOrAddAssemblyVersionEntity(assemblyEntity, assemblyName);
-                    var packageAssemblyVersionEntity = GetOrAddPackageAssemblyVersionEntity(packageEntity, packageVersionEntity, assemblyEntity, assemblyVersionEntity);
-                    packageAssemblyVersionEntity.ReferenceIncluded = true;
+                    assembly = lc.LoadFromStream(entryStream);
                 }
+                catch (FileLoadException)
+                {
+                    Logger.LogError($"{packageEntity.Name} (v{packageVersionEntity.Version}) - {archiveEntry.Key} - could not be loaded.");
+                    continue;
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e, $"{packageEntity.Name} (v{packageVersionEntity.Version}) - {archiveEntry.Key} - threw an exception.");
+                    continue;
+                }
+
+                foreach (var referencedAssembly in assembly.GetReferencedAssemblies())
+                {
+                    if (!uniqueAssemblies.ContainsKey(referencedAssembly.FullName))
+                    {
+                        uniqueAssemblies.Add(referencedAssembly.FullName, referencedAssembly);
+                    }
+                }
+
+                var assemblyName = assembly.GetName();
+                Logger.LogDebug($"Processing assembly {assemblyName.Name}, version={assemblyName.Version}");
+
+                var assemblyEntity = GetOrAddAssemblyEntity(assemblyName);
+                var assemblyVersionEntity = GetOrAddAssemblyVersionEntity(assemblyEntity, assemblyName);
+                var packageAssemblyVersionEntity = GetOrAddPackageAssemblyVersionEntity(packageEntity, packageVersionEntity, assemblyEntity, assemblyVersionEntity);
+                packageAssemblyVersionEntity.ReferenceIncluded = true;
             }
 
             foreach (var uniqueAssembly in uniqueAssemblies.Values)
@@ -428,7 +418,11 @@ namespace SynchroFeed.Command.Catalog
 
         private AssemblyVersion GetOrAddAssemblyVersionEntity(Assembly assemblyEntity, AssemblyName assemblyName)
         {
-            var assemblyVersion = assemblyName.Version.ToString();
+            if (assemblyName.Version == null)
+            {
+                throw new ArgumentNullException(nameof(assemblyName.Version));
+            }
+            var assemblyVersion = assemblyName.Version?.ToString();
             var assemblyVersionEntity = dbContext.AssemblyVersions.FirstOrDefault(s => s.AssemblyId == assemblyEntity.AssemblyId && s.Version == assemblyVersion);
             if (assemblyVersionEntity == null)
             {

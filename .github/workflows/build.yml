@@ -1,0 +1,50 @@
+name: .NET 5.0 Build
+
+on:
+  push:
+    branches: [ Net50 ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Setup .NET Core 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.100
+    - name: Setup .NET Core 3.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.100
+    - name: Install dotnet-setversion
+      run: dotnet tool install -g dotnet-setversion
+
+    - name: Install GitVersion
+      run: dotnet tool install --global GitVersion.Tool
+
+    - name: Run GitVersion
+      run: dotnet-gitversion /showvariable semver > sem.ver 
+
+    - name: SetVersion
+      run: setversion -r "@sem.ver"
+
+    - name: Build
+      run: dotnet build --configuration Release --verbosity minimal
+
+    - name: Test
+      run: dotnet test --configuration Release --verbosity minimal
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: nuget-artifacts
+        path: /home/runner/work/SynchroFeed.Core/SynchroFeed.Core/nuget/Release/*.*nupkg
+
+    - name: Publish to nuget.org
+      run: dotnet nuget push /home/runner/work/SynchroFeed.Core/SynchroFeed.Core/nuget/Release/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API_KEY}} --skip-duplicate

@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{F5BCF341-75E3-4440-932E-1F263D409B6C}</ProjectGuid>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net50</TargetFramework>
     <AssemblyTitle>SynchroFeed.Command.VersioningCheck</AssemblyTitle>
     <Product>SynchroFeed.Command.VersioningCheck</Product>
     <Copyright>Copyright(c) 2018 SynchroFeed</Copyright>
@@ -10,7 +10,8 @@
     <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for validating packages to make sure they have the same version applied to all dlls within the package.</Description>
-    <Version>0.0.0.0</Version>
+    <Version>1.1.0-Net50.1
+</Version>
     <Authors>SynchroFeed</Authors>
     <Company>SynchroFeed</Company>
     <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Command.VersioningCheck/</RepositoryUrl>
@@ -20,9 +21,10 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>SynchroFeed.png</PackageIcon>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-  </ItemGroup>
+  <PropertyGroup>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">
       <Pack>True</Pack>

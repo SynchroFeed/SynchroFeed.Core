@@ -1,0 +1,10 @@
+{
+  "solution": {
+    "path": "SynchroFeed.Core.sln",
+    "projects": [
+      "src\\SynchroFeed.Library.TestFramework\\SynchroFeed.Library.TestFramework.csproj",
+      "src\\SynchroFeed.Library\\SynchroFeed.Library.csproj",
+      "test\\SynchroFeed.Library.Test\\SynchroFeed.Library.Test.csproj"
+    ]
+  }
+}

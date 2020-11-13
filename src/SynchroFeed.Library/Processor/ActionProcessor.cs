@@ -134,22 +134,20 @@ namespace SynchroFeed.Library.Processor
             {
                 try
                 {
-                    using (var scope = ServiceProvider.CreateScope())
-                    {
-                        var action = CreateAction(scope, actionSettings);
-                        action.ObserverManager.NotifyObservers(
-                                                               new ActionEvent(
-                                                                               action,
-                                                                               ActionEventType.ActionStarted,
-                                                                               $"{actionSettings.Name}[{actionSettings.Type}] has started"));
-                        action.Run();
-                        action.ObserverManager.NotifyObservers(
-                                                               new ActionEvent(
-                                                                               action,
-                                                                               ActionEventType.ActionCompleted,
-                                                                               $"{actionSettings.Name}[{actionSettings.Type}] has completed"));
-                        Logger.LogDebug($"Running {actionSettings.Type} on \"{actionSettings.Name}\" Action...done");
-                    }
+                    using var scope = ServiceProvider.CreateScope();
+                    var action = CreateAction(scope, actionSettings);
+                    action.ObserverManager.NotifyObservers(
+                        new ActionEvent(
+                            action,
+                            ActionEventType.ActionStarted,
+                            $"{actionSettings.Name}[{actionSettings.Type}] has started"));
+                    action.Run();
+                    action.ObserverManager.NotifyObservers(
+                        new ActionEvent(
+                            action,
+                            ActionEventType.ActionCompleted,
+                            $"{actionSettings.Name}[{actionSettings.Type}] has completed"));
+                    Logger.LogDebug($"Running {actionSettings.Type} on \"{actionSettings.Name}\" Action...done");
                 }
                 catch (Exception ex)
                 {

@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{17EA72FA-B334-4FC7-9DAA-4EC70ECB0205}</ProjectGuid>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net50</TargetFramework>
     <AssemblyTitle>SynchroFeed.Action.Sync</AssemblyTitle>
     <Product>SynchroFeed.Action.Sync</Product>
     <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for syncing packages between a source repository with a target repository.</Description>
@@ -14,20 +14,22 @@
     <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Action.Sync/</RepositoryUrl>
     <RepositoryType>nuget</RepositoryType>
   </PropertyGroup>
-
   <PropertyGroup>
     <NoWarn>1701;1702;NU5125</NoWarn>
   </PropertyGroup>
-
   <PropertyGroup>
     <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyVersion>0.0.0.0</AssemblyVersion>
     <FileVersion>0.0.0.0</FileVersion>
-    <Version>0.0.0</Version>
+    <Version>1.1.0-Net50.1
+</Version>
     <PackageIcon>SynchroFeed.png</PackageIcon>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
   </ItemGroup>

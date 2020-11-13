@@ -50,8 +50,8 @@ namespace SynchroFeed.Library.Reflection
 
                 var extension = Path.GetExtension(archiveEntry.Key);
 
-                if (extension != null && (extension.Equals(".dll", StringComparison.InvariantCultureIgnoreCase)
-                                          || extension.Equals(".exe", StringComparison.InvariantCultureIgnoreCase)))
+                if (extension.Equals(".dll", StringComparison.InvariantCultureIgnoreCase)
+                     || extension.Equals(".exe", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var file = Path.GetFileNameWithoutExtension(archiveEntry.Key);
 
@@ -63,11 +63,15 @@ namespace SynchroFeed.Library.Reflection
             }
         }
 
+        /// <exception cref="ArgumentNullException">Throws exception if Name property of assemblyName is null</exception>
         /// <inheritdoc />
         public override Assembly Resolve(MetadataLoadContext context, AssemblyName assemblyName)
         {
             Assembly candidateWithSamePkt = null;
             Assembly candidateIgnoringPkt = null;
+
+            if (assemblyName == null) throw new ArgumentNullException(nameof(assemblyName));
+            if (assemblyName.Name == null) throw new ArgumentNullException(nameof(assemblyName.Name));
 
             if (_zipEntries.TryGetValue(assemblyName.Name, out List<IArchiveEntry> archiveEntries))
             {
@@ -75,32 +79,30 @@ namespace SynchroFeed.Library.Reflection
 
                 foreach (var archiveEntry in archiveEntries)
                 {
-                    using (var entryStream = archiveEntry.ExtractToStream())
+                    using var entryStream = archiveEntry.ExtractToStream();
+                    var assemblyFromZip = context.LoadFromStream(entryStream);
+                    var assemblyNameFromZip = assemblyFromZip.GetName();
+
+                    if (assemblyName.Name != null && assemblyName.Name.Equals(assemblyNameFromZip.Name, StringComparison.OrdinalIgnoreCase))
                     {
-                        var assemblyFromZip = context.LoadFromStream(entryStream);
-                        var assemblyNameFromZip = assemblyFromZip.GetName();
+                        ReadOnlySpan<byte> pktFromAssembly = assemblyNameFromZip.GetPublicKeyToken();
 
-                        if (assemblyName.Name.Equals(assemblyNameFromZip.Name, StringComparison.OrdinalIgnoreCase))
+                        // Find exact match on PublicKeyToken including treating no PublicKeyToken as its own entry.
+                        if (pktFromName.SequenceEqual(pktFromAssembly))
                         {
-                            ReadOnlySpan<byte> pktFromAssembly = assemblyNameFromZip.GetPublicKeyToken();
-
-                            // Find exact match on PublicKeyToken including treating no PublicKeyToken as its own entry.
-                            if (pktFromName.SequenceEqual(pktFromAssembly))
+                            // Pick the highest version.
+                            if (candidateWithSamePkt == null || assemblyNameFromZip.Version > candidateWithSamePkt.GetName().Version)
                             {
-                                // Pick the highest version.
-                                if (candidateWithSamePkt == null || assemblyNameFromZip.Version > candidateWithSamePkt.GetName().Version)
-                                {
-                                    candidateWithSamePkt = assemblyFromZip;
-                                }
+                                candidateWithSamePkt = assemblyFromZip;
                             }
-                            // If assemblyName does not specify a PublicKeyToken, then still consider those with a PublicKeyToken.
-                            else if (candidateWithSamePkt == null && pktFromName.IsEmpty)
+                        }
+                        // If assemblyName does not specify a PublicKeyToken, then still consider those with a PublicKeyToken.
+                        else if (candidateWithSamePkt == null && pktFromName.IsEmpty)
+                        {
+                            // Pick the highest version.
+                            if (candidateIgnoringPkt == null || assemblyNameFromZip.Version > candidateIgnoringPkt.GetName().Version)
                             {
-                                // Pick the highest version.
-                                if (candidateIgnoringPkt == null || assemblyNameFromZip.Version > candidateIgnoringPkt.GetName().Version)
-                                {
-                                    candidateIgnoringPkt = assemblyFromZip;
-                                }
+                                candidateIgnoringPkt = assemblyFromZip;
                             }
                         }
                     }
@@ -109,7 +111,7 @@ namespace SynchroFeed.Library.Reflection
 
             var assembly = candidateWithSamePkt ?? candidateIgnoringPkt;
 
-            if ((assembly == null) && (assemblyName.Name.Equals(_coreAssemblyName, StringComparison.InvariantCultureIgnoreCase)))
+            if (assemblyName.Name != null && (assembly == null) && (assemblyName.Name.Equals(_coreAssemblyName, StringComparison.InvariantCultureIgnoreCase)))
                 assembly = context.LoadFromAssemblyPath(_coreAssemblyPath);
 
             return assembly;

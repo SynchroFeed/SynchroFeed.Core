@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{49DFC645-3127-4BF4-AC8D-8FEDC256BCB1}</ProjectGuid>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net50</TargetFramework>
     <AssemblyTitle>SynchroFeed.Command.Log4netReview</AssemblyTitle>
     <Product>SynchroFeed.Command.Log4netReview</Product>
     <Copyright>Copyright ©  2018</Copyright>
@@ -12,13 +12,18 @@
     <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for validating packages to make sure the log4net config included in the package is valid.</Description>
     <Authors>SynchroFeed</Authors>
     <Company>SynchroFeed</Company>
-    <Version>0.0.0.0</Version>
+    <Version>1.1.0-Net50.1
+</Version>
     <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
     <RepositoryType>nuget</RepositoryType>
     <PackageTags>nuget chocolately sync feed package log4net addon command</PackageTags>
     <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Command.Log4netReview/</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>SynchroFeed.png</PackageIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\LICENSE">

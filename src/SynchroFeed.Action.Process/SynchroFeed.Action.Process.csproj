@@ -1,9 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net50</TargetFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Version>0.0.0</Version>
+    <Version>1.1.0-Net50.1
+</Version>
     <Authors>Bob Vandehey</Authors>
     <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for processing packages in a repository.</Description>
     <Copyright>Copyright(c) 2018 Robert Vandehey</Copyright>
@@ -16,35 +16,26 @@
     <AssemblyVersion>0.0.0.0</AssemblyVersion>
     <FileVersion>0.0.0.0</FileVersion>
   </PropertyGroup>
-
   <PropertyGroup>
     <NoWarn>1701;1702;NU5125</NoWarn>
   </PropertyGroup>
-
   <PropertyGroup>
     <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
     <PackageIcon>SynchroFeed.png</PackageIcon>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Data.Services.Client" />
-    <Reference Include="System.Web" />
-  </ItemGroup>
-
+  <PropertyGroup>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj">
       <Project>{dd82ce9d-7037-4a40-88c2-5b0b02e6bcd8}</Project>
       <Name>SynchroFeed.Library</Name>
     </ProjectReference>
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="..\..\SynchroFeed.png">
       <Pack>True</Pack>
