@@ -20,8 +20,10 @@ jobs:
     - name: Install dotnet-setversion
       run: dotnet tool install -g dotnet-setversion
 
-    - name: Choco Install GitVersion
-      run: choco install GitVersion.Portable
+    - name: Choco install GitVersion.Portable
+      uses: crazy-max/ghaction-chocolatey@v1
+      with:
+        args: install GitVersion.Portable
 
     - name: Run GitVersion
       run: gitversion /showvariable semver > sem.ver
