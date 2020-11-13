@@ -41,7 +41,9 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release --verbosity minimal
 
+    - name: Echo GITHUB_WORKSPACE
+      run: echo $GITHUB_WORKSPACE/nuget/Release/*.*nupkg
     - uses: actions/upload-artifact@v2
       with:
         name: nuget-artifacts
-        path: ${GITHUB_WORKSPACE}/nuget/Release/*.*nupkg
+        path: $GITHUB_WORKSPACE/nuget/Release/*.*nupkg
