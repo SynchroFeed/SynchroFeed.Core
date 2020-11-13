@@ -15,6 +15,13 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
+
+    - name: Get Branch Name
+      run: echo "##[set-output name=branch;]${GITHUB_REF#refs/heads/}"
+
+    - name: Get Branch Name - echo
+      run: echo "${GITHUB_REF#refs/heads/}"
+
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
@@ -47,4 +54,5 @@ jobs:
         path: /home/runner/work/SynchroFeed.Core/SynchroFeed.Core/nuget/Release/*.*nupkg
 
     - name: Publish to nuget.org
+      #if: ${{ github.event_name == 'pull_request' && github.event.action == 'unassigned' }}
       run: dotnet nuget push /home/runner/work/SynchroFeed.Core/SynchroFeed.Core/nuget/Release/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API_KEY}} --skip-duplicate
