@@ -46,4 +46,4 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: nuget-artifacts
-        path: $GITHUB_WORKSPACE/nuget/Release/*.*nupkg
+        path: ${{env.GITHUB_WORKSPACE}}/nuget/Release/*.*nupkg
