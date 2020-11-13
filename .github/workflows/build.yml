@@ -45,3 +45,6 @@ jobs:
       with:
         name: nuget-artifacts
         path: /home/runner/work/SynchroFeed.Core/SynchroFeed.Core/nuget/Release/*.*nupkg
+
+    - name: Publish to nuget.org
+      run: dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API_KEY}}
