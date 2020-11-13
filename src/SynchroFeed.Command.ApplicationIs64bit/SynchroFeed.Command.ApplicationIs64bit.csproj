@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{7569F829-F3D8-4643-98A6-DBF87F41165C}</ProjectGuid>
     <TargetFramework>net50</TargetFramework>
@@ -6,7 +6,8 @@
     <Product>SynchroFeed.Command.ApplicationIs64bit</Product>
     <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for validating packages to make sure the included assemblies are all 64-bit.</Description>
     <Copyright>Copyright(c) 2018 Robert Vandehey</Copyright>
-    <Version>0.0.0.0</Version>
+    <Version>1.1.0-Net50.1
+</Version>
     <Authors>Bob Vandehey</Authors>
     <PackageId>SynchroFeed.Command.ApplicationIs64bit</PackageId>
     <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
@@ -17,18 +18,19 @@
     <NoWarn>1701;1702;NU5125</NoWarn>
     <RepositoryType>nuget</RepositoryType>
   </PropertyGroup>
-
   <PropertyGroup>
     <NoWarn>1701;1702;NU5125</NoWarn>
   </PropertyGroup>
-
   <PropertyGroup>
     <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>SynchroFeed.png</PackageIcon>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
   </ItemGroup>

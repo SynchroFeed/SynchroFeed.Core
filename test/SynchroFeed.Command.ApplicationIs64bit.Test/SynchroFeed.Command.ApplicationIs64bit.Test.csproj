@@ -1,12 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{B1F8A5C1-F6E5-48FE-9FBA-0FEAFF99BEEA}</ProjectGuid>
     <RootNamespace>SynchroFeed.Command.ApplicationIs64bit.Tests</RootNamespace>
     <AssemblyName>SynchroFeed.Command.ApplicationIs64bit.Tests</AssemblyName>
     <TargetFramework>net50</TargetFramework>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <AssemblyTitle>SynchroFeed.Command.ApplicationIs64bit.Tests</AssemblyTitle>
     <Product>SynchroFeed.Command.ApplicationIs64bit.Tests</Product>
     <Copyright>Copyright ©  2018</Copyright>
+    <Version>1.1.0-Net50.1
+</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="local.choco\.gitignore" />
@@ -19,6 +22,10 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
     <PackageReference Include="Moq" Version="4.15.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\SynchroFeed.Command.ApplicationIs64bit\SynchroFeed.Command.ApplicationIs64bit.csproj" />

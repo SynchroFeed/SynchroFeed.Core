@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{1D475789-4665-46F8-A3CD-5AA972E61DE5}</ProjectGuid>
     <TargetFramework>net50</TargetFramework>
@@ -6,7 +6,8 @@
     <Product>SynchroFeed.Repository.Proget</Product>
     <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for using a Proget feed as a repository.</Description>
     <Copyright>Copyright(c) 2018 Robert Vandehey</Copyright>
-    <Version>0.0.0.0</Version>
+    <Version>1.1.0-Net50.1
+</Version>
     <Authors>Bob Vandehey</Authors>
     <PackageId>SynchroFeed.Repository.Proget</PackageId>
     <PackageLicenseUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/LICENSE</PackageLicenseUrl>
@@ -15,17 +16,18 @@
     <PackageTags>nuget chocolately sync feed package catalog addon repository</PackageTags>
     <RepositoryType>nuget</RepositoryType>
   </PropertyGroup>
-
   <PropertyGroup>
     <NoWarn>1701;1702;NU5125</NoWarn>
   </PropertyGroup>
-
   <PropertyGroup>
     <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIcon>SynchroFeed.png</PackageIcon>
   </PropertyGroup>
-
+  <PropertyGroup>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
     <ProjectReference Include="..\SynchroFeed.Repository.Nuget\SynchroFeed.Repository.Nuget.csproj" />

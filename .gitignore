@@ -290,3 +290,5 @@ __pycache__/
 # Release Config Files
 App.Release.Config
 App.*.json
+
+sem.ver

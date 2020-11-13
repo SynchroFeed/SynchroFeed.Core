@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{85709AED-6CCA-4536-8113-85D28B42D69D}</ProjectGuid>
     <RootNamespace>SynchroFeed.Command.VersioningCheck.Test</RootNamespace>
@@ -12,6 +12,8 @@
     <AssemblyTitle>SynchroFeed.Command.VersioningCheck.Test</AssemblyTitle>
     <Product>SynchroFeed.Command.VersioningCheck.Test</Product>
     <Copyright>Copyright ©  2018</Copyright>
+    <Version>1.1.0-Net50.1
+</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="local.choco\.gitignore" />
@@ -24,6 +26,10 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
     <PackageReference Include="Moq" Version="4.15.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\SynchroFeed.Command.VersioningCheck\SynchroFeed.Command.VersioningCheck.csproj" />
