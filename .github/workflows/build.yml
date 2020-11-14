@@ -5,6 +5,8 @@ on:
     branches: [ Net50 ]
   pull_request:
     branches: [ main ]
+  release:
+    types: [published]
 
 jobs:
   build:
