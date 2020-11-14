@@ -1,7 +1,7 @@
 # Same changes need to be made in publish.yml
 
 # This Github Workflow builds and tests on a push or pull_request
-name: .NET 5.0 Build
+name: Build
 
 on: [push, pull_request]
 

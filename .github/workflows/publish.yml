@@ -1,7 +1,7 @@
 # Same changes need to be made in build.yml
 
 # This Github Workflow builds, tests and pushes to nuget.org on a release
-name: .NET 5.0 Build
+name: Publish
 
 on:
   release:
