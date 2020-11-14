@@ -55,5 +55,5 @@ jobs:
         path: /home/runner/work/SynchroFeed.Core/SynchroFeed.Core/nuget/Release/*.*nupkg
 
     - name: Publish to nuget.org
-      #if: ${{ github.event_name == 'pull_request' && github.event.action == 'unassigned' }}
+      if: ${{ steps.extract_branch.outputs.branch == 'main' }}
       run: dotnet nuget push /home/runner/work/SynchroFeed.Core/SynchroFeed.Core/nuget/Release/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API_KEY}} --skip-duplicate
