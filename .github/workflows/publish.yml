@@ -1,8 +1,11 @@
-# Same changes need to be made in publish.yml
+# Same changes need to be made in build.yml
 
-name: Build
+# This Github Workflow builds, tests and pushes to nuget.org on a release
+name: Publish
 
-on: [push, pull_request]
+on:
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -13,13 +16,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
-
-    - name: Get Branch Name
-      run: echo "##[set-output name=branch;]${GITHUB_REF#refs/heads/}"
-      id: extract_branch
-
-    - name: Get Branch Name - echo
-      run: echo "${{ steps.extract_branch.outputs.branch }}"
 
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
@@ -51,3 +47,6 @@ jobs:
       with:
         name: nuget-artifacts
         path: /home/runner/work/SynchroFeed.Core/SynchroFeed.Core/nuget/Release/*.*nupkg
+
+    - name: Publish to nuget.org
+      run: dotnet nuget push /home/runner/work/SynchroFeed.Core/SynchroFeed.Core/nuget/Release/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API_KEY}} --skip-duplicate
