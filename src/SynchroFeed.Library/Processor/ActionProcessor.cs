@@ -152,6 +152,8 @@ namespace SynchroFeed.Library.Processor
                 catch (Exception ex)
                 {
                     Logger.LogError($"Error running {actionSettings.Type} on \"{actionSettings.Name}\" Action. Error: {ex.Message}.");
+                    if (ex.InnerException != null)
+                        Logger.LogError($"Details: {ex.InnerException.Message}.");
                     if (actionSettings.FailOnError)
                         throw;
                 }

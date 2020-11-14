@@ -184,7 +184,8 @@ namespace SynchroFeed.Repository.Nuget
                 using DataServiceStreamResponse response = dataServiceContext.GetReadStreamAsync(packageEntity, new DataServiceRequestArgs(), null).Result;
                 if (response != null)
                 {
-                    using var byteStream = new MemoryStream(new byte[packageEntity.PackageSize], true);
+                    long packageSize = long.Parse(response.Headers["Content-Length"]);
+                    using var byteStream = new MemoryStream(new byte[packageSize], true);
                     using var stream = response.Stream;
                     stream.CopyTo(byteStream);
 
