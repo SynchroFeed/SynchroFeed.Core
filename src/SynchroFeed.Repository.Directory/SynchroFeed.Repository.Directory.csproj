@@ -1,44 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\Common.props" />
   <PropertyGroup>
-    <ProjectGuid>{BB452E80-BE2C-44C9-AD7F-5B79FD6F9868}</ProjectGuid>
     <TargetFramework>net50</TargetFramework>
-    <AssemblyTitle>SynchroFeed.Repository.Directory</AssemblyTitle>
-    <Product>SynchroFeed.Repository.Directory</Product>
-    <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for using a directory as a repository.</Description>
-    <Copyright>Copyright(c) 2018 Robert Vandehey</Copyright>
-    <Version>1.1.0-Net50.1
-</Version>
-    <Authors>Bob Vandehey</Authors>
-    <PackageId>SynchroFeed.Repository.Directory</PackageId>
-    <PackageLicenseUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
+    <Version>1.1.0</Version>
     <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Repository.Directory/</RepositoryUrl>
-    <PackageTags>nuget chocolately sync feed package catalog addon repository</PackageTags>
-    <RepositoryType>nuget</RepositoryType>
-  </PropertyGroup>
-  <PropertyGroup>
-    <NoWarn>1701;1702;NU5125</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup>
-    <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageIcon>SynchroFeed.png</PackageIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\SynchroFeed.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,35 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TargetFramework>net50</TargetFramework>
+    <Authors>Bob Vandehey</Authors>
+    <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for syncing packages between a source repository with a target repository.</Description>
+    <Copyright>Copyright(c) 2020 Robert Vandehey</Copyright>
+    <PackageIcon>SynchroFeed.png</PackageIcon>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
+    <PackageTags>nuget chocolately sync feed package catalog addon action</PackageTags>
+    <RepositoryType>nuget</RepositoryType>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <NoWarn>1701;1702;NU5125</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;test</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+    <None Include="..\..\SynchroFeed.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+</Project>

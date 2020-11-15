@@ -1,18 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\Common.props" />
   <PropertyGroup>
-    <ProjectGuid>{C0C64DA9-9BAB-4DB4-892A-27B7C683C4A1}</ProjectGuid>
     <TargetFramework>net50</TargetFramework>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <AssemblyTitle>SynchroFeed.Repository.Npm.Tests</AssemblyTitle>
-    <Product>SynchroFeed.Repository.Npm.Tests</Product>
-    <Version>1.1.0-Net50.1
-</Version>
+    <Version>1.1.0</Version>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <ItemGroup>
     <Compile Remove="local.choco\**" />
     <EmbeddedResource Remove="local.choco\**" />
@@ -27,8 +20,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\src\SynchroFeed.Library\SynchroFeed.Library.csproj" />
     <ProjectReference Include="..\..\src\SynchroFeed.Repository.Directory\SynchroFeed.Repository.Directory.csproj" />
     <ProjectReference Include="..\..\src\SynchroFeed.Repository.Npm\SynchroFeed.Repository.Npm.csproj" />

@@ -90,6 +90,10 @@ namespace SynchroFeed.Library.DomainLoader
             {
                 // Ignore since it is a a non .NET assembly
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             return null;
         }

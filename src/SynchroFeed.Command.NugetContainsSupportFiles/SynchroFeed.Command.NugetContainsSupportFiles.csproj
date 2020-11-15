@@ -1,43 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\Common.props" />
   <PropertyGroup>
-    <ProjectGuid>{DB1FEF28-91F5-4EFC-940F-DF612569F91F}</ProjectGuid>
     <TargetFramework>net50</TargetFramework>
-    <AssemblyTitle>SynchroFeed.Command.NugetContainsSupportFiles</AssemblyTitle>
-    <Product>SynchroFeed.Command.NugetContainsSupportFiles</Product>
-  </PropertyGroup>
-  <PropertyGroup>
-    <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.0-Net50.1
-</Version>
-    <Authors>SynchroFeed</Authors>
-    <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for validating packages to make sure the package includes additional support files.</Description>
-    <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
-    <RepositoryType>nuget</RepositoryType>
-    <PackageTags>nuget chocolately sync feed package support addon command</PackageTags>
+    <Version>1.1.0</Version>
     <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Command.NugetContainsSupportFiles/</RepositoryUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageIcon>SynchroFeed.png</PackageIcon>
   </PropertyGroup>
-  <PropertyGroup>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="..\..\LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="..\..\SynchroFeed.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="README.md" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 </Project>

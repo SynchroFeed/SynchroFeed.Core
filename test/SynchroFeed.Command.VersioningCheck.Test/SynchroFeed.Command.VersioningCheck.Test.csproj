@@ -1,19 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\Common.props" />
   <PropertyGroup>
-    <ProjectGuid>{85709AED-6CCA-4536-8113-85D28B42D69D}</ProjectGuid>
-    <RootNamespace>SynchroFeed.Command.VersioningCheck.Test</RootNamespace>
-    <AssemblyName>SynchroFeed.Command.VersioningCheck.Test</AssemblyName>
     <TargetFramework>net50</TargetFramework>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <AssemblyTitle>SynchroFeed.Command.VersioningCheck.Test</AssemblyTitle>
-    <Product>SynchroFeed.Command.VersioningCheck.Test</Product>
-    <Copyright>Copyright ©  2018</Copyright>
-    <Version>1.1.0-Net50.1
-</Version>
+    <Version>1.1.0</Version>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="local.choco\.gitignore" />
@@ -30,8 +21,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\src\SynchroFeed.Command.VersioningCheck\SynchroFeed.Command.VersioningCheck.csproj" />
     <ProjectReference Include="..\..\src\SynchroFeed.Library.TestFramework\SynchroFeed.Library.TestFramework.csproj" />
     <ProjectReference Include="..\..\src\SynchroFeed.Library\SynchroFeed.Library.csproj" />

@@ -1,45 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\Common.props" />
   <PropertyGroup>
     <TargetFramework>net50</TargetFramework>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Version>1.1.0-Net50.1
-</Version>
-    <Authors>Bob Vandehey</Authors>
-    <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for processing packages in a repository.</Description>
-    <Copyright>Copyright(c) 2018 Robert Vandehey</Copyright>
-    <PackageLicenseUrl>https://github.com/SynchroFeed/SynchroFeed.Core/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
+    <Version>1.1.0</Version>
     <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Action.Process/</RepositoryUrl>
-    <RepositoryType>nuget</RepositoryType>
-    <PackageTags>nuget chocolately sync feed package catalog addon action</PackageTags>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>0.0.0.0</AssemblyVersion>
-    <FileVersion>0.0.0.0</FileVersion>
-  </PropertyGroup>
-  <PropertyGroup>
-    <NoWarn>1701;1702;NU5125</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup>
-    <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
-    <PackageIcon>SynchroFeed.png</PackageIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj">
-      <Project>{dd82ce9d-7037-4a40-88c2-5b0b02e6bcd8}</Project>
-      <Name>SynchroFeed.Library</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\SynchroFeed.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+    <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
   </ItemGroup>
 </Project>

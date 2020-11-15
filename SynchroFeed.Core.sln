@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B40BB7C9-009D-4752-A623-E32A336945EF}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		Common.props = Common.props
 		LICENSE = LICENSE
 		README.md = README.md
 		SynchroFeed.png = SynchroFeed.png

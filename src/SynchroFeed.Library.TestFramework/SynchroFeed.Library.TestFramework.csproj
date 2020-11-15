@@ -1,45 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\Common.props" />
   <PropertyGroup>
     <TargetFramework>net50</TargetFramework>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Version>1.1.0-Net50.1
-</Version>
-  </PropertyGroup>
-  <PropertyGroup>
-    <NoWarn>1701;1702;NU5125</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup>
-    <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
-    <PackageIcon>SynchroFeed.png</PackageIcon>
-    <PackageIconUrl />
-    <PackageId>SynchroFeed.Library.TestFramework</PackageId>
-    <Authors>Bob Vandehey</Authors>
-    <Copyright>Copyright(c) 2020 Robert Vandehey</Copyright>
-    <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
-    <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Library/</RepositoryUrl>
-    <RepositoryType>nuget</RepositoryType>
-    <PackageTags>nuget chocolately sync feed package catalog test framework</PackageTags>
-    <Description>SynchroFeed TestFramework is the testing framework used for Synchrofeed.</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-  <PropertyGroup>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Version>1.1.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
+    <ProjectReference Include="..\SynchroFeed.Repository.Nuget\SynchroFeed.Repository.Nuget.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="Moq" Version="4.15.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\SynchroFeed.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
+    </ItemGroup>
 </Project>

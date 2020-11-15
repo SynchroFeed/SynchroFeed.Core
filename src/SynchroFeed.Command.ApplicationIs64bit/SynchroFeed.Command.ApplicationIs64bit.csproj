@@ -1,51 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\Common.props" />
   <PropertyGroup>
-    <ProjectGuid>{7569F829-F3D8-4643-98A6-DBF87F41165C}</ProjectGuid>
     <TargetFramework>net50</TargetFramework>
-    <AssemblyTitle>SynchroFeed.Command.ApplicationIs64bit</AssemblyTitle>
-    <Product>SynchroFeed.Command.ApplicationIs64bit</Product>
-    <Description>SynchroFeed is an extensible framework for integrating with a Nuget-like feeds to perform syncing, cataloging and validation of Nuget and Chocolatey packages. This is an addon for validating packages to make sure the included assemblies are all 64-bit.</Description>
-    <Copyright>Copyright(c) 2018 Robert Vandehey</Copyright>
-    <Version>1.1.0-Net50.1
-</Version>
-    <Authors>Bob Vandehey</Authors>
-    <PackageId>SynchroFeed.Command.ApplicationIs64bit</PackageId>
-    <PackageProjectUrl>https://github.com/SynchroFeed/SynchroFeed.Core</PackageProjectUrl>
+    <Version>1.1.0</Version>
     <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Command.ApplicationIs64bit/</RepositoryUrl>
-    <PackageTags>nuget chocolately sync feed package catalog addon command</PackageTags>
-  </PropertyGroup>
-  <PropertyGroup>
-    <NoWarn>1701;1702;NU5125</NoWarn>
-    <RepositoryType>nuget</RepositoryType>
-  </PropertyGroup>
-  <PropertyGroup>
-    <NoWarn>1701;1702;NU5125</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup>
-    <OutputPath>$(SolutionDir)nuget\$(Configuration)\</OutputPath>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageIcon>SynchroFeed.png</PackageIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SynchroFeed.Library\SynchroFeed.Library.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="..\..\SynchroFeed.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 </Project>
