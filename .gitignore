@@ -292,3 +292,4 @@ App.Release.Config
 App.*.json
 
 sem.ver
+.env
