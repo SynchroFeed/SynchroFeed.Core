@@ -8,10 +8,13 @@ namespace SynchroFeed.Repository.Npm
 {
     public class NpmClient
     {
+        private const string ApiKeyHeaderName = "X-ApiKey";
+
         public NpmClient(NpmRepository repository, string feedUri, string apiKey, string feedName, ILogger logger)
         {
             this.Repository = repository;
             this.HttpClient = new HttpClient();
+            this.HttpClient.DefaultRequestHeaders.Add(ApiKeyHeaderName, apiKey);
             this.Uri = feedUri.EndsWith("/") ? feedUri : feedUri + "/";
             this.ApiKey = apiKey;
             this.FeedName = feedName;

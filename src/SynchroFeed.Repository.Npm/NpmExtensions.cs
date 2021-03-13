@@ -20,7 +20,6 @@ namespace SynchroFeed.Repository.Npm
 {
     public static class NpmExtensions
     {
-        private const string ApiKeyHeaderName = "X-ApiKey";
         private const string prereleaseRegEx = @"(?<PackageId>.*\d+\.\d+\.\d+)(?<Prerelease>.*)";
 
         public static async Task<(IEnumerable<Package> Packages, Error Error)> NpmFetchPackagesAsync(this NpmClient client, Expression<Func<Package, bool>> expression, bool downloadPackageContent)
@@ -96,7 +95,6 @@ namespace SynchroFeed.Repository.Npm
             };
 
             var content = new StringContent(JsonConvert.SerializeObject(publishPackage, new JsonSerializerSettings{ MissingMemberHandling = MissingMemberHandling.Ignore }), Encoding.UTF8, "application/json");
-			content.Headers.Add(ApiKeyHeaderName, client.ApiKey);
 			// TODO: Scope is included in the package.Name - need to do some testing to see if scope if actually needed
             using var response = await client.HttpClient.PutAsync(new Uri(new Uri(client.Uri), GetNpmPath(package.Name, package.Version)), content);
             if (response.IsSuccessStatusCode)
@@ -110,7 +108,6 @@ namespace SynchroFeed.Repository.Npm
 		public static async Task<(NpmPackage Package, Error Error)> NpmGetPackageAsync(this NpmClient client, string packageName, string version)
         {
             using var requestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri(new Uri(client.Uri), GetNpmPath(packageName, version)));
-            requestMessage.Headers.Add(ApiKeyHeaderName, client.ApiKey);
             requestMessage.Headers.Add("Accept", "application/json");
             using var response = await client.HttpClient.SendAsync(requestMessage);
             if (response.IsSuccessStatusCode)
@@ -173,12 +170,12 @@ namespace SynchroFeed.Repository.Npm
             string name;
             string scope;
 
-            var npmIdNoVersion = npmId.LastIndexOf('@', 1) == -1 ? npmId : npmId.Substring(0, npmId.LastIndexOf('@'));
+            var npmIdNoVersion = npmId.LastIndexOf('@', 1) <= 1 ? npmId : npmId.Substring(0, npmId.LastIndexOf('@'));
 
             var parts = npmIdNoVersion.Split('/');
             if (parts.Length == 2)
             {
-                name = parts[1].Substring(0, parts[1].IndexOf("@", StringComparison.Ordinal));
+                name = parts[1];
                 // Remove @ from scope
                 scope = parts[0].Substring(1);
             }
