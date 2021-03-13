@@ -26,19 +26,17 @@
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SynchroFeed.Library.Model;
-using SynchroFeed.Repository.Proget;
+using SynchroFeed.Repository.Directory;
 using Xunit;
 using Settings=SynchroFeed.Library.Settings;
 
-namespace SynchroFeed.Repository.Directory.Test
+namespace SynchroFeed.Repository.Proget.Test
 {
     public class ProgetRepositoryTest
     {
