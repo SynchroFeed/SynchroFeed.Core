@@ -155,7 +155,7 @@ namespace SynchroFeed.Action.Sync
         ///   <c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         protected virtual bool ProcessPackageAdded(Package package, PackageEvent packageEvent)
         {
-            if (IgnorePackage(package.Id))
+            if (IgnorePackage(package))
             {
                 Logger.LogDebug($"Package ({package.Id} is being ignored due to configuration");
                 this.ObserverManager.NotifyObservers(new ActionEvent(this, ActionEventType.ActionPackageIgnored,

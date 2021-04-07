@@ -25,7 +25,6 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-using System;
 using System.Collections.Generic;
 
 namespace SynchroFeed.Library.Settings
@@ -97,7 +96,13 @@ namespace SynchroFeed.Library.Settings
         public ObserverCollection Observers { get; protected set; } = new ObserverCollection();
 
         /// <summary>
-        /// Gets or sets the package IDs to ignore.
+        /// Gets or sets a vale indicating whether to include packages created in the last X minutes.
+        /// </summary>
+        /// <value><c>null</c> the filter should not be applied; otherwise, Only packages created in the last X minutes are processed.</value>
+        public int? OnlyPackagesCreatedInTheLastMinutes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the package IDs to ignore (supports Regex).
         /// </summary>
         /// <value>The package IDs to ignore.</value>
         public List<string> PackagesToIgnore { get; set; } = new List<string>();
@@ -130,6 +135,7 @@ namespace SynchroFeed.Library.Settings
                                 IncludePrerelease = this.IncludePrerelease,
                                 FailOnError = this.FailOnError,
                                 PackagesToIgnore = new List<string>(PackagesToIgnore),
+                                OnlyPackagesCreatedInTheLastMinutes = OnlyPackagesCreatedInTheLastMinutes,
                                 SettingsGroup = this.SettingsGroup,
                                 Enabled = this.Enabled,
                                 Settings = new SettingsCollection(this.Settings),
