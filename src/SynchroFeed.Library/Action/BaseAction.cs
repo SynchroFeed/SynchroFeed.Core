@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -198,21 +199,61 @@ namespace SynchroFeed.Library.Action
         protected Package[] GetPackages(IRepository<Package> repo)
         {
             Logger.LogDebug($"Retrieving packages from feed: {repo.Name}");
-            IEnumerable<Package> packages = ActionSettings.OnlyLatestVersion
-                                                ? repo.Fetch(t => (ActionSettings.IncludePrerelease || !t.IsPrerelease) && t.IsLatestVersion)
-                                                : repo.Fetch(t => (ActionSettings.IncludePrerelease || !t.IsPrerelease));
+
+            var packages = repo.Fetch(this.CreateRepositoryExpression(ActionSettings));
             var packagesArray = packages as Package[] ?? packages.ToArray();
+
             return packagesArray;
+        }
+
+        private Expression<Func<Package, bool>> CreateRepositoryExpression(Settings.Action action)
+        {
+            var paramPackage = Expression.Parameter(typeof(Package), "package");
+            var expressions = new List<Expression>();
+
+            if (!action.IncludePrerelease)
+            {
+                // package.IsPrerelease == false
+                expressions.Add(Expression.Equal(Expression.Property(paramPackage, nameof(Package.IsPrerelease)), Expression.Constant(false, typeof(bool))));
+            }
+
+            if (action.OnlyLatestVersion)
+            {
+                // package.IsLatestVersion
+                expressions.Add(Expression.Property(paramPackage, nameof(Package.IsLatestVersion)));
+            }
+
+            // If no expressions were added, ensure that all packages are included.
+            if (expressions.Count < 1)
+                expressions.Add(Expression.Constant(true, typeof(bool)));
+
+            // Build up the return expression from the collection of individual checks.
+            var filterExpression = expressions[0];
+
+            for (int i = 1; i < expressions.Count; ++i)
+                filterExpression = Expression.AndAlso(filterExpression, expressions[i]);
+
+            return Expression.Lambda<Func<Package, bool>>(filterExpression, paramPackage);
         }
 
         /// <summary>
         /// Determines whether the package should be ignored.
         /// </summary>
-        /// <param name="packageId">The package identifier.</param>
+        /// <param name="package">The package.</param>
         /// <returns><c>true</c> if the package should be ignored, <c>false</c> otherwise.</returns>
-        protected bool IgnorePackage(string packageId)
+        protected bool IgnorePackage(Package package)
         {
-            return packagesToIgnoreRegex.Any(regex => regex.IsMatch(packageId));
+            if (packagesToIgnoreRegex.Any(regex => regex.IsMatch(package.Id)))
+                return true;
+
+            if (this.ActionSettings.OnlyPackagesCreatedInTheLastMinutes.HasValue && package.Created.HasValue)
+            {
+                var cutOffDateTime = DateTime.UtcNow.AddMinutes(0 - this.ActionSettings.OnlyPackagesCreatedInTheLastMinutes.Value);
+
+                return (package.Created.Value < cutOffDateTime);
+            }
+
+            return false;
         }
 
         /// <summary>

@@ -25,7 +25,6 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 #endregion
-using System;
 using AutoFixture;
 using SynchroFeed.Library.Settings;
 using Xunit;
@@ -106,6 +105,7 @@ namespace SynchroFeed.Library.Test.Settings
             action.FailOnError = !action.FailOnError;
             action.IncludePrerelease = !action.IncludePrerelease;
             action.OnlyLatestVersion = !action.OnlyLatestVersion;
+            action.OnlyPackagesCreatedInTheLastMinutes += 1;
 
             var sut = action.Clone();
 
@@ -121,6 +121,7 @@ namespace SynchroFeed.Library.Test.Settings
             Assert.Equal(action.Commands, sut.Commands);
             Assert.Equal(action.Observers, sut.Observers);
             Assert.Equal(action.PackagesToIgnore, sut.PackagesToIgnore);
+            Assert.Equal(action.OnlyPackagesCreatedInTheLastMinutes, sut.OnlyPackagesCreatedInTheLastMinutes);
             Assert.Equal(action.Settings, sut.Settings);
         }
 
@@ -159,10 +160,9 @@ namespace SynchroFeed.Library.Test.Settings
         public void Test_Action_Collection_Default()
         {
             var sut = new ActionCollection();
-            Fixture.AddManyTo(sut, 19);            
+            Fixture.AddManyTo(sut, 19);
 
             Assert.True(sut.Count == 19);
-
         }
 
         [Fact]
