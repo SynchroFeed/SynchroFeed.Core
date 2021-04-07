@@ -1,8 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\Common.props" />
   <PropertyGroup>
-    <TargetFramework>net50</TargetFramework>
-    <Version>1.1.0</Version>
     <RepositoryUrl>https://www.nuget.org/packages/SynchroFeed.Command.NugetContainsSupportFiles/</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
